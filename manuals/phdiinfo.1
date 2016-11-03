@@ -1,0 +1,57 @@
+.Dd December 20, 2015
+.Dt phdiinfo
+.Os libphdi
+.Sh NAME
+.Nm phdiinfo
+.Nd determines information about a Parallels Hard Disk image file
+.Sh SYNOPSIS
+.Nm phdiinfo
+.Op Fl hvV
+.Va Ar source
+.Sh DESCRIPTION
+.Nm phdiinfo
+is a utility to determine information about a Parallels Hard Disk image file
+.Pp
+.Nm phdiinfo
+is part of the
+.Nm libphdi
+package.
+.Nm libphdi
+is a library to access the Parallels Hard Disk image format
+.Pp
+.Ar source
+is the source file.
+.Pp
+The options are as follows:
+.Bl -tag -width Ds
+.It Fl h
+shows this help
+.It Fl v
+verbose output to stderr
+.It Fl V
+print version
+.El
+.Sh ENVIRONMENT
+None
+.Sh FILES
+None
+.Sh EXAMPLES
+.Bd -literal
+# phdiinfo DiskDescriptor.xml
+phdiinfo 20151220
+
+Parallels Hard Disk image information:
+	Media size:		536870912 bytes
+
+.Ed
+.Sh DIAGNOSTICS
+Errors, verbose and debug output are printed to stderr when verbose output \-v is enabled.
+Verbose and debug output are only printed when enabled at compilation.
+.Sh BUGS
+Please report bugs of any kind to <joachim.metz@gmail.com> or on the project website:
+https://github.com/libyal/libphdi/
+.Sh AUTHOR
+These man pages were written by Joachim Metz.
+.Sh COPYRIGHT
+Copyright (C) 2015-2016, Joachim Metz <joachim.metz@gmail.com>.
+.Sh SEE ALSO

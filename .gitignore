@@ -1,10 +1,13 @@
 # Files to ignore by git
 #
-# Version: 20150927
+# Version: 20161030
 
 # Generic auto-generated build files
 *~
 *.a
+*.gcda
+*.gcno
+*.gcov
 *.la
 *.lai
 *.lib
@@ -36,12 +39,15 @@ stamp-h[1-9]
 /autom4te.cache/
 /build
 /compile
+/confdefs.h
+/config.cache
 /config.guess
 /config.log
 /config.rpath
 /config.status
 /config.sub
 /configure
+/conftest.c
 /depcomp
 /dist
 /install-sh
@@ -51,6 +57,7 @@ stamp-h[1-9]
 /test-driver
 /ylwrap
 /m4/codeset.m4
+/m4/extern-inline.m4
 /m4/fcntl-o.m4
 /m4/gettext.m4
 /m4/glibc2.m4
@@ -113,17 +120,23 @@ stamp-h[1-9]
 /include/libphdi/types.h
 /libphdi/libphdi.rc
 /libphdi/libphdi_definitions.h
+/pyphdi-python[23]/*.[ch]
 /phditools/phdiinfo
 /phditools/phdimount
 /tests/input
-/tests/tmp*
+/tests/phdi_test_error
+/tests/phdi_test_handle
+/tests/phdi_test_notify
 /tests/phdi_test_open_close
 /tests/phdi_test_read
 /tests/phdi_test_seek
+/tests/phdi_test_support
+/tests/tmp*
 
 # Local library dependencies specific files
 /libbfio
 /libcdata
+/libcdirectory
 /libcerror
 /libcfile
 /libclocale

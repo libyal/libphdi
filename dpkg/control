@@ -1,0 +1,66 @@
+Source: libphdi
+Section: libs
+Priority: extra
+Maintainer: Joachim Metz <joachim.metz@gmail.com>
+Build-Depends: debhelper (>= 7), autotools-dev, libfuse-dev, python-dev, python3-dev
+Standards-Version: 3.9.5
+Homepage: https://github.com/libyal/libphdi/
+
+Package: libphdi
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Suggests: libphdi-dbg
+Description: Library to access the Parallels Hard Disk image format
+ libphdi is a library to access the Parallels Hard Disk image format.
+
+Package: libphdi-dbg
+Architecture: any
+Section: debug
+Depends: libphdi (= ${binary:Version}), ${misc:Depends}
+Description: Debugging symbols for libphdi
+ Debugging symbols for libphdi.
+
+Package: libphdi-dev
+Section: libdevel
+Architecture: any
+Depends: libphdi (= ${binary:Version}), ${misc:Depends}
+Description: Header files and libraries for developing applications for libphdi
+ Header files and libraries for developing applications for libphdi.
+
+Package: libphdi-tools
+Section: utils
+Architecture: any
+Depends: libphdi (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
+Description: Several tools for reading Parallels Hard Disk image files
+ Several tools for reading Parallels Hard Disk image files.
+
+Package: libphdi-python
+Section: python
+Architecture: any
+Depends: libphdi (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
+Suggests: libphdi-python-dbg
+Description: Python 2 bindings for libphdi
+ Python 2 bindings for libphdi.
+
+Package: libphdi-python-dbg
+Section: debug
+Architecture: any
+Depends: libphdi-python (= ${binary:Version}), ${misc:Depends}
+Description: Debugging symbols for libphdi-python
+ Debugging symbols for libphdi-python.
+
+Package: libphdi-python3
+Section: python
+Architecture: any
+Depends: libphdi (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
+Suggests: libphdi-python3-dbg
+Description: Python 3 bindings for libphdi
+ Python 3 bindings for libphdi.
+
+Package: libphdi-python3-dbg
+Section: debug
+Architecture: any
+Depends: libphdi-python3 (= ${binary:Version}), ${misc:Depends}
+Description: Debugging symbols for libphdi-python3
+ Debugging symbols for libphdi-python3.
+
