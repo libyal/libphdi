@@ -27,7 +27,6 @@
 #include "info_handle.h"
 #include "phditools_libcerror.h"
 #include "phditools_libcnotify.h"
-#include "phditools_libcstring.h"
 #include "phditools_libphdi.h"
 
 #define INFO_HANDLE_NOTIFY_STREAM		stdout
@@ -202,7 +201,7 @@ int info_handle_signal_abort(
  */
 int info_handle_open_input(
      info_handle_t *info_handle,
-     const libcstring_system_character_t *filename,
+     const system_character_t *filename,
      libcerror_error_t **error )
 {
 	static char *function = "info_handle_open_input";
@@ -218,7 +217,7 @@ int info_handle_open_input(
 
 		return( -1 );
 	}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	if( libphdi_handle_open_wide(
 	     info_handle->input,
 	     filename,
@@ -298,11 +297,11 @@ int info_handle_file_fprint(
      info_handle_t *info_handle,
      libcerror_error_t **error )
 {
-	libcstring_system_character_t *value_string = NULL;
-	static char *function                       = "info_handle_file_fprint";
-	size_t value_string_size                    = 0;
-	size64_t media_size                         = 0;
-	int result                                  = 0;
+	system_character_t *value_string = NULL;
+	static char *function            = "info_handle_file_fprint";
+	size64_t media_size              = 0;
+	size_t value_string_size         = 0;
+	int result                       = 0;
 
 	if( info_handle == NULL )
 	{

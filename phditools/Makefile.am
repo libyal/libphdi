@@ -1,7 +1,6 @@
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/include \
 	-I$(top_srcdir)/common \
-	@LIBCSTRING_CPPFLAGS@ \
 	@LIBCERROR_CPPFLAGS@ \
 	@LIBCDATA_CPPFLAGS@ \
 	@LIBCLOCALE_CPPFLAGS@ \
@@ -32,7 +31,6 @@ phdiinfo_SOURCES = \
 	phditools_libcerror.h \
 	phditools_libclocale.h \
 	phditools_libcnotify.h \
-	phditools_libcstring.h \
 	phditools_libcsystem.h \
 	phditools_libphdi.h \
 	phditools_libuna.h
@@ -43,7 +41,6 @@ phdiinfo_LDADD = \
 	@LIBCNOTIFY_LIBADD@ \
 	@LIBCLOCALE_LIBADD@ \
 	@LIBCERROR_LIBADD@ \
-	@LIBCSTRING_LIBADD@ \
 	@LIBINTL@
 
 phdimount_SOURCES = \
@@ -56,7 +53,6 @@ phdimount_SOURCES = \
 	phditools_libclocale.h \
 	phditools_libcnotify.h \
 	phditools_libcpath.h \
-	phditools_libcstring.h \
 	phditools_libcsystem.h \
 	phditools_libphdi.h \
 	phditools_libuna.h
@@ -71,7 +67,6 @@ phdimount_LDADD = \
 	@LIBCLOCALE_LIBADD@ \
 	@LIBCDATA_LIBADD@ \
 	@LIBCERROR_LIBADD@ \
-	@LIBCSTRING_LIBADD@ \
 	@LIBINTL@
 
 MAINTAINERCLEANFILES = \

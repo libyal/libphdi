@@ -1,7 +1,6 @@
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/include \
 	-I$(top_srcdir)/common \
-	@LIBCSTRING_CPPFLAGS@ \
 	@LIBCERROR_CPPFLAGS@ \
 	@LIBCTHREADS_CPPFLAGS@ \
 	@LIBCDATA_CPPFLAGS@ \
@@ -25,9 +24,6 @@ endif
 TESTS = \
 	test_api_functions.sh \
 	test_api_types.sh \
-	test_open_close.sh \
-	test_seek.sh \
-	test_read.sh \
 	test_phdiinfo.sh \
 	$(TESTS_PYPHDI)
 
@@ -36,13 +32,10 @@ check_SCRIPTS = \
 	pyphdi_test_seek.py \
 	test_api_functions.sh \
 	test_api_types.sh \
-	test_open_close.sh \
 	test_phdiinfo.sh \
 	test_pyphdi_open_close.sh \
 	test_pyphdi_seek.sh \
-	test_read.sh \
-	test_runner.sh \
-	test_seek.sh
+	test_runner.sh
 
 EXTRA_DIST = \
 	$(check_SCRIPTS)
@@ -51,29 +44,23 @@ check_PROGRAMS = \
 	phdi_test_error \
 	phdi_test_handle \
 	phdi_test_notify \
-	phdi_test_open_close \
-	phdi_test_read \
-	phdi_test_seek \
 	phdi_test_support
 
 phdi_test_error_SOURCES = \
 	phdi_test_error.c
 	phdi_test_libcerror.h \
-	phdi_test_libcstring.h \
 	phdi_test_libphdi.h \
 	phdi_test_macros.h \
 	phdi_test_unused.h
 
 phdi_test_error_LDADD = \
 	../libphdi/libphdi.la \
-	@LIBCERROR_LIBADD@ \
-	@LIBCSTRING_LIBADD@
+	@LIBCERROR_LIBADD@
 
 phdi_test_handle_SOURCES = \
 	phdi_test_handle.c \
 	phdi_test_libcerror.h \
 	phdi_test_libclocale.h \
-	phdi_test_libcstring.h \
 	phdi_test_libcsystem.h \
 	phdi_test_libcthreads.h \
 	phdi_test_libphdi.h \
@@ -90,13 +77,11 @@ phdi_test_handle_LDADD = \
 	@LIBCDATA_LIBADD@ \
 	../libphdi/libphdi.la \
 	@LIBCTHREADS_LIBADD@ \
-	@LIBCERROR_LIBADD@ \
-	@LIBCSTRING_LIBADD@ \
+	@LIBCERROR_LIBADD@
 	@PTHREAD_LIBADD@
 
 phdi_test_notify_SOURCES = \
 	phdi_test_libcerror.h \
-	phdi_test_libcstring.h \
 	phdi_test_libphdi.h \
 	phdi_test_macros.h \
 	phdi_test_notify.c
@@ -104,58 +89,11 @@ phdi_test_notify_SOURCES = \
 
 phdi_test_notify_LDADD = \
 	../libphdi/libphdi.la \
-	@LIBCERROR_LIBADD@ \
-	@LIBCSTRING_LIBADD@
-
-phdi_test_open_close_SOURCES = \
-	phdi_test_libcerror.h \
-	phdi_test_libcstring.h \
-	phdi_test_libcthreads.h \
-	phdi_test_libphdi.h \
-	phdi_test_open_close.c \
-	phdi_test_unused.h
-
-phdi_test_open_close_LDADD = \
-	../libphdi/libphdi.la \
-	@LIBCTHREADS_LIBADD@ \
-	@LIBCERROR_LIBADD@ \
-	@LIBCSTRING_LIBADD@ \
-	@PTHREAD_LIBADD@
-
-phdi_test_read_SOURCES = \
-	phdi_test_libcerror.h \
-	phdi_test_libcstring.h \
-	phdi_test_libcthreads.h \
-	phdi_test_libphdi.h \
-	phdi_test_read.c \
-	phdi_test_unused.h
-
-phdi_test_read_LDADD = \
-	../libphdi/libphdi.la \
-	@LIBCTHREADS_LIBADD@ \
-	@LIBCERROR_LIBADD@ \
-	@LIBCSTRING_LIBADD@ \
-	@PTHREAD_LIBADD@
-
-phdi_test_seek_SOURCES = \
-	phdi_test_libcerror.h \
-	phdi_test_libcstring.h \
-	phdi_test_libcthreads.h \
-	phdi_test_libphdi.h \
-	phdi_test_seek.c \
-	phdi_test_unused.h
-
-phdi_test_seek_LDADD = \
-	../libphdi/libphdi.la \
-	@LIBCTHREADS_LIBADD@ \
-	@LIBCERROR_LIBADD@ \
-	@LIBCSTRING_LIBADD@ \
-	@PTHREAD_LIBADD@
+	@LIBCERROR_LIBADD@
 
 phdi_test_support_SOURCES = \
 	phdi_test_libcerror.h \
 	phdi_test_libclocale.h \
-	phdi_test_libcstring.h \
 	phdi_test_libcsystem.h \
 	phdi_test_libphdi.h \
 	phdi_test_libuna.h \
@@ -170,8 +108,7 @@ phdi_test_support_LDADD = \
 	@LIBCLOCALE_LIBADD@ \
 	@LIBCDATA_LIBADD@ \
 	../libphdi/libphdi.la \
-	@LIBCERROR_LIBADD@ \
-	@LIBCSTRING_LIBADD@
+	@LIBCERROR_LIBADD@
 
 MAINTAINERCLEANFILES = \
 	Makefile.in

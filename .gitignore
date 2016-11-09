@@ -127,9 +127,6 @@ stamp-h[1-9]
 /tests/phdi_test_error
 /tests/phdi_test_handle
 /tests/phdi_test_notify
-/tests/phdi_test_open_close
-/tests/phdi_test_read
-/tests/phdi_test_seek
 /tests/phdi_test_support
 /tests/tmp*
 
@@ -143,7 +140,6 @@ stamp-h[1-9]
 /libcnotify
 /libcpath
 /libcsplit
-/libcstring
 /libcsystem
 /libcthreads
 /libfcache

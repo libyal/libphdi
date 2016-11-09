@@ -33,7 +33,6 @@
 #include "pyphdi_libbfio.h"
 #include "pyphdi_libcerror.h"
 #include "pyphdi_libclocale.h"
-#include "pyphdi_libcstring.h"
 #include "pyphdi_libphdi.h"
 #include "pyphdi_python.h"
 #include "pyphdi_unused.h"
@@ -513,7 +512,7 @@ PyObject *pyphdi_file_open(
 	char *mode                   = NULL;
 	int result                   = 0;
 
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	const wchar_t *filename_wide = NULL;
 #else
 	PyObject *utf8_string_object = NULL;
@@ -573,7 +572,7 @@ PyObject *pyphdi_file_open(
 	{
 		PyErr_Clear();
 
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 		filename_wide = (wchar_t *) PyUnicode_AsUnicode(
 		                             string_object );
 		Py_BEGIN_ALLOW_THREADS

@@ -27,7 +27,6 @@
 
 #include "pyphdi_libbfio.h"
 #include "pyphdi_libcerror.h"
-#include "pyphdi_libcstring.h"
 #include "pyphdi_python.h"
 
 #if defined( __cplusplus )

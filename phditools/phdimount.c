@@ -22,7 +22,10 @@
 #include <common.h>
 #include <file_stream.h>
 #include <memory.h>
+#include <narrow_string.h>
+#include <system_string.h>
 #include <types.h>
+#include <wide_string.h>
 
 #if defined( HAVE_ERRNO_H )
 #include <errno.h>
@@ -66,7 +69,6 @@
 #include "phditools_libcerror.h"
 #include "phditools_libclocale.h"
 #include "phditools_libcnotify.h"
-#include "phditools_libcstring.h"
 #include "phditools_libcsystem.h"
 #include "phditools_libphdi.h"
 
@@ -188,11 +190,11 @@ int phdimount_fuse_open(
 
 		goto on_error;
 	}
-	path_length = libcstring_narrow_string_length(
+	path_length = narrow_string_length(
 	               path );
 
 	if( ( path_length <= phdimount_fuse_path_prefix_length )
-	 || ( libcstring_narrow_string_compare(
+	 || ( narrow_string_compare(
 	       path,
 	       phdimount_fuse_path_prefix,
 	       phdimount_fuse_path_prefix_length ) != 0 ) )
@@ -291,12 +293,12 @@ int phdimount_fuse_read(
 
 		goto on_error;
 	}
-	path_length = libcstring_narrow_string_length(
+	path_length = narrow_string_length(
 	               path );
 
 	if( ( path_length <= phdimount_fuse_path_prefix_length )
 	 || ( path_length > ( phdimount_fuse_path_prefix_length + 3 ) )
-	 || ( libcstring_narrow_string_compare(
+	 || ( narrow_string_compare(
 	       path,
 	       phdimount_fuse_path_prefix,
 	       phdimount_fuse_path_prefix_length ) != 0 ) )
@@ -592,7 +594,7 @@ int phdimount_fuse_readdir(
 
 		goto on_error;
 	}
-	path_length = libcstring_narrow_string_length(
+	path_length = narrow_string_length(
 	               path );
 
 	if( ( path_length != 1 )
@@ -609,7 +611,7 @@ int phdimount_fuse_readdir(
 
 		goto on_error;
 	}
-	if( libcstring_narrow_string_copy(
+	if( narrow_string_copy(
 	     phdimount_fuse_path,
 	     phdimount_fuse_path_prefix,
 	     phdimount_fuse_path_prefix_length ) == NULL )
@@ -835,7 +837,7 @@ int phdimount_fuse_getattr(
 
 		goto on_error;
 	}
-	path_length = libcstring_narrow_string_length(
+	path_length = narrow_string_length(
 	               path );
 
 	if( path_length == 1 )
@@ -850,7 +852,7 @@ int phdimount_fuse_getattr(
 	else if( ( path_length > phdimount_fuse_path_prefix_length )
 	      && ( path_length <= ( phdimount_fuse_path_prefix_length + 3 ) ) )
 	{
-		if( libcstring_narrow_string_compare(
+		if( narrow_string_compare(
 		     path,
 		     phdimount_fuse_path_prefix,
 		     phdimount_fuse_path_prefix_length ) == 0 )
@@ -1050,7 +1052,7 @@ int __stdcall phdimount_dokan_CreateFile(
 
 		goto on_error;
 	}
-	path_length = libcstring_wide_string_length(
+	path_length = wide_string_length(
 	               path );
 
 	if( path_length == 1 )
@@ -1074,7 +1076,7 @@ int __stdcall phdimount_dokan_CreateFile(
 	{
 		if( ( path_length <= phdimount_dokan_path_prefix_length )
 		 || ( path_length > ( phdimount_dokan_path_prefix_length + 3 ) )
-		 || ( libcstring_wide_string_compare(
+		 || ( wide_string_compare(
 		       path,
 		       phdimount_dokan_path_prefix,
 		       phdimount_dokan_path_prefix_length ) != 0 ) )
@@ -1132,7 +1134,7 @@ int __stdcall phdimount_dokan_OpenDirectory(
 
 		goto on_error;
 	}
-	path_length = libcstring_wide_string_length(
+	path_length = wide_string_length(
 	               path );
 
 	if( ( path_length != 1 )
@@ -1262,12 +1264,12 @@ int __stdcall phdimount_dokan_ReadFile(
 
 		goto on_error;
 	}
-	path_length = libcstring_wide_string_length(
+	path_length = wide_string_length(
 	               path );
 
 	if( ( path_length <= phdimount_dokan_path_prefix_length )
          || ( path_length > ( phdimount_dokan_path_prefix_length + 3 ) )
-	 || ( libcstring_wide_string_compare(
+	 || ( wide_string_compare(
 	       path,
 	       phdimount_dokan_path_prefix,
 	       phdimount_dokan_path_prefix_length ) != 0 ) )
@@ -1497,7 +1499,7 @@ int phdimount_dokan_filldir(
 
 		return( -1 );
 	}
-	if( libcstring_wide_string_copy(
+	if( wide_string_copy(
 	     find_data->cFileName,
 	     name,
 	     name_size ) == NULL )
@@ -1513,7 +1515,7 @@ int phdimount_dokan_filldir(
 	}
 	if( name_size <= (size_t) 14 )
 	{
-		if( libcstring_wide_string_copy(
+		if( wide_string_copy(
 		     find_data->cAlternateFileName,
 		     name,
 		     name_size ) == NULL )
@@ -1594,7 +1596,7 @@ int __stdcall phdimount_dokan_FindFiles(
 
 		goto on_error;
 	}
-	path_length = libcstring_wide_string_length(
+	path_length = wide_string_length(
 	               path );
 
 	if( ( path_length != 1 )
@@ -1612,7 +1614,7 @@ int __stdcall phdimount_dokan_FindFiles(
 
 		goto on_error;
 	}
-	if( libcstring_wide_string_copy(
+	if( wide_string_copy(
 	     phdimount_dokan_path,
 	     phdimount_dokan_path_prefix,
 	     phdimount_dokan_path_prefix_length ) == NULL )
@@ -1841,7 +1843,7 @@ int __stdcall phdimount_dokan_GetFileInformation(
 
 		goto on_error;
 	}
-	path_length = libcstring_wide_string_length(
+	path_length = wide_string_length(
 	               path );
 
 	if( path_length == 1 )
@@ -1867,7 +1869,7 @@ int __stdcall phdimount_dokan_GetFileInformation(
 	{
 		if( ( path_length <= phdimount_dokan_path_prefix_length )
 		 || ( path_length > ( phdimount_dokan_path_prefix_length + 3 ) )
-		 || ( libcstring_wide_string_compare(
+		 || ( wide_string_compare(
 		       path,
 		       phdimount_dokan_path_prefix,
 		       phdimount_dokan_path_prefix_length ) != 0 ) )
@@ -2060,27 +2062,27 @@ int __stdcall phdimount_dokan_Unmount(
 
 /* The main program
  */
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 int wmain( int argc, wchar_t * const argv[] )
 #else
 int main( int argc, char * const argv[] )
 #endif
 {
-	libphdi_error_t *error                                 = NULL;
-	libcstring_system_character_t *mount_point             = NULL;
-	libcstring_system_character_t *option_extended_options = NULL;
-	libcstring_system_character_t *source                  = NULL;
-	char *program                                          = "phdimount";
-	libcstring_system_integer_t option                     = 0;
-	int result                                             = 0;
-	int verbose                                            = 0;
+	libphdi_error_t *error                      = NULL;
+	system_character_t *mount_point             = NULL;
+	system_character_t *option_extended_options = NULL;
+	system_character_t *source                  = NULL;
+	char *program                               = "phdimount";
+	system_integer_t option                     = 0;
+	int result                                  = 0;
+	int verbose                                 = 0;
 
 #if defined( HAVE_LIBFUSE ) || defined( HAVE_LIBOSXFUSE )
 	struct fuse_operations phdimount_fuse_operations;
 
-	struct fuse_args phdimount_fuse_arguments              = FUSE_ARGS_INIT(0, NULL);
-	struct fuse_chan *phdimount_fuse_channel               = NULL;
-	struct fuse *phdimount_fuse_handle                     = NULL;
+	struct fuse_args phdimount_fuse_arguments   = FUSE_ARGS_INIT(0, NULL);
+	struct fuse_chan *phdimount_fuse_channel    = NULL;
+	struct fuse *phdimount_fuse_handle          = NULL;
 
 #elif defined( HAVE_LIBDOKAN )
 	DOKAN_OPERATIONS phdimount_dokan_operations;
@@ -2120,15 +2122,15 @@ int main( int argc, char * const argv[] )
 	while( ( option = libcsystem_getopt(
 	                   argc,
 	                   argv,
-	                   _LIBCSTRING_SYSTEM_STRING( "hvVX:" ) ) ) != (libcstring_system_integer_t) -1 )
+	                   _SYSTEM_STRING( "hvVX:" ) ) ) != (system_integer_t) -1 )
 	{
 		switch( option )
 		{
-			case (libcstring_system_integer_t) '?':
+			case (system_integer_t) '?':
 			default:
 				fprintf(
 				 stderr,
-				 "Invalid argument: %" PRIs_LIBCSTRING_SYSTEM "\n",
+				 "Invalid argument: %" PRIs_SYSTEM "\n",
 				 argv[ optind - 1 ] );
 
 				usage_fprint(
@@ -2136,24 +2138,24 @@ int main( int argc, char * const argv[] )
 
 				return( EXIT_FAILURE );
 
-			case (libcstring_system_integer_t) 'h':
+			case (system_integer_t) 'h':
 				usage_fprint(
 				 stdout );
 
 				return( EXIT_SUCCESS );
 
-			case (libcstring_system_integer_t) 'v':
+			case (system_integer_t) 'v':
 				verbose = 1;
 
 				break;
 
-			case (libcstring_system_integer_t) 'V':
+			case (system_integer_t) 'V':
 				phdioutput_copyright_fprint(
 				 stdout );
 
 				return( EXIT_SUCCESS );
 
-			case (libcstring_system_integer_t) 'X':
+			case (system_integer_t) 'X':
 				option_extended_options = optarg;
 
 				break;

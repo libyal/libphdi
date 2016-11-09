@@ -21,7 +21,9 @@
 
 #include <common.h>
 #include <memory.h>
+#include <narrow_string.h>
 #include <types.h>
+#include <wide_string.h>
 
 #include "libphdi_debug.h"
 #include "libphdi_definitions.h"
@@ -31,7 +33,6 @@
 #include "libphdi_libbfio.h"
 #include "libphdi_libcerror.h"
 #include "libphdi_libcnotify.h"
-#include "libphdi_libcstring.h"
 #include "libphdi_libcthreads.h"
 #include "libphdi_libfcache.h"
 #include "libphdi_libfdata.h"
@@ -366,7 +367,7 @@ int libphdi_handle_open(
 		goto on_error;
 	}
 #endif
-	filename_length = libcstring_narrow_string_length(
+	filename_length = narrow_string_length(
 	                   filename );
 
 	if( libbfio_file_set_name(
@@ -536,7 +537,7 @@ int libphdi_handle_open_wide(
 		goto on_error;
 	}
 #endif
-	filename_length = libcstring_wide_string_length(
+	filename_length = wide_string_length(
 	                   filename );
 
 	if( libbfio_file_set_name_wide(

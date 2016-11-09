@@ -2,7 +2,6 @@ if HAVE_PYTHON
 AM_CFLAGS = \
 	-I$(top_srcdir)/include \
 	-I$(top_srcdir)/common \
-	@LIBCSTRING_CPPFLAGS@ \
 	@LIBCERROR_CPPFLAGS@ \
 	@LIBCDATA_CPPFLAGS@ \
 	@LIBCLOCALE_CPPFLAGS@ \
@@ -24,13 +23,11 @@ pyphdi_la_SOURCES = \
 	pyphdi_libbfio.h \
 	pyphdi_libcerror.h \
 	pyphdi_libclocale.h \
-	pyphdi_libcstring.h \
 	pyphdi_libphdi.h \
 	pyphdi_python.h \
 	pyphdi_unused.h
 
 pyphdi_la_LIBADD = \
-	@LIBCSTRING_LIBADD@ \
 	@LIBCERROR_LIBADD@ \
 	../libphdi/libphdi.la \
 	@LIBCDATA_LIBADD@ \

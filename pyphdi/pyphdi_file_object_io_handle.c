@@ -28,7 +28,6 @@
 #include "pyphdi_integer.h"
 #include "pyphdi_libbfio.h"
 #include "pyphdi_libcerror.h"
-#include "pyphdi_libcstring.h"
 #include "pyphdi_python.h"
 
 /* Creates a file object IO handle

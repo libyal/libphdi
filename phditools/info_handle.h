@@ -28,7 +28,6 @@
 
 #include "phditools_libcerror.h"
 #include "phditools_libcnotify.h"
-#include "phditools_libcstring.h"
 #include "phditools_libphdi.h"
 
 #if defined( __cplusplus )
@@ -62,7 +61,7 @@ int info_handle_signal_abort(
 
 int info_handle_open_input(
      info_handle_t *info_handle,
-     const libcstring_system_character_t *filename,
+     const system_character_t *filename,
      libcerror_error_t **error );
 
 int info_handle_close(

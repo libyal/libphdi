@@ -2,7 +2,6 @@ AM_CPPFLAGS = \
 	-DLOCALEDIR=\"$(datadir)/locale\" \
 	-I$(top_srcdir)/include \
 	-I$(top_srcdir)/common \
-	@LIBCSTRING_CPPFLAGS@ \
 	@LIBCERROR_CPPFLAGS@ \
 	@LIBCTHREADS_CPPFLAGS@ \
 	@LIBCDATA_CPPFLAGS@ \
@@ -35,7 +34,6 @@ libphdi_la_SOURCES = \
 	libphdi_libcerror.h \
 	libphdi_libclocale.h \
 	libphdi_libcnotify.h \
-	libphdi_libcstring.h \
 	libphdi_libcthreads.h \
 	libphdi_libfcache.h \
 	libphdi_libfdata.h \
@@ -48,7 +46,6 @@ libphdi_la_SOURCES = \
 	phdi_file_footer.h
 
 libphdi_la_LIBADD = \
-	@LIBCSTRING_LIBADD@ \
 	@LIBCERROR_LIBADD@ \
 	@LIBCTHREADS_LIBADD@ \
 	@LIBCDATA_LIBADD@ \

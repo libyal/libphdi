@@ -20,12 +20,13 @@
  */
 
 #include <common.h>
+#include <file_stream.h>
+#include <types.h>
 
 #if defined( HAVE_STDLIB_H ) || defined( WINAPI )
 #include <stdlib.h>
 #endif
 
-#include "phdi_test_libcerror.h"
 #include "phdi_test_libphdi.h"
 #include "phdi_test_macros.h"
 #include "phdi_test_unused.h"
@@ -90,7 +91,7 @@ int phdi_test_notify_stream_close(
 
 /* The main program
  */
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 int wmain(
      int argc PHDI_TEST_ATTRIBUTE_UNUSED,
      wchar_t * const argv[] PHDI_TEST_ATTRIBUTE_UNUSED )

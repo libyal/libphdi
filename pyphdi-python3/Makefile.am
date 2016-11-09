@@ -8,7 +8,6 @@ if HAVE_PYTHON3
 AM_CFLAGS = \
 	-I$(top_srcdir)/include \
 	-I$(top_srcdir)/common \
-	@LIBCSTRING_CPPFLAGS@ \
 	@LIBCERROR_CPPFLAGS@ \
 	@LIBCDATA_CPPFLAGS@ \
 	@LIBCLOCALE_CPPFLAGS@ \
@@ -30,7 +29,6 @@ BUILT_SOURCES = \
 	pyphdi_libbfio.h \
 	pyphdi_libcerror.h \
 	pyphdi_libclocale.h \
-	pyphdi_libcstring.h \
 	pyphdi_libphdi.h \
 	pyphdi_python.h \
 	pyphdi_unused.h
@@ -40,7 +38,6 @@ pyexec_LTLIBRARIES = pyphdi.la
 nodist_pyphdi_la_SOURCES = $(BUILT_SOURCES)
 
 pyphdi_la_LIBADD = \
-	@LIBCSTRING_LIBADD@ \
 	@LIBCERROR_LIBADD@ \
 	../libphdi/libphdi.la \
 	@LIBCDATA_LIBADD@ \

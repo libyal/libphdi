@@ -21,7 +21,10 @@
 
 #include <common.h>
 #include <memory.h>
+#include <narrow_string.h>
+#include <system_string.h>
 #include <types.h>
+#include <wide_string.h>
 
 #include "mount_handle.h"
 #include "phditools_libcdata.h"
@@ -247,15 +250,15 @@ int mount_handle_signal_abort(
  */
 int mount_handle_open_input(
      mount_handle_t *mount_handle,
-     const libcstring_system_character_t *filename,
+     const system_character_t *filename,
      libcerror_error_t **error )
 {
-	libcstring_system_character_t *basename_end = NULL;
-	libphdi_handle_t *input_file                  = NULL;
-	static char *function                       = "mount_handle_open_input";
-	size_t basename_length                      = 0;
-	size_t filename_length                      = 0;
-	int entry_index                             = 0;
+	libphdi_handle_t *input_file     = NULL;
+	system_character_t *basename_end = NULL;
+	static char *function            = "mount_handle_open_input";
+	size_t basename_length           = 0;
+	size_t filename_length           = 0;
+	int entry_index                  = 0;
 
 	if( mount_handle == NULL )
 	{
@@ -279,12 +282,12 @@ int mount_handle_open_input(
 
 		return( -1 );
 	}
-	filename_length = libcstring_system_string_length(
+	filename_length = system_string_length(
 	                   filename );
 
-	basename_end = libcstring_system_string_search_character_reverse(
+	basename_end = system_string_search_character_reverse(
 	                filename,
-	                (libcstring_system_character_t) LIBCPATH_SEPARATOR,
+	                (system_character_t) LIBCPATH_SEPARATOR,
 	                filename_length + 1 );
 
 	if( basename_end != NULL )
@@ -322,7 +325,7 @@ int mount_handle_open_input(
 
 		goto on_error;
 	}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	if( libphdi_handle_open_wide(
 	     input_file,
 	     filename,
@@ -675,7 +678,7 @@ int mount_handle_get_number_of_inputs(
  */
 int mount_handle_set_basename(
      mount_handle_t *mount_handle,
-     const libcstring_system_character_t *basename,
+     const system_character_t *basename,
      size_t basename_size,
      libcerror_error_t **error )
 {
@@ -715,7 +718,7 @@ int mount_handle_set_basename(
 		goto on_error;
 	}
 	if( ( basename_size > (size_t) SSIZE_MAX )
-	 || ( ( sizeof( libcstring_system_character_t ) * basename_size ) > (size_t) SSIZE_MAX ) )
+	 || ( ( sizeof( system_character_t ) * basename_size ) > (size_t) SSIZE_MAX ) )
 	{
 		libcerror_error_set(
 		 error,
@@ -734,7 +737,7 @@ int mount_handle_set_basename(
 		mount_handle->basename      = NULL;
 		mount_handle->basename_size = 0;
 	}
-	mount_handle->basename = libcstring_system_string_allocate(
+	mount_handle->basename = system_string_allocate(
 	                          basename_size );
 
 	if( mount_handle->basename == NULL )
@@ -748,7 +751,7 @@ int mount_handle_set_basename(
 
 		goto on_error;
 	}
-	if( libcstring_system_string_copy(
+	if( system_string_copy(
 	     mount_handle->basename,
 	     basename,
 	     basename_size ) == NULL )
