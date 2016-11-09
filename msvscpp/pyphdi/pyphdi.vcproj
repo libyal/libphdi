@@ -174,19 +174,15 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\pyphdi\pyphdi_disk_types.c"
-				>
-			</File>
-			<File
 				RelativePath="..\..\pyphdi\pyphdi_error.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\pyphdi\pyphdi_file.c"
+				RelativePath="..\..\pyphdi\pyphdi_file_object_io_handle.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\pyphdi\pyphdi_file_object_io_handle.c"
+				RelativePath="..\..\pyphdi\pyphdi_handle.c"
 				>
 			</File>
 			<File
@@ -204,19 +200,15 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\pyphdi\pyphdi_disk_types.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\pyphdi\pyphdi_error.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\pyphdi\pyphdi_file.h"
+				RelativePath="..\..\pyphdi\pyphdi_file_object_io_handle.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\pyphdi\pyphdi_file_object_io_handle.h"
+				RelativePath="..\..\pyphdi\pyphdi_handle.h"
 				>
 			</File>
 			<File

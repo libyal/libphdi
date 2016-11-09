@@ -57,5 +57,5 @@ PyMODINIT_FUNC initpyphdi(
 }
 #endif
 
-#endif
+#endif /* !defined( _PYPHDI_H ) */
 

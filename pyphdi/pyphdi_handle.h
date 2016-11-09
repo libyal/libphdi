@@ -1,5 +1,5 @@
 /*
- * Python object definition of the libphdi file
+ * Python object definition of the libphdi handle
  *
  * Copyright (C) 2015-2016, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -19,8 +19,8 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _PYPHDI_FILE_H )
-#define _PYPHDI_FILE_H
+#if !defined( _PYPHDI_HANDLE_H )
+#define _PYPHDI_HANDLE_H
 
 #include <common.h>
 #include <types.h>
@@ -33,89 +33,89 @@
 extern "C" {
 #endif
 
-typedef struct pyphdi_file pyphdi_file_t;
+typedef struct pyphdi_handle pyphdi_handle_t;
 
-struct pyphdi_file
+struct pyphdi_handle
 {
 	/* Python object initialization
 	 */
 	PyObject_HEAD
 
-	/* The libphdi file
+	/* The libphdi handle
 	 */
-	libphdi_file_t *file;
+	libphdi_handle_t *handle;
 
 	/* The libbfio file IO handle
 	 */
 	libbfio_handle_t *file_io_handle;
 };
 
-extern PyMethodDef pyphdi_file_object_methods[];
-extern PyTypeObject pyphdi_file_type_object;
+extern PyMethodDef pyphdi_handle_object_methods[];
+extern PyTypeObject pyphdi_handle_type_object;
 
-PyObject *pyphdi_file_new(
+PyObject *pyphdi_handle_new(
            void );
 
-PyObject *pyphdi_file_new_open(
+PyObject *pyphdi_handle_new_open(
            PyObject *self,
            PyObject *arguments,
            PyObject *keywords );
 
-PyObject *pyphdi_file_new_open_file_object(
+PyObject *pyphdi_handle_new_open_file_object(
            PyObject *self,
            PyObject *arguments,
            PyObject *keywords );
 
-int pyphdi_file_init(
-     pyphdi_file_t *pyphdi_file );
+int pyphdi_handle_init(
+     pyphdi_handle_t *pyphdi_handle );
 
-void pyphdi_file_free(
-      pyphdi_file_t *pyphdi_file );
+void pyphdi_handle_free(
+      pyphdi_handle_t *pyphdi_handle );
 
-PyObject *pyphdi_file_signal_abort(
-           pyphdi_file_t *pyphdi_file,
+PyObject *pyphdi_handle_signal_abort(
+           pyphdi_handle_t *pyphdi_handle,
            PyObject *arguments );
 
-PyObject *pyphdi_file_open(
-           pyphdi_file_t *pyphdi_file,
+PyObject *pyphdi_handle_open(
+           pyphdi_handle_t *pyphdi_handle,
            PyObject *arguments,
            PyObject *keywords );
 
-PyObject *pyphdi_file_open_file_object(
-           pyphdi_file_t *pyphdi_file,
+PyObject *pyphdi_handle_open_file_object(
+           pyphdi_handle_t *pyphdi_handle,
            PyObject *arguments,
            PyObject *keywords );
 
-PyObject *pyphdi_file_close(
-           pyphdi_file_t *pyphdi_file,
+PyObject *pyphdi_handle_close(
+           pyphdi_handle_t *pyphdi_handle,
            PyObject *arguments );
 
-PyObject *pyphdi_file_read_buffer(
-           pyphdi_file_t *pyphdi_file,
+PyObject *pyphdi_handle_read_buffer(
+           pyphdi_handle_t *pyphdi_handle,
            PyObject *arguments,
            PyObject *keywords );
 
-PyObject *pyphdi_file_read_buffer_at_offset(
-           pyphdi_file_t *pyphdi_file,
+PyObject *pyphdi_handle_read_buffer_at_offset(
+           pyphdi_handle_t *pyphdi_handle,
            PyObject *arguments,
            PyObject *keywords );
 
-PyObject *pyphdi_file_seek_offset(
-           pyphdi_file_t *pyphdi_file,
+PyObject *pyphdi_handle_seek_offset(
+           pyphdi_handle_t *pyphdi_handle,
            PyObject *arguments,
            PyObject *keywords );
 
-PyObject *pyphdi_file_get_offset(
-           pyphdi_file_t *pyphdi_file,
+PyObject *pyphdi_handle_get_offset(
+           pyphdi_handle_t *pyphdi_handle,
            PyObject *arguments );
 
-PyObject *pyphdi_file_get_media_size(
-           pyphdi_file_t *pyphdi_file,
+PyObject *pyphdi_handle_get_media_size(
+           pyphdi_handle_t *pyphdi_handle,
            PyObject *arguments );
 
 #if defined( __cplusplus )
 }
 #endif
 
-#endif
+#endif /* !defined( _PYPHDI_HANDLE_H ) */
 

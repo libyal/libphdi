@@ -1,5 +1,5 @@
 /*
- * Python object definition of the libphdi file
+ * Python object definition of the libphdi handle
  *
  * Copyright (C) 2015-2016, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -27,7 +27,7 @@
 #endif
 
 #include "pyphdi_error.h"
-#include "pyphdi_file.h"
+#include "pyphdi_handle.h"
 #include "pyphdi_file_object_io_handle.h"
 #include "pyphdi_integer.h"
 #include "pyphdi_libbfio.h"
@@ -39,68 +39,68 @@
 
 #if !defined( LIBPHDI_HAVE_BFIO )
 LIBPHDI_EXTERN \
-int libphdi_file_open_file_io_handle(
-     libphdi_file_t *file,
+int libphdi_handle_open_file_io_handle(
+     libphdi_handle_t *handle,
      libbfio_handle_t *file_io_handle,
      int access_flags,
      libphdi_error_t **error );
 #endif
 
-PyMethodDef pyphdi_file_object_methods[] = {
+PyMethodDef pyphdi_handle_object_methods[] = {
 
 	{ "signal_abort",
-	  (PyCFunction) pyphdi_file_signal_abort,
+	  (PyCFunction) pyphdi_handle_signal_abort,
 	  METH_NOARGS,
 	  "signal_abort() -> None\n"
 	  "\n"
-	  "Signals the file to abort the current activity." },
+	  "Signals the handle to abort the current activity." },
 
-	/* Functions to access the file */
+	/* Functions to access the handle */
 
 	{ "open",
-	  (PyCFunction) pyphdi_file_open,
+	  (PyCFunction) pyphdi_handle_open,
 	  METH_VARARGS | METH_KEYWORDS,
 	  "open(filename, mode='r') -> None\n"
 	  "\n"
-	  "Opens a file." },
+	  "Opens a handle." },
 
 	{ "open_file_object",
-	  (PyCFunction) pyphdi_file_open_file_object,
+	  (PyCFunction) pyphdi_handle_open_file_object,
 	  METH_VARARGS | METH_KEYWORDS,
-	  "open_file_object(file_object, mode='r') -> None\n"
+	  "open_handle_object(file_object, mode='r') -> None\n"
 	  "\n"
-	  "Opens a file using a file-like object." },
+	  "Opens a handle using a file-like object." },
 
 	{ "close",
-	  (PyCFunction) pyphdi_file_close,
+	  (PyCFunction) pyphdi_handle_close,
 	  METH_NOARGS,
 	  "close() -> None\n"
 	  "\n"
-	  "Closes a file." },
+	  "Closes a handle." },
 
 	{ "read_buffer",
-	  (PyCFunction) pyphdi_file_read_buffer,
+	  (PyCFunction) pyphdi_handle_read_buffer,
 	  METH_VARARGS | METH_KEYWORDS,
 	  "read_buffer(size) -> String\n"
 	  "\n"
 	  "Reads a buffer of data." },
 
 	{ "read_buffer_at_offset",
-	  (PyCFunction) pyphdi_file_read_buffer_at_offset,
+	  (PyCFunction) pyphdi_handle_read_buffer_at_offset,
 	  METH_VARARGS | METH_KEYWORDS,
 	  "read_buffer_at_offset(size, offset) -> String\n"
 	  "\n"
 	  "Reads a buffer of data at a specific offset." },
 
 	{ "seek_offset",
-	  (PyCFunction) pyphdi_file_seek_offset,
+	  (PyCFunction) pyphdi_handle_seek_offset,
 	  METH_VARARGS | METH_KEYWORDS,
 	  "seek_offset(offset, whence) -> None\n"
 	  "\n"
 	  "Seeks an offset within the data." },
 
 	{ "get_offset",
-	  (PyCFunction) pyphdi_file_get_offset,
+	  (PyCFunction) pyphdi_handle_get_offset,
 	  METH_NOARGS,
 	  "get_offset() -> Integer\n"
 	  "\n"
@@ -109,30 +109,30 @@ PyMethodDef pyphdi_file_object_methods[] = {
 	/* Some Pythonesque aliases */
 
 	{ "read",
-	  (PyCFunction) pyphdi_file_read_buffer,
+	  (PyCFunction) pyphdi_handle_read_buffer,
 	  METH_VARARGS | METH_KEYWORDS,
 	  "read(size) -> String\n"
 	  "\n"
 	  "Reads a buffer of data." },
 
 	{ "seek",
-	  (PyCFunction) pyphdi_file_seek_offset,
+	  (PyCFunction) pyphdi_handle_seek_offset,
 	  METH_VARARGS | METH_KEYWORDS,
 	  "seek(offset, whence) -> None\n"
 	  "\n"
 	  "Seeks an offset within the data." },
 
 	{ "tell",
-	  (PyCFunction) pyphdi_file_get_offset,
+	  (PyCFunction) pyphdi_handle_get_offset,
 	  METH_NOARGS,
 	  "tell() -> Integer\n"
 	  "\n"
 	  "Retrieves the current offset within the data." },
 
-	/* Functions to access the file values */
+	/* Functions to access the handle values */
 
 	{ "get_media_size",
-	  (PyCFunction) pyphdi_file_get_media_size,
+	  (PyCFunction) pyphdi_handle_get_media_size,
 	  METH_NOARGS,
 	  "get_media_size() -> Integer\n"
 	  "\n"
@@ -142,10 +142,10 @@ PyMethodDef pyphdi_file_object_methods[] = {
 	{ NULL, NULL, 0, NULL }
 };
 
-PyGetSetDef pyphdi_file_object_get_set_definitions[] = {
+PyGetSetDef pyphdi_handle_object_get_set_definitions[] = {
 
 	{ "media_size",
-	  (getter) pyphdi_file_get_media_size,
+	  (getter) pyphdi_handle_get_media_size,
 	  (setter) 0,
 	  "The media size.",
 	  NULL },
@@ -154,17 +154,17 @@ PyGetSetDef pyphdi_file_object_get_set_definitions[] = {
 	{ NULL, NULL, NULL, NULL, NULL }
 };
 
-PyTypeObject pyphdi_file_type_object = {
+PyTypeObject pyphdi_handle_type_object = {
 	PyVarObject_HEAD_INIT( NULL, 0 )
 
 	/* tp_name */
-	"pyphdi.file",
+	"pyphdi.handle",
 	/* tp_basicsize */
-	sizeof( pyphdi_file_t ),
+	sizeof( pyphdi_handle_t ),
 	/* tp_itemsize */
 	0,
 	/* tp_dealloc */
-	(destructor) pyphdi_file_free,
+	(destructor) pyphdi_handle_free,
 	/* tp_print */
 	0,
 	/* tp_getattr */
@@ -196,7 +196,7 @@ PyTypeObject pyphdi_file_type_object = {
 	/* tp_flags */
 	Py_TPFLAGS_DEFAULT,
 	/* tp_doc */
-	"pyphdi file object (wraps libphdi_file_t)",
+	"pyphdi handle object (wraps libphdi_handle_t)",
 	/* tp_traverse */
 	0,
 	/* tp_clear */
@@ -210,11 +210,11 @@ PyTypeObject pyphdi_file_type_object = {
 	/* tp_iternext */
 	0,
 	/* tp_methods */
-	pyphdi_file_object_methods,
+	pyphdi_handle_object_methods,
 	/* tp_members */
 	0,
 	/* tp_getset */
-	pyphdi_file_object_get_set_definitions,
+	pyphdi_handle_object_get_set_definitions,
 	/* tp_base */
 	0,
 	/* tp_dict */
@@ -226,7 +226,7 @@ PyTypeObject pyphdi_file_type_object = {
 	/* tp_dictoffset */
 	0,
 	/* tp_init */
-	(initproc) pyphdi_file_init,
+	(initproc) pyphdi_handle_init,
 	/* tp_alloc */
 	0,
 	/* tp_new */
@@ -249,45 +249,45 @@ PyTypeObject pyphdi_file_type_object = {
 	0
 };
 
-/* Creates a new file object
+/* Creates a new handle object
  * Returns a Python object if successful or NULL on error
  */
-PyObject *pyphdi_file_new(
+PyObject *pyphdi_handle_new(
            void )
 {
-	pyphdi_file_t *pyphdi_file = NULL;
-	static char *function      = "pyphdi_file_new";
+	pyphdi_handle_t *pyphdi_handle = NULL;
+	static char *function          = "pyphdi_handle_new";
 
-	pyphdi_file = PyObject_New(
-	               struct pyphdi_file,
-	               &pyphdi_file_type_object );
+	pyphdi_handle = PyObject_New(
+	                 struct pyphdi_handle,
+	                 &pyphdi_handle_type_object );
 
-	if( pyphdi_file == NULL )
+	if( pyphdi_handle == NULL )
 	{
 		PyErr_Format(
 		 PyExc_MemoryError,
-		 "%s: unable to initialize file.",
+		 "%s: unable to initialize handle.",
 		 function );
 
 		goto on_error;
 	}
-	if( pyphdi_file_init(
-	     pyphdi_file ) != 0 )
+	if( pyphdi_handle_init(
+	     pyphdi_handle ) != 0 )
 	{
 		PyErr_Format(
 		 PyExc_MemoryError,
-		 "%s: unable to initialize file.",
+		 "%s: unable to initialize handle.",
 		 function );
 
 		goto on_error;
 	}
-	return( (PyObject *) pyphdi_file );
+	return( (PyObject *) pyphdi_handle );
 
 on_error:
-	if( pyphdi_file != NULL )
+	if( pyphdi_handle != NULL )
 	{
 		Py_DecRef(
-		 (PyObject *) pyphdi_file );
+		 (PyObject *) pyphdi_handle );
 	}
 	return( NULL );
 }
@@ -295,76 +295,76 @@ on_error:
 /* Creates a new file object and opens it
  * Returns a Python object if successful or NULL on error
  */
-PyObject *pyphdi_file_new_open(
+PyObject *pyphdi_handle_new_open(
            PyObject *self PYPHDI_ATTRIBUTE_UNUSED,
            PyObject *arguments,
            PyObject *keywords )
 {
-	PyObject *pyphdi_file = NULL;
+	PyObject *pyphdi_handle = NULL;
 
 	PYPHDI_UNREFERENCED_PARAMETER( self )
 
-	pyphdi_file = pyphdi_file_new();
+	pyphdi_handle = pyphdi_handle_new();
 
-	pyphdi_file_open(
-	 (pyphdi_file_t *) pyphdi_file,
+	pyphdi_handle_open(
+	 (pyphdi_handle_t *) pyphdi_handle,
 	 arguments,
 	 keywords );
 
-	return( pyphdi_file );
+	return( pyphdi_handle );
 }
 
 /* Creates a new file object and opens it
  * Returns a Python object if successful or NULL on error
  */
-PyObject *pyphdi_file_new_open_file_object(
+PyObject *pyphdi_handle_new_open_file_object(
            PyObject *self PYPHDI_ATTRIBUTE_UNUSED,
            PyObject *arguments,
            PyObject *keywords )
 {
-	PyObject *pyphdi_file = NULL;
+	PyObject *pyphdi_handle = NULL;
 
 	PYPHDI_UNREFERENCED_PARAMETER( self )
 
-	pyphdi_file = pyphdi_file_new();
+	pyphdi_handle = pyphdi_handle_new();
 
-	pyphdi_file_open_file_object(
-	 (pyphdi_file_t *) pyphdi_file,
+	pyphdi_handle_open_file_object(
+	 (pyphdi_handle_t *) pyphdi_handle,
 	 arguments,
 	 keywords );
 
-	return( pyphdi_file );
+	return( pyphdi_handle );
 }
 
-/* Intializes a file object
+/* Intializes a handle object
  * Returns 0 if successful or -1 on error
  */
-int pyphdi_file_init(
-     pyphdi_file_t *pyphdi_file )
+int pyphdi_handle_init(
+     pyphdi_handle_t *pyphdi_handle )
 {
-	static char *function    = "pyphdi_file_init";
+	static char *function    = "pyphdi_handle_init";
 	libcerror_error_t *error = NULL;
 
-	if( pyphdi_file == NULL )
+	if( pyphdi_handle == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid file.",
+		 "%s: invalid handle.",
 		 function );
 
 		return( -1 );
 	}
-	pyphdi_file->file           = NULL;
-	pyphdi_file->file_io_handle = NULL;
+	pyphdi_handle->handle         = NULL;
+	pyphdi_handle->file_io_handle = NULL;
 
-	if( libphdi_file_initialize(
-	     &( pyphdi_file->file ),
+	if( libphdi_handle_initialize(
+	     &( pyphdi_handle->handle ),
 	     &error ) != 1 )
 	{
 		pyphdi_error_raise(
 		 error,
 		 PyExc_MemoryError,
-		 "%s: unable to initialize file.",
+		 "%s: unable to initialize handle.",
 		 function );
 
 		libcerror_error_free(
@@ -375,36 +375,36 @@ int pyphdi_file_init(
 	return( 0 );
 }
 
-/* Frees a file object
+/* Frees a handle object
  */
-void pyphdi_file_free(
-      pyphdi_file_t *pyphdi_file )
+void pyphdi_handle_free(
+      pyphdi_handle_t *pyphdi_handle )
 {
 	libcerror_error_t *error    = NULL;
 	struct _typeobject *ob_type = NULL;
-	static char *function       = "pyphdi_file_free";
+	static char *function       = "pyphdi_handle_free";
 	int result                  = 0;
 
-	if( pyphdi_file == NULL )
+	if( pyphdi_handle == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid file.",
+		 "%s: invalid handle.",
 		 function );
 
 		return;
 	}
-	if( pyphdi_file->file == NULL )
+	if( pyphdi_handle->handle == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid file - missing libphdi file.",
+		 "%s: invalid handle - missing libphdi handle.",
 		 function );
 
 		return;
 	}
 	ob_type = Py_TYPE(
-	           pyphdi_file );
+	           pyphdi_handle );
 
 	if( ob_type == NULL )
 	{
@@ -426,8 +426,8 @@ void pyphdi_file_free(
 	}
 	Py_BEGIN_ALLOW_THREADS
 
-	result = libphdi_file_free(
-	          &( pyphdi_file->file ),
+	result = libphdi_handle_free(
+	          &( pyphdi_handle->handle ),
 	          &error );
 
 	Py_END_ALLOW_THREADS
@@ -437,42 +437,42 @@ void pyphdi_file_free(
 		pyphdi_error_raise(
 		 error,
 		 PyExc_MemoryError,
-		 "%s: unable to free libphdi file.",
+		 "%s: unable to free libphdi handle.",
 		 function );
 
 		libcerror_error_free(
 		 &error );
 	}
 	ob_type->tp_free(
-	 (PyObject*) pyphdi_file );
+	 (PyObject*) pyphdi_handle );
 }
 
-/* Signals the file to abort the current activity
+/* Signals the handle to abort the current activity
  * Returns a Python object if successful or NULL on error
  */
-PyObject *pyphdi_file_signal_abort(
-           pyphdi_file_t *pyphdi_file,
+PyObject *pyphdi_handle_signal_abort(
+           pyphdi_handle_t *pyphdi_handle,
            PyObject *arguments PYPHDI_ATTRIBUTE_UNUSED )
 {
 	libcerror_error_t *error = NULL;
-	static char *function    = "pyphdi_file_signal_abort";
+	static char *function    = "pyphdi_handle_signal_abort";
 	int result               = 0;
 
 	PYPHDI_UNREFERENCED_PARAMETER( arguments )
 
-	if( pyphdi_file == NULL )
+	if( pyphdi_handle == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid file.",
+		 "%s: invalid handle.",
 		 function );
 
 		return( NULL );
 	}
 	Py_BEGIN_ALLOW_THREADS
 
-	result = libphdi_file_signal_abort(
-	          pyphdi_file->file,
+	result = libphdi_handle_signal_abort(
+	          pyphdi_handle->handle,
 	          &error );
 
 	Py_END_ALLOW_THREADS
@@ -496,17 +496,17 @@ PyObject *pyphdi_file_signal_abort(
 	return( Py_None );
 }
 
-/* Opens a file
+/* Opens a handle
  * Returns a Python object if successful or NULL on error
  */
-PyObject *pyphdi_file_open(
-           pyphdi_file_t *pyphdi_file,
+PyObject *pyphdi_handle_open(
+           pyphdi_handle_t *pyphdi_handle,
            PyObject *arguments,
            PyObject *keywords )
 {
 	PyObject *string_object      = NULL;
 	libcerror_error_t *error     = NULL;
-	static char *function        = "pyphdi_file_open";
+	static char *function        = "pyphdi_handle_open";
 	static char *keyword_list[]  = { "filename", "mode", NULL };
 	const char *filename_narrow  = NULL;
 	char *mode                   = NULL;
@@ -518,11 +518,11 @@ PyObject *pyphdi_file_open(
 	PyObject *utf8_string_object = NULL;
 #endif
 
-	if( pyphdi_file == NULL )
+	if( pyphdi_handle == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid file.",
+		 "%s: invalid handle.",
 		 function );
 
 		return( NULL );
@@ -577,8 +577,8 @@ PyObject *pyphdi_file_open(
 		                             string_object );
 		Py_BEGIN_ALLOW_THREADS
 
-		result = libphdi_file_open_wide(
-		          pyphdi_file->file,
+		result = libphdi_handle_open_wide(
+		          pyphdi_handle->handle,
 	                  filename_wide,
 		          LIBPHDI_OPEN_READ,
 		          &error );
@@ -606,8 +606,8 @@ PyObject *pyphdi_file_open(
 #endif
 		Py_BEGIN_ALLOW_THREADS
 
-		result = libphdi_file_open(
-		          pyphdi_file->file,
+		result = libphdi_handle_open(
+		          pyphdi_handle->handle,
 	                  filename_narrow,
 		          LIBPHDI_OPEN_READ,
 		          &error );
@@ -622,7 +622,7 @@ PyObject *pyphdi_file_open(
 			pyphdi_error_raise(
 			 error,
 			 PyExc_IOError,
-			 "%s: unable to open file.",
+			 "%s: unable to open handle.",
 			 function );
 
 			libcerror_error_free(
@@ -668,8 +668,8 @@ PyObject *pyphdi_file_open(
 #endif
 		Py_BEGIN_ALLOW_THREADS
 
-		result = libphdi_file_open(
-		          pyphdi_file->file,
+		result = libphdi_handle_open(
+		          pyphdi_handle->handle,
 	                  filename_narrow,
 		          LIBPHDI_OPEN_READ,
 		          &error );
@@ -681,7 +681,7 @@ PyObject *pyphdi_file_open(
 			pyphdi_error_raise(
 			 error,
 			 PyExc_IOError,
-			 "%s: unable to open file.",
+			 "%s: unable to open handle.",
 			 function );
 
 			libcerror_error_free(
@@ -702,11 +702,11 @@ PyObject *pyphdi_file_open(
 	return( NULL );
 }
 
-/* Opens a file using a file-like object
+/* Opens a handle using a file-like object
  * Returns a Python object if successful or NULL on error
  */
-PyObject *pyphdi_file_open_file_object(
-           pyphdi_file_t *pyphdi_file,
+PyObject *pyphdi_handle_open_file_object(
+           pyphdi_handle_t *pyphdi_handle,
            PyObject *arguments,
            PyObject *keywords )
 {
@@ -714,14 +714,14 @@ PyObject *pyphdi_file_open_file_object(
 	libcerror_error_t *error    = NULL;
 	char *mode                  = NULL;
 	static char *keyword_list[] = { "file_object", "mode", NULL };
-	static char *function       = "pyphdi_file_open_file_object";
+	static char *function       = "pyphdi_handle_open_file_object";
 	int result                  = 0;
 
-	if( pyphdi_file == NULL )
+	if( pyphdi_handle == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid file.",
+		 "%s: invalid handle.",
 		 function );
 
 		return( NULL );
@@ -748,7 +748,7 @@ PyObject *pyphdi_file_open_file_object(
 		return( NULL );
 	}
 	if( pyphdi_file_object_initialize(
-	     &( pyphdi_file->file_io_handle ),
+	     &( pyphdi_handle->file_io_handle ),
 	     file_object,
 	     &error ) != 1 )
 	{
@@ -765,9 +765,9 @@ PyObject *pyphdi_file_open_file_object(
 	}
 	Py_BEGIN_ALLOW_THREADS
 
-	result = libphdi_file_open_file_io_handle(
-	          pyphdi_file->file,
-	          pyphdi_file->file_io_handle,
+	result = libphdi_handle_open_file_io_handle(
+	          pyphdi_handle->handle,
+	          pyphdi_handle->file_io_handle,
 	          LIBPHDI_OPEN_READ,
 	          &error );
 
@@ -778,7 +778,7 @@ PyObject *pyphdi_file_open_file_object(
 		pyphdi_error_raise(
 		 error,
 		 PyExc_IOError,
-		 "%s: unable to open file.",
+		 "%s: unable to open handle.",
 		 function );
 
 		libcerror_error_free(
@@ -792,41 +792,41 @@ PyObject *pyphdi_file_open_file_object(
 	return( Py_None );
 
 on_error:
-	if( pyphdi_file->file_io_handle != NULL )
+	if( pyphdi_handle->file_io_handle != NULL )
 	{
 		libbfio_handle_free(
-		 &( pyphdi_file->file_io_handle ),
+		 &( pyphdi_handle->file_io_handle ),
 		 NULL );
 	}
 	return( NULL );
 }
 
-/* Closes a file
+/* Closes a handle
  * Returns a Python object if successful or NULL on error
  */
-PyObject *pyphdi_file_close(
-           pyphdi_file_t *pyphdi_file,
+PyObject *pyphdi_handle_close(
+           pyphdi_handle_t *pyphdi_handle,
            PyObject *arguments PYPHDI_ATTRIBUTE_UNUSED )
 {
 	libcerror_error_t *error = NULL;
-	static char *function    = "pyphdi_file_close";
+	static char *function    = "pyphdi_handle_close";
 	int result               = 0;
 
 	PYPHDI_UNREFERENCED_PARAMETER( arguments )
 
-	if( pyphdi_file == NULL )
+	if( pyphdi_handle == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid file.",
+		 "%s: invalid handle.",
 		 function );
 
 		return( NULL );
 	}
 	Py_BEGIN_ALLOW_THREADS
 
-	result = libphdi_file_close(
-	          pyphdi_file->file,
+	result = libphdi_handle_close(
+	          pyphdi_handle->handle,
 	          &error );
 
 	Py_END_ALLOW_THREADS
@@ -836,7 +836,7 @@ PyObject *pyphdi_file_close(
 		pyphdi_error_raise(
 		 error,
 		 PyExc_IOError,
-		 "%s: unable to close file.",
+		 "%s: unable to close handle.",
 		 function );
 
 		libcerror_error_free(
@@ -844,12 +844,12 @@ PyObject *pyphdi_file_close(
 
 		return( NULL );
 	}
-	if( pyphdi_file->file_io_handle != NULL )
+	if( pyphdi_handle->file_io_handle != NULL )
 	{
 		Py_BEGIN_ALLOW_THREADS
 
 		result = libbfio_handle_free(
-		          &( pyphdi_file->file_io_handle ),
+		          &( pyphdi_handle->file_io_handle ),
 		          &error );
 
 		Py_END_ALLOW_THREADS
@@ -877,24 +877,24 @@ PyObject *pyphdi_file_close(
 /* Reads data at the current offset into a buffer
  * Returns a Python object if successful or NULL on error
  */
-PyObject *pyphdi_file_read_buffer(
-           pyphdi_file_t *pyphdi_file,
+PyObject *pyphdi_handle_read_buffer(
+           pyphdi_handle_t *pyphdi_handle,
            PyObject *arguments,
            PyObject *keywords )
 {
 	libcerror_error_t *error    = NULL;
 	PyObject *string_object     = NULL;
-	static char *function       = "pyphdi_file_read_buffer";
+	static char *function       = "pyphdi_handle_read_buffer";
 	static char *keyword_list[] = { "size", NULL };
 	char *buffer                = NULL;
 	ssize_t read_count          = 0;
 	int read_size               = -1;
 
-	if( pyphdi_file == NULL )
+	if( pyphdi_handle == NULL )
 	{
 		PyErr_Format(
 		 PyExc_TypeError,
-		 "%s: invalid file.",
+		 "%s: invalid handle.",
 		 function );
 
 		return( NULL );
@@ -945,8 +945,8 @@ PyObject *pyphdi_file_read_buffer(
 #endif
 	Py_BEGIN_ALLOW_THREADS
 
-	read_count = libphdi_file_read_buffer(
-	              pyphdi_file->file,
+	read_count = libphdi_handle_read_buffer(
+	              pyphdi_handle->handle,
 	              (uint8_t *) buffer,
 	              (size_t) read_size,
 	              &error );
@@ -992,25 +992,25 @@ PyObject *pyphdi_file_read_buffer(
 /* Reads data at a specific offset
  * Returns a Python object if successful or NULL on error
  */
-PyObject *pyphdi_file_read_buffer_at_offset(
-           pyphdi_file_t *pyphdi_file,
+PyObject *pyphdi_handle_read_buffer_at_offset(
+           pyphdi_handle_t *pyphdi_handle,
            PyObject *arguments,
            PyObject *keywords )
 {
 	libcerror_error_t *error    = NULL;
 	PyObject *string_object     = NULL;
-	static char *function       = "pyphdi_file_read_buffer_at_offset";
+	static char *function       = "pyphdi_handle_read_buffer_at_offset";
 	static char *keyword_list[] = { "size", "offset", NULL };
 	char *buffer                = NULL;
 	off64_t read_offset         = 0;
 	ssize_t read_count          = 0;
 	int read_size               = 0;
 
-	if( pyphdi_file == NULL )
+	if( pyphdi_handle == NULL )
 	{
 		PyErr_Format(
 		 PyExc_TypeError,
-		 "%s: invalid file.",
+		 "%s: invalid handle.",
 		 function );
 
 		return( NULL );
@@ -1073,8 +1073,8 @@ PyObject *pyphdi_file_read_buffer_at_offset(
 #endif
 	Py_BEGIN_ALLOW_THREADS
 
-	read_count = libphdi_file_read_buffer_at_offset(
-	              pyphdi_file->file,
+	read_count = libphdi_handle_read_buffer_at_offset(
+	              pyphdi_handle->handle,
 	              (uint8_t *) buffer,
 	              (size_t) read_size,
 	              (off64_t) read_offset,
@@ -1121,22 +1121,22 @@ PyObject *pyphdi_file_read_buffer_at_offset(
 /* Seeks a certain offset in the data
  * Returns a Python object if successful or NULL on error
  */
-PyObject *pyphdi_file_seek_offset(
-           pyphdi_file_t *pyphdi_file,
+PyObject *pyphdi_handle_seek_offset(
+           pyphdi_handle_t *pyphdi_handle,
            PyObject *arguments,
            PyObject *keywords )
 {
 	libcerror_error_t *error    = NULL;
-	static char *function       = "pyphdi_file_seek_offset";
+	static char *function       = "pyphdi_handle_seek_offset";
 	static char *keyword_list[] = { "offset", "whence", NULL };
 	off64_t offset              = 0;
 	int whence                  = 0;
 
-	if( pyphdi_file == NULL )
+	if( pyphdi_handle == NULL )
 	{
 		PyErr_Format(
 		 PyExc_TypeError,
-		 "%s: invalid file.",
+		 "%s: invalid handle.",
 		 function );
 
 		return( NULL );
@@ -1153,8 +1153,8 @@ PyObject *pyphdi_file_seek_offset(
 	}
 	Py_BEGIN_ALLOW_THREADS
 
-	offset = libphdi_file_seek_offset(
-	          pyphdi_file->file,
+	offset = libphdi_handle_seek_offset(
+	          pyphdi_handle->handle,
 	          offset,
 	          whence,
 	          &error );
@@ -1183,31 +1183,31 @@ PyObject *pyphdi_file_seek_offset(
 /* Retrieves the current offset in the data
  * Returns a Python object if successful or NULL on error
  */
-PyObject *pyphdi_file_get_offset(
-           pyphdi_file_t *pyphdi_file,
+PyObject *pyphdi_handle_get_offset(
+           pyphdi_handle_t *pyphdi_handle,
            PyObject *arguments PYPHDI_ATTRIBUTE_UNUSED )
 {
 	libcerror_error_t *error = NULL;
 	PyObject *integer_object = NULL;
-	static char *function    = "pyphdi_file_get_offset";
+	static char *function    = "pyphdi_handle_get_offset";
 	off64_t current_offset   = 0;
 	int result               = 0;
 
 	PYPHDI_UNREFERENCED_PARAMETER( arguments )
 
-	if( pyphdi_file == NULL )
+	if( pyphdi_handle == NULL )
 	{
 		PyErr_Format(
 		 PyExc_TypeError,
-		 "%s: invalid file.",
+		 "%s: invalid handle.",
 		 function );
 
 		return( NULL );
 	}
 	Py_BEGIN_ALLOW_THREADS
 
-	result = libphdi_file_get_offset(
-	          pyphdi_file->file,
+	result = libphdi_handle_get_offset(
+	          pyphdi_handle->handle,
 	          &current_offset,
 	          &error );
 
@@ -1235,31 +1235,31 @@ PyObject *pyphdi_file_get_offset(
 /* Retrieves the media size
  * Returns a Python object if successful or NULL on error
  */
-PyObject *pyphdi_file_get_media_size(
-           pyphdi_file_t *pyphdi_file,
+PyObject *pyphdi_handle_get_media_size(
+           pyphdi_handle_t *pyphdi_handle,
            PyObject *arguments PYPHDI_ATTRIBUTE_UNUSED )
 {
 	libcerror_error_t *error = NULL;
 	PyObject *integer_object = NULL;
-	static char *function    = "pyphdi_file_get_media_size";
+	static char *function    = "pyphdi_handle_get_media_size";
 	size64_t media_size      = 0;
 	int result               = 0;
 
 	PYPHDI_UNREFERENCED_PARAMETER( arguments )
 
-	if( pyphdi_file == NULL )
+	if( pyphdi_handle == NULL )
 	{
 		PyErr_Format(
 		 PyExc_TypeError,
-		 "%s: invalid file.",
+		 "%s: invalid handle.",
 		 function );
 
 		return( NULL );
 	}
 	Py_BEGIN_ALLOW_THREADS
 
-	result = libphdi_file_get_media_size(
-	          pyphdi_file->file,
+	result = libphdi_handle_get_media_size(
+	          pyphdi_handle->handle,
 	          &media_size,
 	          &error );
 

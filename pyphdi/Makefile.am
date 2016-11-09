@@ -15,9 +15,8 @@ pyexec_LTLIBRARIES = pyphdi.la
 
 pyphdi_la_SOURCES = \
 	pyphdi.c pyphdi.h \
-	pyphdi_disk_types.c pyphdi_disk_types.h \
 	pyphdi_error.c pyphdi_error.h \
-	pyphdi_file.c pyphdi_file.h \
+	pyphdi_handle.c pyphdi_handle.h \
 	pyphdi_file_object_io_handle.c pyphdi_file_object_io_handle.h \
 	pyphdi_integer.c pyphdi_integer.h \
 	pyphdi_libbfio.h \

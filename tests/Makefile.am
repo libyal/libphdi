@@ -16,9 +16,7 @@ AM_CPPFLAGS = \
 	@LIBPHDI_DLL_IMPORT@
 
 if HAVE_PYTHON
-TESTS_PYPHDI = \
-	test_pyphdi_open_close.sh \
-	test_pyphdi_seek.sh
+TESTS_PYPHDI =
 endif
 
 TESTS = \
@@ -28,13 +26,9 @@ TESTS = \
 	$(TESTS_PYPHDI)
 
 check_SCRIPTS = \
-	pyphdi_test_open_close.py \
-	pyphdi_test_seek.py \
 	test_api_functions.sh \
 	test_api_types.sh \
 	test_phdiinfo.sh \
-	test_pyphdi_open_close.sh \
-	test_pyphdi_seek.sh \
 	test_runner.sh
 
 EXTRA_DIST = \

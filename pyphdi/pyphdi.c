@@ -28,11 +28,10 @@
 #endif
 
 #include "pyphdi.h"
-#include "pyphdi_disk_types.h"
 #include "pyphdi_error.h"
 #include "pyphdi_libcerror.h"
 #include "pyphdi_libphdi.h"
-#include "pyphdi_file.h"
+#include "pyphdi_handle.h"
 #include "pyphdi_file_object_io_handle.h"
 #include "pyphdi_python.h"
 #include "pyphdi_unused.h"
@@ -69,18 +68,18 @@ PyMethodDef pyphdi_module_methods[] = {
 	  "Checks if a file has a Parallels Hard Disk image file signature using a file-like object." },
 
 	{ "open",
-	  (PyCFunction) pyphdi_file_new_open,
+	  (PyCFunction) pyphdi_handle_new_open,
 	  METH_VARARGS | METH_KEYWORDS,
 	  "open(filename, mode='r') -> Object\n"
 	  "\n"
-	  "Opens a file." },
+	  "Opens a handle." },
 
 	{ "open_file_object",
-	  (PyCFunction) pyphdi_file_new_open_file_object,
+	  (PyCFunction) pyphdi_handle_new_open_file_object,
 	  METH_VARARGS | METH_KEYWORDS,
-	  "open_file_object(file_object, mode='r') -> Object\n"
+	  "open_handle_object(file_object, mode='r') -> Object\n"
 	  "\n"
-	  "Opens a file using a file-like object." },
+	  "Opens a handle using a file-like object." },
 
 	/* Sentinel */
 	{ NULL, NULL, 0, NULL }
@@ -450,10 +449,9 @@ PyMODINIT_FUNC initpyphdi(
                 void )
 #endif
 {
-	PyObject *module                     = NULL;
-	PyTypeObject *disk_types_type_object = NULL;
-	PyTypeObject *file_type_object       = NULL;
-	PyGILState_STATE gil_state           = 0;
+	PyObject *module                 = NULL;
+	PyTypeObject *handle_type_object = NULL;
+	PyGILState_STATE gil_state       = 0;
 
 #if defined( HAVE_DEBUG_OUTPUT )
 	libphdi_notify_set_stream(
@@ -488,48 +486,24 @@ PyMODINIT_FUNC initpyphdi(
 
 	gil_state = PyGILState_Ensure();
 
-	/* Setup the file type object
+	/* Setup the handle type object
 	 */
-	pyphdi_file_type_object.tp_new = PyType_GenericNew;
+	pyphdi_handle_type_object.tp_new = PyType_GenericNew;
 
 	if( PyType_Ready(
-	     &pyphdi_file_type_object ) < 0 )
+	     &pyphdi_handle_type_object ) < 0 )
 	{
 		goto on_error;
 	}
 	Py_IncRef(
-	 (PyObject *) &pyphdi_file_type_object );
+	 (PyObject *) &pyphdi_handle_type_object );
 
-	file_type_object = &pyphdi_file_type_object;
-
-	PyModule_AddObject(
-	 module,
-	 "file",
-	 (PyObject *) file_type_object );
-
-	/* Setup the disk types type object
-	 */
-	pyphdi_disk_types_type_object.tp_new = PyType_GenericNew;
-
-	if( pyphdi_disk_types_init_type(
-	     &pyphdi_disk_types_type_object ) != 1 )
-	{
-		goto on_error;
-	}
-	if( PyType_Ready(
-	     &pyphdi_disk_types_type_object ) < 0 )
-	{
-		goto on_error;
-	}
-	Py_IncRef(
-	 (PyObject *) &pyphdi_disk_types_type_object );
-
-	disk_types_type_object = &pyphdi_disk_types_type_object;
+	handle_type_object = &pyphdi_handle_type_object;
 
 	PyModule_AddObject(
 	 module,
-	 "disk_types",
-	 (PyObject *) disk_types_type_object );
+	 "handle",
+	 (PyObject *) handle_type_object );
 
 	PyGILState_Release(
 	 gil_state );
