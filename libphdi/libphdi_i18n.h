@@ -51,5 +51,5 @@ int libphdi_i18n_initialize(
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBPHDI_I18N_H ) */
 

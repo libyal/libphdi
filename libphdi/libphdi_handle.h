@@ -156,14 +156,6 @@ ssize_t libphdi_handle_read_buffer_at_offset(
          off64_t offset,
          libcerror_error_t **error );
 
-LIBPHDI_EXTERN \
-ssize_t libphdi_handle_read_random(
-         libphdi_handle_t *handle,
-         void *buffer,
-         size_t buffer_size,
-         off64_t offset,
-         libcerror_error_t **error );
-
 #ifdef TODO_WRITE_SUPPORT
 
 ssize_t libphdi_internal_handle_write_buffer_to_file_io_handle(

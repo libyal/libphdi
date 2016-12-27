@@ -38,9 +38,9 @@
 #include <libphdi/extern.h>
 
 #else
-#define LIBPHDI_EXTERN	extern
+#define LIBPHDI_EXTERN	/* extern */
 
-#endif
+#endif /* !defined( HAVE_LOCAL_LIBPHDI ) */
 
 #endif /* !defined( _LIBPHDI_INTERNAL_EXTERN_H ) */
 

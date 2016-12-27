@@ -126,6 +126,7 @@ stamp-h[1-9]
 /tests/input
 /tests/phdi_test_error
 /tests/phdi_test_handle
+/tests/phdi_test_io_handle
 /tests/phdi_test_notify
 /tests/phdi_test_support
 /tests/tmp*

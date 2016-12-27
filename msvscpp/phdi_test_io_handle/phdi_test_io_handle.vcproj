@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
-	Name="phdi_test_handle"
-	ProjectGUID="{B95129C3-BA9D-4DE2-9A0B-17F61681CF90}"
-	RootNamespace="phdi_test_handle"
+	Name="phdi_test_io_handle"
+	ProjectGUID="{F901EC39-CEEF-49C7-BBC7-6A5D07FD9FA9}"
+	RootNamespace="phdi_test_io_handle"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="131072"
 	>
@@ -176,11 +176,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\..\tests\phdi_test_getopt.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\tests\phdi_test_handle.c"
+				RelativePath="..\..\tests\phdi_test_io_handle.c"
 				>
 			</File>
 			<File
@@ -194,27 +190,11 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\..\tests\phdi_test_getopt.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\tests\phdi_test_libcerror.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\tests\phdi_test_libclocale.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\tests\phdi_test_libcnotify.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\tests\phdi_test_libphdi.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\tests\phdi_test_libuna.h"
 				>
 			</File>
 			<File
@@ -223,6 +203,10 @@
 			</File>
 			<File
 				RelativePath="..\..\tests\phdi_test_memory.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\tests\phdi_test_unused.h"
 				>
 			</File>
 		</Filter>

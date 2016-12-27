@@ -8,15 +8,18 @@ AM_CPPFLAGS = \
 	@LIBCNOTIFY_CPPFLAGS@ \
 	@LIBCSPLIT_CPPFLAGS@ \
 	@LIBUNA_CPPFLAGS@ \
+	@LIBCDIRECTORY_CPPFLAGS@ \
 	@LIBCFILE_CPPFLAGS@ \
 	@LIBCPATH_CPPFLAGS@ \
 	@LIBBFIO_CPPFLAGS@ \
-	@LIBCSYSTEM_CPPFLAGS@ \
+	@LIBFCACHE_CPPFLAGS@ \
+	@LIBFDATA_CPPFLAGS@ \
 	@PTHREAD_CPPFLAGS@ \
 	@LIBPHDI_DLL_IMPORT@
 
-if HAVE_PYTHON
-TESTS_PYPHDI =
+if HAVE_PYTHON_TESTS
+TESTS_PYPHDI = \
+	test_python_functions.sh
 endif
 
 TESTS = \
@@ -26,9 +29,11 @@ TESTS = \
 	$(TESTS_PYPHDI)
 
 check_SCRIPTS = \
+	pyphdi_test_support.py \
 	test_api_functions.sh \
 	test_api_types.sh \
 	test_phdiinfo.sh \
+	test_python_functions.sh \
 	test_runner.sh
 
 EXTRA_DIST = \
@@ -37,66 +42,76 @@ EXTRA_DIST = \
 check_PROGRAMS = \
 	phdi_test_error \
 	phdi_test_handle \
+	phdi_test_io_handle \
 	phdi_test_notify \
 	phdi_test_support
 
 phdi_test_error_SOURCES = \
-	phdi_test_error.c
-	phdi_test_libcerror.h \
+	phdi_test_error.c \
 	phdi_test_libphdi.h \
 	phdi_test_macros.h \
 	phdi_test_unused.h
 
 phdi_test_error_LDADD = \
-	../libphdi/libphdi.la \
-	@LIBCERROR_LIBADD@
+	../libphdi/libphdi.la
 
 phdi_test_handle_SOURCES = \
+	phdi_test_getopt.c phdi_test_getopt.h \
 	phdi_test_handle.c \
 	phdi_test_libcerror.h \
 	phdi_test_libclocale.h \
-	phdi_test_libcsystem.h \
-	phdi_test_libcthreads.h \
+	phdi_test_libcnotify.h \
 	phdi_test_libphdi.h \
 	phdi_test_libuna.h \
 	phdi_test_macros.h \
-	phdi_test_memory.c phdi_test_memory.h \
-	phdi_test_unused.h
+	phdi_test_memory.c phdi_test_memory.h
 
 phdi_test_handle_LDADD = \
-	@LIBCSYSTEM_LIBADD@ \
 	@LIBUNA_LIBADD@ \
 	@LIBCNOTIFY_LIBADD@ \
 	@LIBCLOCALE_LIBADD@ \
 	@LIBCDATA_LIBADD@ \
 	../libphdi/libphdi.la \
 	@LIBCTHREADS_LIBADD@ \
-	@LIBCERROR_LIBADD@
+	@LIBCERROR_LIBADD@ \
 	@PTHREAD_LIBADD@
 
-phdi_test_notify_SOURCES = \
+phdi_test_io_handle_SOURCES = \
+	phdi_test_io_handle.c \
 	phdi_test_libcerror.h \
 	phdi_test_libphdi.h \
 	phdi_test_macros.h \
-	phdi_test_notify.c
+	phdi_test_memory.c phdi_test_memory.h \
 	phdi_test_unused.h
 
-phdi_test_notify_LDADD = \
+phdi_test_io_handle_LDADD = \
 	../libphdi/libphdi.la \
 	@LIBCERROR_LIBADD@
 
+phdi_test_notify_SOURCES = \
+	phdi_test_libphdi.h \
+	phdi_test_macros.h \
+	phdi_test_notify.c \
+	phdi_test_unused.h
+
+phdi_test_notify_LDADD = \
+	../libphdi/libphdi.la
+
 phdi_test_support_SOURCES = \
+	phdi_test_getopt.c phdi_test_getopt.h \
+	phdi_test_libbfio.h \
 	phdi_test_libcerror.h \
 	phdi_test_libclocale.h \
-	phdi_test_libcsystem.h \
+	phdi_test_libcnotify.h \
 	phdi_test_libphdi.h \
 	phdi_test_libuna.h \
 	phdi_test_macros.h \
-	phdi_test_unused.h \
 	phdi_test_support.c
 
 phdi_test_support_LDADD = \
-	@LIBCSYSTEM_LIBADD@ \
+	@LIBBFIO_LIBADD@ \
+	@LIBCPATH_LIBADD@ \
+	@LIBCFILE_LIBADD@ \
 	@LIBUNA_LIBADD@ \
 	@LIBCNOTIFY_LIBADD@ \
 	@LIBCLOCALE_LIBADD@ \

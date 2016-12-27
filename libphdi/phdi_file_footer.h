@@ -120,5 +120,5 @@ struct phdi_file_footer
 }
 #endif
 
-#endif
+#endif /* !defined( _PHDI_FILE_FOOTER_H ) */
 
