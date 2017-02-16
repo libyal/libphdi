@@ -24,7 +24,7 @@ BEGIN
       VALUE "FileDescription",		"Library to access the Parallels Hard Disk image format\0"
       VALUE "FileVersion",		"@VERSION@" "\0"
       VALUE "InternalName",		"libphdi.dll\0"
-      VALUE "LegalCopyright",		"(C) 2015-2016, Joachim Metz <joachim.metz@gmail.com>\0"
+      VALUE "LegalCopyright",		"(C) 2015-2017, Joachim Metz <joachim.metz@gmail.com>\0"
       VALUE "OriginalFilename",		"libphdi.dll\0"
       VALUE "ProductName",		"libphdi\0"
       VALUE "ProductVersion",		"@VERSION@" "\0"
