@@ -12,7 +12,6 @@ AM_CPPFLAGS = \
 	@LIBBFIO_CPPFLAGS@ \
 	@LIBFCACHE_CPPFLAGS@ \
 	@LIBFDATA_CPPFLAGS@ \
-	@LIBCSYSTEM_CPPFLAGS@ \
 	@LIBFUSE_CPPFLAGS@ \
 	@LIBPHDI_DLL_IMPORT@
 
@@ -25,47 +24,51 @@ bin_PROGRAMS = \
 phdiinfo_SOURCES = \
 	info_handle.c info_handle.h \
 	phdiinfo.c \
-	phdioutput.c phdioutput.h \
+	phditools_getopt.c phditools_getopt.h \
+	phditools_i18n.h \
 	phditools_libbfio.h \
 	phditools_libcdata.h \
 	phditools_libcerror.h \
 	phditools_libclocale.h \
 	phditools_libcnotify.h \
-	phditools_libcsystem.h \
 	phditools_libphdi.h \
-	phditools_libuna.h
+	phditools_libuna.h \
+	phditools_output.c phditools_output.h \
+	phditools_signal.c phditools_signal.h \
+	phditools_unused.h
 
 phdiinfo_LDADD = \
-	@LIBCSYSTEM_LIBADD@ \
-	../libphdi/libphdi.la \
 	@LIBCNOTIFY_LIBADD@ \
 	@LIBCLOCALE_LIBADD@ \
+	../libphdi/libphdi.la \
 	@LIBCERROR_LIBADD@ \
 	@LIBINTL@
 
 phdimount_SOURCES = \
 	mount_handle.c mount_handle.h \
 	phdimount.c \
-	phdioutput.c phdioutput.h \
+	phditools_getopt.c phditools_getopt.h \
+	phditools_i18n.h \
 	phditools_libbfio.h \
 	phditools_libcdata.h \
 	phditools_libcerror.h \
 	phditools_libclocale.h \
 	phditools_libcnotify.h \
 	phditools_libcpath.h \
-	phditools_libcsystem.h \
 	phditools_libphdi.h \
-	phditools_libuna.h
+	phditools_libuna.h \
+	phditools_output.c phditools_output.h \
+	phditools_signal.c phditools_signal.h \
+	phditools_unused.h
 
 phdimount_LDADD = \
 	@LIBFUSE_LIBADD@ \
-	@LIBCSYSTEM_LIBADD@ \
 	@LIBCPATH_LIBADD@ \
 	@LIBCSPLIT_LIBADD@ \
-	../libphdi/libphdi.la \
 	@LIBCNOTIFY_LIBADD@ \
 	@LIBCLOCALE_LIBADD@ \
 	@LIBCDATA_LIBADD@ \
+	../libphdi/libphdi.la \
 	@LIBCERROR_LIBADD@ \
 	@LIBINTL@
 

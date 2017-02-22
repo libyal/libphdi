@@ -17,7 +17,6 @@ SUBDIRS = \
 	libfcache \
 	libfdata \
 	libphdi \
-	libcsystem \
 	phditools \
 	pyphdi \
 	pyphdi-python2 \
@@ -122,7 +121,6 @@ splint:
 	(cd $(srcdir)/libfcache && $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libfdata && $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/libphdi && $(MAKE) splint $(AM_MAKEFLAGS))
-	(cd $(srcdir)/libcsystem && $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/phditools && $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/pyphdi && $(MAKE) splint $(AM_MAKEFLAGS))
 	(cd $(srcdir)/po && $(MAKE) $(AM_MAKEFLAGS))

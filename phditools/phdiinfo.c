@@ -34,12 +34,14 @@
 #endif
 
 #include "info_handle.h"
-#include "phdioutput.h"
+#include "phditools_getopt.h"
 #include "phditools_libcerror.h"
 #include "phditools_libclocale.h"
 #include "phditools_libcnotify.h"
-#include "phditools_libcsystem.h"
 #include "phditools_libphdi.h"
+#include "phditools_output.h"
+#include "phditools_signal.h"
+#include "phditools_unused.h"
 
 info_handle_t *phdiinfo_info_handle = NULL;
 int phdiinfo_abort                  = 0;
@@ -68,12 +70,12 @@ void usage_fprint(
 /* Signal handler for phdiinfo
  */
 void phdiinfo_signal_handler(
-      libcsystem_signal_t signal LIBCSYSTEM_ATTRIBUTE_UNUSED )
+      phditools_signal_t signal PHDITOOLS_ATTRIBUTE_UNUSED )
 {
 	libcerror_error_t *error = NULL;
 	static char *function   = "phdiinfo_signal_handler";
 
-	LIBCSYSTEM_UNREFERENCED_PARAMETER( signal )
+	PHDITOOLS_UNREFERENCED_PARAMETER( signal )
 
 	phdiinfo_abort = 1;
 
@@ -95,8 +97,13 @@ void phdiinfo_signal_handler(
 	}
 	/* Force stdin to close otherwise any function reading it will remain blocked
 	 */
-	if( libcsystem_file_io_close(
+#if defined( WINAPI ) && !defined( __CYGWIN__ )
+	if( _close(
 	     0 ) != 0 )
+#else
+	if( close(
+	     0 ) != 0 )
+#endif
 	{
 		libcnotify_printf(
 		 "%s: unable to close stdin.\n",
@@ -134,13 +141,13 @@ int main( int argc, char * const argv[] )
 
 		goto on_error;
 	}
-        if( libcsystem_initialize(
+        if( phditools_output_initialize(
              _IONBF,
              &error ) != 1 )
 	{
 		fprintf(
 		 stderr,
-		 "Unable to initialize system values.\n" );
+		 "Unable to initialize output settings.\n" );
 
 		goto on_error;
 	}
@@ -148,7 +155,7 @@ int main( int argc, char * const argv[] )
 	 stdout,
 	 program );
 
-	while( ( option = libcsystem_getopt(
+	while( ( option = phditools_getopt(
 	                   argc,
 	                   argv,
 	                   _SYSTEM_STRING( "hvV" ) ) ) != (system_integer_t) -1 )

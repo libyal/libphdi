@@ -1,5 +1,5 @@
 /*
- * The libbfio header wrapper
+ * Common output functions for the phditools
  *
  * Copyright (C) 2015-2017, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -19,36 +19,37 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _PYPHDI_LIBBFIO_H )
-#define _PYPHDI_LIBBFIO_H
+#if !defined( _PHDITOOLS_OUTPUT_H )
+#define _PHDITOOLS_OUTPUT_H
 
 #include <common.h>
+#include <file_stream.h>
+#include <types.h>
 
-/* Define HAVE_LOCAL_LIBBFIO for local use of libbfio
- */
-#if defined( HAVE_LOCAL_LIBBFIO )
+#include "phditools_libcerror.h"
 
-#include <libbfio_definitions.h>
-#include <libbfio_file.h>
-#include <libbfio_file_pool.h>
-#include <libbfio_file_range.h>
-#include <libbfio_handle.h>
-#include <libbfio_memory_range.h>
-#include <libbfio_pool.h>
-#include <libbfio_types.h>
-
-#else
-
-/* If libtool DLL support is enabled set LIBBFIO_DLL_IMPORT
- * before including libbfio.h
- */
-#if defined( _WIN32 ) && defined( DLL_IMPORT )
-#define LIBBFIO_DLL_IMPORT
+#if defined( __cplusplus )
+extern "C" {
 #endif
 
-#include <libbfio.h>
+int phditools_output_initialize(
+     int stdio_mode,
+     libcerror_error_t **error );
 
-#endif /* defined( HAVE_LOCAL_LIBBFIO ) */
+void phdioutput_copyright_fprint(
+      FILE *stream );
 
-#endif /* !defined( _PYPHDI_LIBBFIO_H ) */
+void phdioutput_version_fprint(
+      FILE *stream,
+      const char *program );
+
+void phdioutput_version_detailed_fprint(
+      FILE *stream,
+      const char *program );
+
+#if defined( __cplusplus )
+}
+#endif
+
+#endif /* !defined( _PHDITOOLS_OUTPUT_H ) */
 

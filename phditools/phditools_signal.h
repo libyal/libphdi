@@ -1,5 +1,5 @@
 /*
- * Common output functions for the phditools
+ * Signal handling functions
  *
  * Copyright (C) 2015-2017, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -19,31 +19,54 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _PHDIOUTPUT_H )
-#define _PHDIOUTPUT_H
+#if !defined( _PHDITOOLS_SIGNAL_H )
+#define _PHDITOOLS_SIGNAL_H
 
 #include <common.h>
-#include <file_stream.h>
 #include <types.h>
+
+#include "phditools_libcerror.h"
 
 #if defined( __cplusplus )
 extern "C" {
 #endif
 
-void phdioutput_copyright_fprint(
-      FILE *stream );
+#if !defined( HAVE_SIGNAL_H ) && !defined( WINAPI )
+#error missing signal functions
+#endif
 
-void phdioutput_version_fprint(
-      FILE *stream,
-      const char *program );
+#if defined( WINAPI )
+typedef unsigned long phditools_signal_t;
 
-void phdioutput_version_detailed_fprint(
-      FILE *stream,
-      const char *program );
+#else
+typedef int phditools_signal_t;
+
+#endif /* defined( WINAPI ) */
+
+#if defined( WINAPI )
+
+BOOL WINAPI phditools_signal_handler(
+             phditools_signal_t signal );
+
+#if defined( _MSC_VER )
+
+void phditools_signal_initialize_memory_debug(
+      void );
+
+#endif /* defined( _MSC_VER ) */
+
+#endif /* defined( WINAPI ) */
+
+int phditools_signal_attach(
+     void (*signal_handler)( phditools_signal_t ),
+     libcerror_error_t **error );
+
+int phditools_signal_detach(
+     libcerror_error_t **error );
 
 #if defined( __cplusplus )
 }
 #endif
 
-#endif /* !defined( _PHDIOUTPUT_H ) */
+#endif /* !defined( _PHDITOOLS_SIGNAL_H ) */
 

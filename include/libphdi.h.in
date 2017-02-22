@@ -341,10 +341,6 @@ int libphdi_handle_get_offset(
      off64_t *offset,
      libphdi_error_t **error );
 
-/* -------------------------------------------------------------------------
- * Meta data functions
- * ------------------------------------------------------------------------- */
-
 /* Retrieves the media size
  * Returns the 1 if succesful or -1 on error
  */

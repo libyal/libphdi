@@ -1,5 +1,5 @@
 /*
- * Python object definition of the libphdi handle
+ * Python object wrapper of libphdi_handle_t
  *
  * Copyright (C) 2015-2017, Joachim Metz <joachim.metz@gmail.com>
  *

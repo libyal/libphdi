@@ -1,7 +1,7 @@
 #!/bin/bash
-# Python module functions testing script
+# Tests Python module functions and types.
 #
-# Version: 20161105
+# Version: 20170115
 
 EXIT_SUCCESS=0;
 EXIT_FAILURE=1;
@@ -12,7 +12,7 @@ TEST_PREFIX=`basename ${TEST_PREFIX} | sed 's/^lib\([^-]*\).*$/\1/'`;
 
 TEST_PROFILE="py${TEST_PREFIX}";
 TEST_FUNCTIONS="support";
-TEST_FUNCTIONS_WITH_INPUT="";
+TEST_FUNCTIONS_WITH_INPUT="handle";
 OPTION_SETS="";
 
 TEST_TOOL_DIRECTORY=".";
