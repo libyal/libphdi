@@ -1,4 +1,4 @@
-.Dd November  3, 2016
+.Dd May 29, 2017
 .Dt libphdi 3
 .Os libphdi
 .Sh NAME
@@ -78,6 +78,8 @@ Handle functions
 .Fn libphdi_handle_seek_offset "libphdi_handle_t *handle, off64_t offset, int whence, libphdi_error_t **error"
 .Ft int
 .Fn libphdi_handle_get_offset "libphdi_handle_t *handle, off64_t *offset, libphdi_error_t **error"
+.Ft int
+.Fn libphdi_handle_get_media_size "libphdi_handle_t *handle, size64_t *media_size, libphdi_error_t **error"
 .Pp
 Available when compiled with wide character string support:
 .Ft int
@@ -86,10 +88,6 @@ Available when compiled with wide character string support:
 Available when compiled with libbfio support:
 .Ft int
 .Fn libphdi_handle_open_file_io_handle "libphdi_handle_t *handle, libbfio_handle_t *file_io_handle, int access_flags, libphdi_error_t **error"
-.Pp
-Meta data functions
-.Ft int
-.Fn libphdi_handle_get_media_size "libphdi_handle_t *handle, size64_t *media_size, libphdi_error_t **error"
 .Sh DESCRIPTION
 The
 .Fn libphdi_get_version

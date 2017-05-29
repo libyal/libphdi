@@ -32,13 +32,12 @@ DPKG_FILES = \
 	dpkg/compat \
 	dpkg/control \
 	dpkg/copyright \
-	dpkg/copyright.in \
 	dpkg/rules \
-	dpkg/libphdi.docs \
-	dpkg/libphdi-dev.docs \
-	dpkg/libphdi-python.docs \
-	dpkg/libphdi-python3.docs \
-	dpkg/libphdi-tools.docs \
+	dpkg/libphdi.install \
+	dpkg/libphdi-dev.install \
+	dpkg/libphdi-python.install \
+	dpkg/libphdi-python3.install \
+	dpkg/libphdi-tools.install \
 	dpkg/source/format
 
 GETTEXT_FILES = \
