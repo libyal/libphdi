@@ -1803,11 +1803,11 @@ int main(
 		 phdi_test_handle_signal_abort,
 		 handle );
 
-#if defined( __GNUC__ )
+#if defined( __GNUC__ ) && !defined( LIBPHDI_DLL_IMPORT )
 
 		/* TODO: add tests for libphdi_handle_open_read */
 
-#endif /* defined( __GNUC__ ) */
+#endif /* defined( __GNUC__ ) && !defined( LIBPHDI_DLL_IMPORT ) */
 
 		PHDI_TEST_RUN_WITH_ARGS(
 		 "libphdi_handle_read_buffer",
