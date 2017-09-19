@@ -21,7 +21,7 @@ BEGIN
   BEGIN
     BLOCK "040904E4"
     BEGIN
-      VALUE "FileDescription",		"Library to access the Parallels Hard Disk image format\0"
+      VALUE "FileDescription",		"Library to access the Parallels Hard Disk image (PHDI) format\0"
       VALUE "FileVersion",		"@VERSION@" "\0"
       VALUE "InternalName",		"libphdi.dll\0"
       VALUE "LegalCopyright",		"(C) 2015-2017, Joachim Metz <joachim.metz@gmail.com>\0"

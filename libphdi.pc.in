@@ -4,7 +4,7 @@ libdir=@libdir@
 includedir=@includedir@
 
 Name: libphdi
-Description: Library to access the Parallels Hard Disk image format
+Description: Library to access the Parallels Hard Disk image (PHDI) format
 Version: @VERSION@
 Libs: -L${libdir} -lphdi
 Libs.private: @ax_libbfio_pc_libs_private@ @ax_libcdata_pc_libs_private@ @ax_libcdirectory_pc_libs_private@ @ax_libcerror_pc_libs_private@ @ax_libcfile_pc_libs_private@ @ax_libclocale_pc_libs_private@ @ax_libcnotify_pc_libs_private@ @ax_libcpath_pc_libs_private@ @ax_libcsplit_pc_libs_private@ @ax_libcthreads_pc_libs_private@ @ax_libfcache_pc_libs_private@ @ax_libfdata_pc_libs_private@ @ax_libuna_pc_libs_private@ @ax_pthread_pc_libs_private@

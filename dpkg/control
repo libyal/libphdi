@@ -1,7 +1,7 @@
 Source: libphdi
 Priority: extra
 Maintainer: Joachim Metz <joachim.metz@gmail.com>
-Build-Depends: debhelper (>= 9), dh-autoreconf, pkg-config, libfuse-dev, python-dev, python3-dev
+Build-Depends: debhelper (>= 9), dh-autoreconf, pkg-config, python-dev, python3-dev, libfuse-dev
 Standards-Version: 3.9.5
 Section: libs
 Homepage: https://github.com/libyal/libphdi
@@ -10,8 +10,8 @@ Package: libphdi
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Suggests: libphdi-dbg
-Description: Library to access the Parallels Hard Disk image format
- libphdi is a library to access the Parallels Hard Disk image format.
+Description: Library to access the Parallels Hard Disk image (PHDI) format
+ libphdi is a library to access the Parallels Hard Disk image (PHDI) format.
 
 Package: libphdi-dbg
 Architecture: any
@@ -31,8 +31,8 @@ Package: libphdi-tools
 Section: utils
 Architecture: any
 Depends: libphdi (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
-Description: Several tools for reading Parallels Hard Disk image files
- Several tools for reading Parallels Hard Disk image files.
+Description: Several tools for reading Parallels Hard Disk image (PHDI) files
+ Several tools for reading Parallels Hard Disk image (PHDI) files.
 
 Package: libphdi-tools-dbg
 Section: debug

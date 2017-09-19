@@ -1,5 +1,5 @@
 /*
- * Library to access the Parallels Hard Disk image format
+ * Library to access the Parallels Hard Disk image (PHDI) format
  *
  * Copyright (C) 2015-2017, Joachim Metz <joachim.metz@gmail.com>
  *
