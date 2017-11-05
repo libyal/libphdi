@@ -55,18 +55,25 @@ phdi_test_error_LDADD = \
 	../libphdi/libphdi.la
 
 phdi_test_handle_SOURCES = \
+	phdi_test_functions.c phdi_test_functions.h \
 	phdi_test_getopt.c phdi_test_getopt.h \
 	phdi_test_handle.c \
+	phdi_test_libbfio.h \
 	phdi_test_libcerror.h \
 	phdi_test_libclocale.h \
 	phdi_test_libcnotify.h \
 	phdi_test_libphdi.h \
 	phdi_test_libuna.h \
 	phdi_test_macros.h \
-	phdi_test_memory.c phdi_test_memory.h
+	phdi_test_memory.c phdi_test_memory.h \
+	phdi_test_unused.h
 
 phdi_test_handle_LDADD = \
+	@LIBBFIO_LIBADD@ \
+	@LIBCPATH_LIBADD@ \
+	@LIBCFILE_LIBADD@ \
 	@LIBUNA_LIBADD@ \
+	@LIBCSPLIT_LIBADD@ \
 	@LIBCNOTIFY_LIBADD@ \
 	@LIBCLOCALE_LIBADD@ \
 	@LIBCDATA_LIBADD@ \
@@ -97,6 +104,7 @@ phdi_test_notify_LDADD = \
 	../libphdi/libphdi.la
 
 phdi_test_support_SOURCES = \
+	phdi_test_functions.c phdi_test_functions.h \
 	phdi_test_getopt.c phdi_test_getopt.h \
 	phdi_test_libbfio.h \
 	phdi_test_libcerror.h \
@@ -105,7 +113,8 @@ phdi_test_support_SOURCES = \
 	phdi_test_libphdi.h \
 	phdi_test_libuna.h \
 	phdi_test_macros.h \
-	phdi_test_support.c
+	phdi_test_support.c \
+	phdi_test_unused.h
 
 phdi_test_support_LDADD = \
 	@LIBBFIO_LIBADD@ \

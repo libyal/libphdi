@@ -194,10 +194,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\libphdi\libphdi_metadata.c"
-				>
-			</File>
-			<File
 				RelativePath="..\..\libphdi\libphdi_notify.c"
 				>
 			</File>
@@ -277,10 +273,6 @@
 			</File>
 			<File
 				RelativePath="..\..\libphdi\libphdi_libuna.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\libphdi\libphdi_metadata.h"
 				>
 			</File>
 			<File

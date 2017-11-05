@@ -33,14 +33,6 @@
 #include "libphdi_libfcache.h"
 #include "libphdi_libfdata.h"
 
-#if defined( _MSC_VER ) || defined( __BORLANDC__ ) || defined( __MINGW32_VERSION ) || defined( __MINGW64_VERSION_MAJOR )
-
-/* This inclusion is needed otherwise some linkers
- * mess up exporting the metadata functions
- */
-#include "libphdi_metadata.h"
-#endif
-
 #if defined( __cplusplus )
 extern "C" {
 #endif
@@ -199,6 +191,12 @@ LIBPHDI_EXTERN \
 int libphdi_handle_get_offset(
      libphdi_handle_t *handle,
      off64_t *offset,
+     libcerror_error_t **error );
+
+LIBPHDI_EXTERN \
+int libphdi_handle_get_media_size(
+     libphdi_handle_t *handle,
+     size64_t *media_size,
      libcerror_error_t **error );
 
 #if defined( __cplusplus )

@@ -1841,3 +1841,95 @@ int libphdi_handle_get_offset(
 	return( 1 );
 }
 
+/* Retrieves the number of media size
+ * Returns 1 if successful or -1 on error
+ */
+int libphdi_handle_get_media_size(
+     libphdi_handle_t *handle,
+     size64_t *media_size,
+     libcerror_error_t **error )
+{
+	libphdi_internal_handle_t *internal_handle = NULL;
+	static char *function                      = "libphdi_handle_get_media_size";
+
+	if( handle == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid handle.",
+		 function );
+
+		return( -1 );
+	}
+	internal_handle = (libphdi_internal_handle_t *) handle;
+
+	if( internal_handle->io_handle == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid handle - missing IO handle.",
+		 function );
+
+		return( -1 );
+	}
+	if( internal_handle->file_io_handle == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid handle - missing file IO handle.",
+		 function );
+
+		return( -1 );
+	}
+	if( media_size == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid media size.",
+		 function );
+
+		return( -1 );
+	}
+#if defined( HAVE_LIBPHDI_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_grab_for_read(
+	     internal_handle->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to grab read/write lock for reading.",
+		 function );
+
+		return( -1 );
+	}
+#endif
+	*media_size = internal_handle->io_handle->media_size;
+
+#if defined( HAVE_LIBPHDI_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_release_for_read(
+	     internal_handle->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to release read/write lock for reading.",
+		 function );
+
+		return( -1 );
+	}
+#endif
+	return( 1 );
+}
+

@@ -38,7 +38,6 @@ libphdi_la_SOURCES = \
 	libphdi_libfcache.h \
 	libphdi_libfdata.h \
 	libphdi_libuna.h \
-	libphdi_metadata.c libphdi_metadata.h \
 	libphdi_notify.c libphdi_notify.h \
 	libphdi_support.c libphdi_support.h \
 	libphdi_types.h \

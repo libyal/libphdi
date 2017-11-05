@@ -270,6 +270,134 @@ on_error:
 	return( 0 );
 }
 
+/* Tests the libphdi_io_handle_clear function
+ * Returns 1 if successful or 0 if not
+ */
+int phdi_test_io_handle_clear(
+     void )
+{
+	libcerror_error_t *error       = NULL;
+	libphdi_io_handle_t *io_handle = NULL;
+	int result                     = 0;
+
+	/* Initialize test
+	 */
+	result = libphdi_io_handle_initialize(
+	          &io_handle,
+	          &error );
+
+	PHDI_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	PHDI_TEST_ASSERT_IS_NOT_NULL(
+	 "io_handle",
+	 io_handle );
+
+	PHDI_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test regular cases
+	 */
+	result = libphdi_io_handle_clear(
+	          io_handle,
+	          &error );
+
+	PHDI_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	PHDI_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+	result = libphdi_io_handle_clear(
+	          NULL,
+	          &error );
+
+	PHDI_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	PHDI_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+#if defined( HAVE_PHDI_TEST_MEMORY )
+
+	/* Test libphdi_io_handle_clear with memset failing
+	 */
+	phdi_test_memset_attempts_before_fail = 0;
+
+	result = libphdi_io_handle_clear(
+	          io_handle,
+	          &error );
+
+	if( phdi_test_memset_attempts_before_fail != -1 )
+	{
+		phdi_test_memset_attempts_before_fail = -1;
+	}
+	else
+	{
+		PHDI_TEST_ASSERT_EQUAL_INT(
+		 "result",
+		 result,
+		 -1 );
+
+		PHDI_TEST_ASSERT_IS_NOT_NULL(
+		 "error",
+		 error );
+
+		libcerror_error_free(
+		 &error );
+	}
+#endif /* defined( HAVE_PHDI_TEST_MEMORY ) */
+
+	/* Clean up
+	 */
+	result = libphdi_io_handle_free(
+	          &io_handle,
+	          &error );
+
+	PHDI_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	PHDI_TEST_ASSERT_IS_NULL(
+	 "io_handle",
+	 io_handle );
+
+	PHDI_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( io_handle != NULL )
+	{
+		libphdi_io_handle_free(
+		 &io_handle,
+		 NULL );
+	}
+	return( 0 );
+}
+
 #endif /* defined( __GNUC__ ) && !defined( LIBPHDI_DLL_IMPORT ) */
 
 /* The main program
@@ -297,7 +425,9 @@ int main(
 	 "libphdi_io_handle_free",
 	 phdi_test_io_handle_free );
 
-	/* TODO: add tests for libphdi_io_handle_clear */
+	PHDI_TEST_RUN(
+	 "libphdi_io_handle_clear",
+	 phdi_test_io_handle_clear );
 
 	/* TODO: add tests for libphdi_io_handle_read_file_footer */
 
