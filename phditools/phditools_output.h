@@ -1,7 +1,7 @@
 /*
  * Common output functions for the phditools
  *
- * Copyright (C) 2015-2017, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2015-2018, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *

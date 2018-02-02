@@ -1,7 +1,7 @@
 /*
  * The file footer definition of a Parallels Hard Disk image file
  *
- * Copyright (C) 2015-2017, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2015-2018, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
