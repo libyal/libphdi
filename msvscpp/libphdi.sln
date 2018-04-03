@@ -50,6 +50,7 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "phdi_test_notify", "phdi_test_notify\phdi_test_notify.vcproj", "{DC6C77D9-5723-46EE-8C51-F684BFF781E7}"
 	ProjectSection(ProjectDependencies) = postProject
 		{590C1718-49FC-4F82-8797-6928B911FAB7} = {590C1718-49FC-4F82-8797-6928B911FAB7}
+		{1128D4A2-34AE-4A04-A803-0A210F4640B7} = {1128D4A2-34AE-4A04-A803-0A210F4640B7}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "phdi_test_support", "phdi_test_support\phdi_test_support.vcproj", "{793C8E7C-CEFA-4F78-9EB7-90FC383ADB32}"

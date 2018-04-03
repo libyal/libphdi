@@ -95,13 +95,15 @@ phdi_test_io_handle_LDADD = \
 	@LIBCERROR_LIBADD@
 
 phdi_test_notify_SOURCES = \
+	phdi_test_libcerror.h \
 	phdi_test_libphdi.h \
 	phdi_test_macros.h \
 	phdi_test_notify.c \
 	phdi_test_unused.h
 
 phdi_test_notify_LDADD = \
-	../libphdi/libphdi.la
+	../libphdi/libphdi.la \
+	@LIBCERROR_LIBADD@
 
 phdi_test_support_SOURCES = \
 	phdi_test_functions.c phdi_test_functions.h \
@@ -113,6 +115,7 @@ phdi_test_support_SOURCES = \
 	phdi_test_libphdi.h \
 	phdi_test_libuna.h \
 	phdi_test_macros.h \
+	phdi_test_memory.c phdi_test_memory.h \
 	phdi_test_support.c \
 	phdi_test_unused.h
 
