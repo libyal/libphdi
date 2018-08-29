@@ -28,17 +28,13 @@
  */
 #if !defined( HAVE_LOCAL_LIBPHDI )
 
-/* If libtool DLL support is enabled set LIBPHDI_DLL_EXPORT
- * before including libphdi/extern.h
- */
-#if defined( _WIN32 ) && defined( DLL_EXPORT )
-#define LIBPHDI_DLL_EXPORT
-#endif
-
 #include <libphdi/extern.h>
 
+#define LIBPHDI_EXTERN_VARIABLE	LIBPHDI_EXTERN
+
 #else
-#define LIBPHDI_EXTERN	/* extern */
+#define LIBPHDI_EXTERN		/* extern */
+#define LIBPHDI_EXTERN_VARIABLE	extern
 
 #endif /* !defined( HAVE_LOCAL_LIBPHDI ) */
 

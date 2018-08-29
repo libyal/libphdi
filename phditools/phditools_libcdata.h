@@ -1,5 +1,5 @@
 /*
- * The internal libcdata header
+ * The libcdata header wrapper
  *
  * Copyright (C) 2015-2018, Joachim Metz <joachim.metz@gmail.com>
  *

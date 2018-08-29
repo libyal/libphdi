@@ -24,14 +24,7 @@
 
 #include <common.h>
 
-/* If Cygwin libtool DLL support is enabled set LIBPHDI_DLL_IMPORT
- * before including libphdi.h
- */
-#if defined( _WIN32 ) && defined( DLL_EXPORT )
-#define LIBPHDI_DLL_IMPORT
-#endif
-
 #include <libphdi.h>
 
-#endif
+#endif /* !defined( _PYPHDI_LIBPHDI_H ) */
 

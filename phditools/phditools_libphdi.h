@@ -1,5 +1,5 @@
 /*
- * The internal libphdi header
+ * The libphdi header wrapper
  *
  * Copyright (C) 2015-2018, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -23,13 +23,6 @@
 #define _PHDITOOLS_LIBPHDI_H
 
 #include <common.h>
-
-/* If Cygwin libtool DLL support is enabled set LIBPHDI_DLL_IMPORT
- * before including libphdi.h
- */
-#if defined( _WIN32 ) && defined( DLL_IMPORT ) && !defined( HAVE_STATIC_EXECUTABLES )
-#define LIBPHDI_DLL_IMPORT
-#endif
 
 #include <libphdi.h>
 
