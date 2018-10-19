@@ -160,9 +160,6 @@ AS_IF(
  [AC_SUBST(
   [libphdi_spec_requires],
   [Requires:])
- AC_SUBST(
-  [libphdi_spec_build_requires],
-  [BuildRequires:])
  ])
 
 AS_IF(
