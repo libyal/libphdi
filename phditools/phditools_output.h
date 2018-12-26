@@ -36,14 +36,14 @@ int phditools_output_initialize(
      int stdio_mode,
      libcerror_error_t **error );
 
-void phdioutput_copyright_fprint(
+void phditools_output_copyright_fprint(
       FILE *stream );
 
-void phdioutput_version_fprint(
+void phditools_output_version_fprint(
       FILE *stream,
       const char *program );
 
-void phdioutput_version_detailed_fprint(
+void phditools_output_version_detailed_fprint(
       FILE *stream,
       const char *program );
 

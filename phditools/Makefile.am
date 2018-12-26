@@ -45,6 +45,10 @@ phdiinfo_LDADD = \
 	@LIBINTL@
 
 phdimount_SOURCES = \
+	mount_dokan.c mount_dokan.h \
+	mount_file_entry.c mount_file_entry.h \
+	mount_file_system.c mount_file_system.h \
+	mount_fuse.c mount_fuse.h \
 	mount_handle.c mount_handle.h \
 	phdimount.c \
 	phditools_getopt.c phditools_getopt.h \
