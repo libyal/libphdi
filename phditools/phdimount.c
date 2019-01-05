@@ -1,7 +1,7 @@
 /*
  * Mounts a Parallels Hard Disk image file
  *
- * Copyright (C) 2015-2018, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2015-2019, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -140,6 +140,7 @@ int main( int argc, char * const argv[] )
 	size_t path_prefix_size                     = 0;
 	int result                                  = 0;
 	int verbose                                 = 0;
+
 #if defined( HAVE_LIBFUSE ) || defined( HAVE_LIBOSXFUSE )
 	struct fuse_operations phdimount_fuse_operations;
 
@@ -159,7 +160,7 @@ int main( int argc, char * const argv[] )
 	 1 );
 
 	if( libclocale_initialize(
-             "phditools",
+	     "phditools",
 	     &error ) != 1 )
 	{
 		fprintf(
@@ -169,8 +170,8 @@ int main( int argc, char * const argv[] )
 		goto on_error;
 	}
 	if( phditools_output_initialize(
-             _IONBF,
-             &error ) != 1 )
+	     _IONBF,
+	     &error ) != 1 )
 	{
 		fprintf(
 		 stderr,
@@ -373,7 +374,7 @@ int main( int argc, char * const argv[] )
 	                         &phdimount_fuse_operations,
 	                         sizeof( struct fuse_operations ),
 	                         phdimount_mount_handle );
-	
+
 	if( phdimount_fuse_handle == NULL )
 	{
 		fprintf(
@@ -569,7 +570,8 @@ int main( int argc, char * const argv[] )
 	 "No sub system to mount PHDI format.\n" );
 
 	return( EXIT_FAILURE );
-#endif
+
+#endif /* defined( HAVE_LIBFUSE ) || defined( HAVE_LIBOSXFUSE ) */
 
 on_error:
 	if( error != NULL )

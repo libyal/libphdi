@@ -1,7 +1,7 @@
 /*
  * Shows information obtained from a Parallels Hard Disk image file
  *
- * Copyright (C) 2015-2018, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2015-2019, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *

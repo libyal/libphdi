@@ -1,7 +1,7 @@
 /*
  * Mount handle
  *
- * Copyright (C) 2015-2018, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2015-2019, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -30,6 +30,7 @@
 #include "mount_file_system.h"
 #include "mount_handle.h"
 #include "phditools_libcerror.h"
+#include "phditools_libcpath.h"
 #include "phditools_libphdi.h"
 
 /* Creates a mount handle
@@ -169,10 +170,7 @@ int mount_handle_signal_abort(
      mount_handle_t *mount_handle,
      libcerror_error_t **error )
 {
-	libphdi_handle_t *handle = NULL;
-	static char *function    = "mount_handle_signal_abort";
-	int handle_index         = 0;
-	int number_of_handles    = 0;
+	static char *function = "mount_handle_signal_abort";
 
 	if( mount_handle == NULL )
 	{
@@ -185,54 +183,18 @@ int mount_handle_signal_abort(
 
 		return( -1 );
 	}
-	if( mount_file_system_get_number_of_handles(
+	if( mount_file_system_signal_abort(
 	     mount_handle->file_system,
-	     &number_of_handles,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve number of handles.",
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to signal file system to abort.",
 		 function );
 
 		return( -1 );
-	}
-	for( handle_index = number_of_handles - 1;
-	     handle_index > 0;
-	     handle_index-- )
-	{
-		if( mount_file_system_get_handle_by_index(
-		     mount_handle->file_system,
-		     handle_index,
-		     &handle,
-		     error ) != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve handle: %d.",
-			 function,
-			 handle_index );
-
-			return( -1 );
-		}
-		if( libphdi_handle_signal_abort(
-		     handle,
-		     error ) != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-			 "%s: unable to signal handle: %d to abort.",
-			 function,
-			 handle_index );
-
-			return( -1 );
-		}
 	}
 	return( 1 );
 }
@@ -277,7 +239,7 @@ int mount_handle_set_path_prefix(
 	return( 1 );
 }
 
-/* Opens a mount handle
+/* Opens the mount handle
  * Returns 1 if successful, 0 if not or -1 on error
  */
 int mount_handle_open(
@@ -285,9 +247,9 @@ int mount_handle_open(
      const system_character_t *filename,
      libcerror_error_t **error )
 {
-	libphdi_handle_t *handle = NULL;
-	static char *function    = "mount_handle_open";
-	int result               = 0;
+	libphdi_handle_t *phdi_handle = NULL;
+	static char *function         = "mount_handle_open";
+	int result                    = 0;
 
 	if( mount_handle == NULL )
 	{
@@ -312,7 +274,7 @@ int mount_handle_open(
 		return( -1 );
 	}
 	if( libphdi_handle_initialize(
-	     &handle,
+	     &phdi_handle,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
@@ -326,13 +288,13 @@ int mount_handle_open(
 	}
 #if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	result = libphdi_handle_open_wide(
-	          handle,
+	          phdi_handle,
 	          filename,
 	          LIBPHDI_OPEN_READ,
 	          error );
 #else
 	result = libphdi_handle_open(
-	          handle,
+	          phdi_handle,
 	          filename,
 	          LIBPHDI_OPEN_READ,
 	          error );
@@ -350,7 +312,7 @@ int mount_handle_open(
 	}
 	if( mount_file_system_append_handle(
 	     mount_handle->file_system,
-	     handle,
+	     phdi_handle,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
@@ -365,10 +327,10 @@ int mount_handle_open(
 	return( 1 );
 
 on_error:
-	if( handle != NULL )
+	if( phdi_handle != NULL )
 	{
 		libphdi_handle_free(
-		 &handle,
+		 &phdi_handle,
 		 NULL );
 	}
 	return( -1 );
@@ -381,10 +343,10 @@ int mount_handle_close(
      mount_handle_t *mount_handle,
      libcerror_error_t **error )
 {
-	libphdi_handle_t *handle = NULL;
-	static char *function    = "mount_handle_close";
-	int handle_index         = 0;
-	int number_of_handles    = 0;
+	libphdi_handle_t *phdi_handle = NULL;
+	static char *function         = "mount_handle_close";
+	int handle_index              = 0;
+	int number_of_handles         = 0;
 
 	if( mount_handle == NULL )
 	{
@@ -409,7 +371,7 @@ int mount_handle_close(
 		 "%s: unable to retrieve number of handles.",
 		 function );
 
-		return( -1 );
+		goto on_error;
 	}
 	for( handle_index = number_of_handles - 1;
 	     handle_index > 0;
@@ -418,7 +380,7 @@ int mount_handle_close(
 		if( mount_file_system_get_handle_by_index(
 		     mount_handle->file_system,
 		     handle_index,
-		     &handle,
+		     &phdi_handle,
 		     error ) != 1 )
 		{
 			libcerror_error_set(
@@ -429,10 +391,12 @@ int mount_handle_close(
 			 function,
 			 handle_index );
 
-			return( -1 );
+			goto on_error;
 		}
+/* TODO remove phdi_handle from file system */
+
 		if( libphdi_handle_close(
-		     handle,
+		     phdi_handle,
 		     error ) != 0 )
 		{
 			libcerror_error_set(
@@ -443,10 +407,10 @@ int mount_handle_close(
 			 function,
 			 handle_index );
 
-			return( -1 );
+			goto on_error;
 		}
 		if( libphdi_handle_free(
-		     &handle,
+		     &phdi_handle,
 		     error ) != 1 )
 		{
 			libcerror_error_set(
@@ -457,10 +421,19 @@ int mount_handle_close(
 			 function,
 			 handle_index );
 
-			return( -1 );
+			goto on_error;
 		}
 	}
 	return( 0 );
+
+on_error:
+	if( phdi_handle != NULL )
+	{
+		libphdi_handle_free(
+		 &phdi_handle,
+		 NULL );
+	}
+	return( -1 );
 }
 
 /* Retrieves a file entry for a specific path
@@ -472,11 +445,12 @@ int mount_handle_get_file_entry_by_path(
      mount_file_entry_t **file_entry,
      libcerror_error_t **error )
 {
-	libphdi_handle_t *handle           = NULL;
+	libphdi_handle_t *phdi_handle      = NULL;
 	const system_character_t *filename = NULL;
 	static char *function              = "mount_handle_get_file_entry_by_path";
+	size_t filename_length             = 0;
+	size_t path_index                  = 0;
 	size_t path_length                 = 0;
-	int handle_index                   = 0;
 	int result                         = 0;
 
 	if( mount_handle == NULL )
@@ -513,13 +487,40 @@ int mount_handle_get_file_entry_by_path(
 		 "%s: invalid path length value out of bounds.",
 		 function );
 
-		return( -1 );
+		goto on_error;
 	}
-	result = mount_file_system_get_handle_index_from_path(
+	if( ( path_length >= 2 )
+	 && ( path[ path_length - 1 ] == LIBCPATH_SEPARATOR ) )
+	{
+		path_length--;
+	}
+	path_index = path_length;
+
+	while( path_index > 0 )
+	{
+		if( path[ path_index ] == LIBCPATH_SEPARATOR )
+		{
+			break;
+		}
+		path_index--;
+	}
+	/* Ignore the name of the root item
+	 */
+	if( path_length == 0 )
+	{
+		filename        = _SYSTEM_STRING( "" );
+		filename_length = 0;
+	}
+	else
+	{
+		filename        = &( path[ path_index + 1 ] );
+		filename_length = path_length - ( path_index + 1 );
+	}
+	result = mount_file_system_get_handle_by_path(
 	          mount_handle->file_system,
 	          path,
 	          path_length,
-	          &handle_index,
+	          &phdi_handle,
 	          error );
 
 	if( result == -1 )
@@ -528,64 +529,34 @@ int mount_handle_get_file_entry_by_path(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve handle index.",
+		 "%s: unable to retrieve handle.",
 		 function );
 
-		return( -1 );
+		goto on_error;
 	}
-	else if( result == 0 )
+	else if( result != 0 )
 	{
-		return( 0 );
-	}
-	if( handle_index != -1 )
-	{
-		if( mount_file_system_get_handle_by_index(
+		if( mount_file_entry_initialize(
+		     file_entry,
 		     mount_handle->file_system,
-		     handle_index,
-		     &handle,
+		     filename,
+		     filename_length,
+		     phdi_handle,
 		     error ) != 1 )
 		{
 			libcerror_error_set(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve handle: %d.",
-			 function,
-			 handle_index );
+			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 "%s: unable to initialize file entry.",
+			 function );
 
-			return( -1 );
+			goto on_error;
 		}
-		if( handle == NULL )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-			 "%s: missing handle: %d.",
-			 function,
-			 handle_index );
-
-			return( -1 );
-		}
-		filename = &( path[ 0 ] );
 	}
-	if( mount_file_entry_initialize(
-	     file_entry,
-	     mount_handle->file_system,
-	     handle_index,
-	     filename,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-		 "%s: unable to initialize file entry for handle: %d.",
-		 function,
-		 handle_index );
+	return( result );
 
-		return( -1 );
-	}
-	return( 1 );
+on_error:
+	return( -1 );
 }
 

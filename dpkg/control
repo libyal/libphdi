@@ -9,6 +9,8 @@ Homepage: https://github.com/libyal/libphdi
 Package: libphdi
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
+Conflicts: libphdi1
+Replaces: libphdi1
 Suggests: libphdi-dbg
 Description: Library to access the Parallels Hard Disk image (PHDI) format
  libphdi is a library to access the Parallels Hard Disk image (PHDI) format.
@@ -31,6 +33,8 @@ Package: libphdi-tools
 Section: utils
 Architecture: any
 Depends: libphdi (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
+Conflicts: libphdi-utils
+Replaces: libphdi-utils
 Description: Several tools for reading Parallels Hard Disk image (PHDI) files
  Several tools for reading Parallels Hard Disk image (PHDI) files.
 
@@ -45,6 +49,8 @@ Package: libphdi-python
 Section: python
 Architecture: any
 Depends: libphdi (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
+Conflicts: python-libphdi
+Replaces: python-libphdi
 Suggests: libphdi-python-dbg
 Description: Python 2 bindings for libphdi
  Python 2 bindings for libphdi.
@@ -60,6 +66,8 @@ Package: libphdi-python3
 Section: python
 Architecture: any
 Depends: libphdi (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
+Conflicts: python3-libphdi
+Replaces: python3-libphdi
 Suggests: libphdi-python3-dbg
 Description: Python 3 bindings for libphdi
  Python 3 bindings for libphdi.

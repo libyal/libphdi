@@ -2,7 +2,7 @@ AC_PREREQ( 2.59 )
 
 AC_INIT(
  [libphdi],
- [20181226],
+ [20190105],
  [joachim.metz@gmail.com])
 
 AC_CONFIG_SRCDIR(
