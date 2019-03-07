@@ -24,6 +24,7 @@ endif
 
 TESTS = \
 	test_library.sh \
+	test_manpage.sh \
 	test_phdiinfo.sh \
 	$(TESTS_PYPHDI)
 
@@ -31,6 +32,7 @@ check_SCRIPTS = \
 	pyphdi_test_handle.py \
 	pyphdi_test_support.py \
 	test_library.sh \
+	test_manpage.sh \
 	test_phdiinfo.sh \
 	test_python_module.sh \
 	test_runner.sh
