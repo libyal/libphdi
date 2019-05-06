@@ -24,7 +24,6 @@ endif
 
 TESTS = \
 	test_library.sh \
-	test_manpage.sh \
 	test_phdiinfo.sh \
 	$(TESTS_PYPHDI)
 
