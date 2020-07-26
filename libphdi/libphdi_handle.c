@@ -23,16 +23,21 @@
 #include <memory.h>
 #include <narrow_string.h>
 #include <types.h>
+#include <system_string.h>
 #include <wide_string.h>
 
 #include "libphdi_debug.h"
 #include "libphdi_definitions.h"
+#include "libphdi_disk_descriptor_xml_file.h"
+#include "libphdi_disk_parameters.h"
 #include "libphdi_i18n.h"
 #include "libphdi_io_handle.h"
 #include "libphdi_handle.h"
 #include "libphdi_libbfio.h"
+#include "libphdi_libcdirectory.h"
 #include "libphdi_libcerror.h"
 #include "libphdi_libcnotify.h"
+#include "libphdi_libcpath.h"
 #include "libphdi_libcthreads.h"
 #include "libphdi_libfcache.h"
 #include "libphdi_libfdata.h"
@@ -71,7 +76,7 @@ int libphdi_handle_initialize(
 		return( -1 );
 	}
 	internal_handle = memory_allocate_structure(
-	                 libphdi_internal_handle_t );
+	                   libphdi_internal_handle_t );
 
 	if( internal_handle == NULL )
 	{
@@ -287,9 +292,15 @@ int libphdi_handle_open(
      libcerror_error_t **error )
 {
 	libbfio_handle_t *file_io_handle           = NULL;
+	libcdirectory_directory_t *directory       = NULL;
 	libphdi_internal_handle_t *internal_handle = NULL;
+	char *basename_end                         = NULL;
+	char *disk_descriptor_xml_path             = NULL;
 	static char *function                      = "libphdi_handle_open";
+	size_t basename_length                     = 0;
+	size_t disk_descriptor_xml_path_size       = 0;
 	size_t filename_length                     = 0;
+	int is_directory                           = 0;
 
 	if( handle == NULL )
 	{
@@ -304,6 +315,17 @@ int libphdi_handle_open(
 	}
 	internal_handle = (libphdi_internal_handle_t *) handle;
 
+	if( internal_handle->basename != NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
+		 "%s: invalid handle - basename already set.",
+		 function );
+
+		return( -1 );
+	}
 	if( filename == NULL )
 	{
 		libcerror_error_set(
@@ -338,6 +360,37 @@ int libphdi_handle_open(
 
 		return( -1 );
 	}
+	if( libcdirectory_directory_initialize(
+	     &directory,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create directory.",
+		 function );
+
+		goto on_error;
+	}
+	is_directory = libcdirectory_directory_open(
+	                directory,
+	                filename,
+	                NULL );
+
+	if( libcdirectory_directory_free(
+	     &directory,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+		 "%s: unable to free directory.",
+		 function );
+
+		goto on_error;
+	}
 	if( libbfio_file_initialize(
 	     &file_io_handle,
 	     error ) != 1 )
@@ -357,33 +410,77 @@ int libphdi_handle_open(
 	     1,
 	     error ) != 1 )
 	{
-                libcerror_error_set(
-                 error,
-                 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-                 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-                 "%s: unable to set track offsets read in file IO handle.",
-                 function );
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set track offsets read in file IO handle.",
+		 function );
 
 		goto on_error;
 	}
 #endif
-	filename_length = narrow_string_length(
-	                   filename );
-
-	if( libbfio_file_set_name(
-	     file_io_handle,
-	     filename,
-	     filename_length,
-	     error ) != 1 )
+	if( is_directory == 1 )
 	{
-                libcerror_error_set(
-                 error,
-                 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-                 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-                 "%s: unable to set filename in file IO handle.",
-                 function );
+		filename_length = narrow_string_length(
+		                   filename );
 
-		goto on_error;
+		if( libcpath_path_join(
+		     &disk_descriptor_xml_path,
+		     &disk_descriptor_xml_path_size,
+		     filename,
+		     filename_length,
+		     "DiskDescriptor.xml",
+		     19,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 "%s: unable to create DiskDescriptor.xml path.",
+			 function );
+
+			goto on_error;
+		}
+		if( libbfio_file_set_name(
+		     file_io_handle,
+		     disk_descriptor_xml_path,
+		     disk_descriptor_xml_path_size - 1,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+			 "%s: unable to set filename in file IO handle.",
+			 function );
+
+			goto on_error;
+		}
+		filename        = disk_descriptor_xml_path;
+		filename_length = disk_descriptor_xml_path_size - 1;
+	}
+	else
+	{
+		filename_length = narrow_string_length(
+		                   filename );
+
+		if( libbfio_file_set_name(
+		     file_io_handle,
+		     filename,
+		     filename_length,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+			 "%s: unable to set filename in file IO handle.",
+			 function );
+
+			goto on_error;
+		}
 	}
 	if( libphdi_handle_open_file_io_handle(
 	     handle,
@@ -395,7 +492,7 @@ int libphdi_handle_open(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_IO,
 		 LIBCERROR_IO_ERROR_OPEN_FAILED,
-		 "%s: unable to open handle: %s.",
+		 "%s: unable to open handle from file: %s.",
 		 function,
 		 filename );
 
@@ -416,6 +513,36 @@ int libphdi_handle_open(
 		return( -1 );
 	}
 #endif
+	filename_length = narrow_string_length(
+	                   filename );
+
+	basename_end = narrow_string_search_character_reverse(
+	                filename,
+	                (int) LIBCPATH_SEPARATOR,
+	                filename_length + 1 );
+
+	if( basename_end != NULL )
+	{
+		basename_length = (size_t) ( basename_end - filename );
+	}
+	if( basename_length > 0 )
+	{
+		if( libphdi_internal_handle_set_basename(
+		     internal_handle,
+		     filename,
+		     basename_length,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+			 "%s: unable to set basename.",
+			 function );
+
+			goto on_error;
+		}
+	}
 	internal_handle->file_io_handle_created_in_library = 1;
 
 #if defined( HAVE_LIBPHDI_MULTI_THREAD_SUPPORT )
@@ -433,6 +560,13 @@ int libphdi_handle_open(
 		return( -1 );
 	}
 #endif
+	if( disk_descriptor_xml_path != NULL )
+	{
+		memory_free(
+		 disk_descriptor_xml_path );
+
+		disk_descriptor_xml_path = NULL;
+	}
 	return( 1 );
 
 on_error:
@@ -442,6 +576,26 @@ on_error:
 		 &file_io_handle,
 		 NULL );
 	}
+	if( disk_descriptor_xml_path != NULL )
+	{
+		memory_free(
+		 disk_descriptor_xml_path );
+	}
+	if( directory != NULL )
+	{
+		libcdirectory_directory_free(
+		 &directory,
+		 NULL );
+	}
+	if( internal_handle->basename != NULL )
+	{
+		memory_free(
+		 internal_handle->basename );
+
+		internal_handle->basename = NULL;
+	}
+	internal_handle->basename_size = 0;
+
 	return( -1 );
 }
 
@@ -457,9 +611,15 @@ int libphdi_handle_open_wide(
      libcerror_error_t **error )
 {
 	libbfio_handle_t *file_io_handle           = NULL;
+	libcdirectory_directory_t *directory       = NULL;
 	libphdi_internal_handle_t *internal_handle = NULL;
+	wchar_t *basename_end                      = NULL;
+	wchar_t *disk_descriptor_xml_path          = NULL;
 	static char *function                      = "libphdi_handle_open_wide";
+	size_t basename_length                     = 0;
+	size_t disk_descriptor_xml_path_size       = 0;
 	size_t filename_length                     = 0;
+	int is_directory                           = 0;
 
 	if( handle == NULL )
 	{
@@ -474,6 +634,17 @@ int libphdi_handle_open_wide(
 	}
 	internal_handle = (libphdi_internal_handle_t *) handle;
 
+	if( internal_handle->basename != NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
+		 "%s: invalid handle - basename already set.",
+		 function );
+
+		return( -1 );
+	}
 	if( filename == NULL )
 	{
 		libcerror_error_set(
@@ -508,6 +679,37 @@ int libphdi_handle_open_wide(
 
 		return( -1 );
 	}
+	if( libcdirectory_directory_initialize(
+	     &directory,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create directory.",
+		 function );
+
+		goto on_error;
+	}
+	is_directory = libcdirectory_directory_open_wide(
+	                directory,
+	                filename,
+	                NULL );
+
+	if( libcdirectory_directory_free(
+	     &directory,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+		 "%s: unable to free directory.",
+		 function );
+
+		goto on_error;
+	}
 	if( libbfio_file_initialize(
 	     &file_io_handle,
 	     error ) != 1 )
@@ -527,33 +729,75 @@ int libphdi_handle_open_wide(
 	     1,
 	     error ) != 1 )
 	{
-                libcerror_error_set(
-                 error,
-                 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-                 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-                 "%s: unable to set track offsets read in file IO handle.",
-                 function );
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set track offsets read in file IO handle.",
+		 function );
 
 		goto on_error;
 	}
 #endif
-	filename_length = wide_string_length(
-	                   filename );
-
-	if( libbfio_file_set_name_wide(
-	     file_io_handle,
-	     filename,
-	     filename_length,
-	     error ) != 1 )
+	if( is_directory == 1 )
 	{
-                libcerror_error_set(
-                 error,
-                 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-                 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-                 "%s: unable to set filename in file IO handle.",
-                 function );
+		filename_length = wide_string_length(
+		                   filename );
 
-		goto on_error;
+		if( libcpath_path_join_wide(
+		     &disk_descriptor_xml_path,
+		     &disk_descriptor_xml_path_size,
+		     filename,
+		     filename_length,
+		     L"DiskDescriptor.xml",
+		     19,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 "%s: unable to create DiskDescriptor.xml path.",
+			 function );
+
+			goto on_error;
+		}
+		if( libbfio_file_set_name_wide(
+		     file_io_handle,
+		     disk_descriptor_xml_path,
+		     disk_descriptor_xml_path_size - 1,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+			 "%s: unable to set filename in file IO handle.",
+			 function );
+
+			goto on_error;
+		}
+	}
+	else
+	{
+		filename_length = wide_string_length(
+		                   filename );
+
+		if( libbfio_file_set_name_wide(
+		     file_io_handle,
+		     filename,
+		     filename_length,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+			 "%s: unable to set filename in file IO handle.",
+			 function );
+
+			goto on_error;
+		}
 	}
 	if( libphdi_handle_open_file_io_handle(
 	     handle,
@@ -586,6 +830,37 @@ int libphdi_handle_open_wide(
 		return( -1 );
 	}
 #endif
+	filename_length = wide_string_length(
+	                   filename );
+
+/* TODO does this work for UTF-16 ? */
+	basename_end = wide_string_search_character_reverse(
+	                filename,
+	                (int) LIBCPATH_SEPARATOR,
+	                filename_length + 1 );
+
+	if( basename_end != NULL )
+	{
+		basename_length = (size_t) ( basename_end - filename );
+	}
+	if( basename_length > 0 )
+	{
+		if( libphdi_internal_handle_set_basename_wide(
+		     internal_handle,
+		     filename,
+		     basename_length,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+			 "%s: unable to set basename.",
+			 function );
+
+			goto on_error;
+		}
+	}
 	internal_handle->file_io_handle_created_in_library = 1;
 
 #if defined( HAVE_LIBPHDI_MULTI_THREAD_SUPPORT )
@@ -603,6 +878,13 @@ int libphdi_handle_open_wide(
 		return( -1 );
 	}
 #endif
+	if( disk_descriptor_xml_path != NULL )
+	{
+		memory_free(
+		 disk_descriptor_xml_path );
+
+		disk_descriptor_xml_path = NULL;
+	}
 	return( 1 );
 
 on_error:
@@ -612,6 +894,26 @@ on_error:
 		 &file_io_handle,
 		 NULL );
 	}
+	if( disk_descriptor_xml_path != NULL )
+	{
+		memory_free(
+		 disk_descriptor_xml_path );
+	}
+	if( directory != NULL )
+	{
+		libcdirectory_directory_free(
+		 &directory,
+		 NULL );
+	}
+	if( internal_handle->basename != NULL )
+	{
+		memory_free(
+		 internal_handle->basename );
+
+		internal_handle->basename = NULL;
+	}
+	internal_handle->basename_size = 0;
+
 	return( -1 );
 }
 
@@ -627,10 +929,10 @@ int libphdi_handle_open_file_io_handle(
      libcerror_error_t **error )
 {
 	libphdi_internal_handle_t *internal_handle = NULL;
-	static char *function                  = "libphdi_handle_open_file_io_handle";
-	int bfio_access_flags                  = 0;
-	int file_io_handle_is_open             = 0;
-	int file_io_handle_opened_in_library   = 0;
+	static char *function                      = "libphdi_handle_open_file_io_handle";
+	int bfio_access_flags                      = 0;
+	int file_io_handle_is_open                 = 0;
+	int file_io_handle_opened_in_library       = 0;
 
 	if( handle == NULL )
 	{
@@ -716,7 +1018,7 @@ int libphdi_handle_open_file_io_handle(
 		}
 		file_io_handle_opened_in_library = 1;
 	}
-	if( libphdi_handle_open_read(
+	if( libphdi_internal_handle_open_read(
 	     internal_handle,
 	     file_io_handle,
 	     error ) != 1 )
@@ -725,7 +1027,7 @@ int libphdi_handle_open_file_io_handle(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_IO,
 		 LIBCERROR_IO_ERROR_READ_FAILED,
-		 "%s: unable to read from file handle.",
+		 "%s: unable to read from file IO handle.",
 		 function );
 
 		goto on_error;
@@ -896,6 +1198,28 @@ int libphdi_handle_close(
 
 		result = -1;
 	}
+	if( internal_handle->basename != NULL )
+	{
+		memory_free(
+		 internal_handle->basename );
+
+		internal_handle->basename = NULL;
+	}
+	internal_handle->basename_size = 0;
+
+	if( libphdi_disk_parameters_free(
+	     &( internal_handle->disk_parameters ),
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+		 "%s: unable to free disk parameters.",
+		 function );
+
+		result = -1;
+	}
 	if( libfdata_vector_free(
 	     &( internal_handle->data_block_vector ),
 	     error ) != 1 )
@@ -943,14 +1267,15 @@ int libphdi_handle_close(
 /* Opens a handle for reading
  * Returns 1 if successful or -1 on error
  */
-int libphdi_handle_open_read(
+int libphdi_internal_handle_open_read(
      libphdi_internal_handle_t *internal_handle,
      libbfio_handle_t *file_io_handle,
      libcerror_error_t **error )
 {
-	static char *function = "libphdi_handle_open_read";
-	off64_t next_offset   = 0;
-	int segment_index     = 0;
+	libphdi_disk_descriptor_xml_file_t *disk_descriptor_xml_file = NULL;
+	static char *function                                        = "libphdi_internal_handle_open_read";
+	off64_t next_offset                                          = 0;
+	int segment_index                                            = 0;
 
 	if( internal_handle == NULL )
 	{
@@ -974,13 +1299,24 @@ int libphdi_handle_open_read(
 
 		return( -1 );
 	}
+	if( internal_handle->disk_parameters != NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
+		 "%s: invalid handle - disk parameters value already set.",
+		 function );
+
+		return( -1 );
+	}
 	if( internal_handle->data_block_vector != NULL )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
-		 "%s: invalid handle - data block vector already set.",
+		 "%s: invalid handle - data block vector value already set.",
 		 function );
 
 		return( -1 );
@@ -991,68 +1327,96 @@ int libphdi_handle_open_read(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
-		 "%s: invalid handle - data block cache already set.",
+		 "%s: invalid handle - data block cache value already set.",
 		 function );
 
 		return( -1 );
 	}
-#if defined( HAVE_LIBPHDI_MULTI_THREAD_SUPPORT )
-	if( libcthreads_read_write_lock_grab_for_write(
-	     internal_handle->read_write_lock,
+#if defined( HAVE_DEBUG_OUTPUT )
+	if( libcnotify_verbose != 0 )
+	{
+		libcnotify_printf(
+		 "Reading Disk descriptor XML file:\n" );
+	}
+#endif
+	if( libphdi_disk_descriptor_xml_file_initialize(
+	     &disk_descriptor_xml_file,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-		 "%s: unable to grab read/write lock for writing.",
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create disk descriptor XML file.",
 		 function );
 
-		return( -1 );
+		goto on_error;
 	}
-#endif
-#if defined( HAVE_DEBUG_OUTPUT )
-	if( libcnotify_verbose != 0 )
-	{
-		libcnotify_printf(
-		 "Reading file footer:\n" );
-	}
-#endif
-	if( libphdi_io_handle_read_file_footer(
-	     internal_handle->io_handle,
+	if( libphdi_disk_descriptor_xml_file_read_file_io_handle(
+	     disk_descriptor_xml_file,
 	     file_io_handle,
-	     &next_offset,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_IO,
 		 LIBCERROR_IO_ERROR_READ_FAILED,
-		 "%s: unable to read file footer.",
+		 "%s: unable to read disk descriptor XML file.",
+		 function );
+
+		goto on_error;
+	}
+	if( libphdi_disk_parameters_initialize(
+	     &( internal_handle->disk_parameters ),
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create disk parameters.",
+		 function );
+
+		goto on_error;
+	}
+	if( libphdi_disk_descriptor_xml_file_get_disk_parameters(
+	     disk_descriptor_xml_file,
+	     internal_handle->disk_parameters,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve disk parameters from disk descriptor XML file.",
 		 function );
 
 		goto on_error;
 	}
 /* TODO */
 
-#if defined( HAVE_LIBPHDI_MULTI_THREAD_SUPPORT )
-	if( libcthreads_read_write_lock_release_for_write(
-	     internal_handle->read_write_lock,
+	if( libphdi_disk_descriptor_xml_file_free(
+	     &disk_descriptor_xml_file,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-		 "%s: unable to release read/write lock for writing.",
+		 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+		 "%s: unable to free disk descriptor XML file.",
 		 function );
 
-		return( -1 );
+		goto on_error;
 	}
-#endif
 	return( 1 );
 
 on_error:
+	if( disk_descriptor_xml_file != NULL )
+	{
+		libphdi_disk_descriptor_xml_file_free(
+		 &disk_descriptor_xml_file,
+		 NULL );
+	}
 	if( internal_handle->data_block_cache != NULL )
 	{
 		libfcache_cache_free(
@@ -1065,11 +1429,12 @@ on_error:
 		 &( internal_handle->data_block_vector ),
 		 NULL );
 	}
-#if defined( HAVE_LIBPHDI_MULTI_THREAD_SUPPORT )
-	libcthreads_read_write_lock_release_for_write(
-	 internal_handle->read_write_lock,
-	 NULL );
-#endif
+	if( internal_handle->disk_parameters != NULL )
+	{
+		libphdi_disk_parameters_free(
+		 &( internal_handle->disk_parameters ),
+		 NULL );
+	}
 	return( -1 );
 }
 
@@ -1367,231 +1732,6 @@ on_error:
 	return( -1 );
 }
 
-#ifdef TODO_WRITE_SUPPORT
-
-/* Writes (media) data at the current offset from a buffer using a Basic File IO (bfio) handle
- * the necessary settings of the write values must have been made
- * Will initialize write if necessary
- * This function is not multi-thread safe acquire write lock before call
- * Returns the number of input bytes written, 0 when no longer bytes can be written or -1 on error
- */
-ssize_t libphdi_internal_handle_write_buffer_to_file_io_handle(
-         libphdi_internal_handle_t *internal_handle,
-         libbfio_handle_t *file_io_handle,
-         void *buffer,
-         size_t buffer_size,
-         libcerror_error_t **error )
-{
-/* TODO implement */
-	return( -1 );
-}
-
-/* Writes (media) data at the current offset
- * the necessary settings of the write values must have been made
- * Will initialize write if necessary
- * Returns the number of input bytes written, 0 when no longer bytes can be written or -1 on error
- */
-ssize_t libphdi_handle_write_buffer(
-         libphdi_handle_t *handle,
-         const void *buffer,
-         size_t buffer_size,
-         libcerror_error_t **error )
-{
-	libphdi_internal_handle_t *internal_handle = NULL;
-	static char *function                      = "libphdi_handle_write_buffer";
-	ssize_t write_count                        = 0;
-
-	if( handle == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid handle.",
-		 function );
-
-		return( -1 );
-	}
-	internal_handle = (libphdi_internal_handle_t *) handle;
-
-	if( internal_handle->file_io_handle == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid handle - missing file IO handle.",
-		 function );
-
-		return( -1 );
-	}
-#if defined( HAVE_LIBPHDI_MULTI_THREAD_SUPPORT )
-	if( libcthreads_read_write_lock_grab_for_write(
-	     internal_handle->read_write_lock,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-		 "%s: unable to grab read/write lock for writing.",
-		 function );
-
-		return( -1 );
-	}
-#endif
-	write_count = libphdi_internal_handle_write_buffer_to_file_io_handle(
-	               internal_handle,
-	               internal_handle->file_io_handle,
-	               buffer,
-	               buffer_size,
-	               error );
-
-	if( write_count == -1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_IO,
-		 LIBCERROR_IO_ERROR_READ_FAILED,
-		 "%s: unable to write buffer.",
-		 function );
-
-		write_count = -1;
-	}
-#if defined( HAVE_LIBPHDI_MULTI_THREAD_SUPPORT )
-	if( libcthreads_read_write_lock_release_for_write(
-	     internal_handle->read_write_lock,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-		 "%s: unable to release read/write lock for writing.",
-		 function );
-
-		return( -1 );
-	}
-#endif
-	return( write_count );
-}
-
-/* Writes (media) data at a specific offset,
- * the necessary settings of the write values must have been made
- * Will initialize write if necessary
- * Returns the number of input bytes written, 0 when no longer bytes can be written or -1 on error
- */
-ssize_t libphdi_handle_write_buffer_at_offset(
-         libphdi_handle_t *handle,
-         const void *buffer,
-         size_t buffer_size,
-         off64_t offset,
-         libcerror_error_t **error )
-{
-	libphdi_internal_handle_t *internal_handle = NULL;
-	static char *function                      = "libphdi_handle_write_buffer_at_offset";
-	ssize_t write_count                        = 0;
-
-	if( handle == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid handle.",
-		 function );
-
-		return( -1 );
-	}
-	internal_handle = (libphdi_internal_handle_t *) handle;
-
-	if( internal_handle->file_io_handle == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid handle - missing file IO handle.",
-		 function );
-
-		return( -1 );
-	}
-#if defined( HAVE_LIBPHDI_MULTI_THREAD_SUPPORT )
-	if( libcthreads_read_write_lock_grab_for_write(
-	     internal_handle->read_write_lock,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-		 "%s: unable to grab read/write lock for writing.",
-		 function );
-
-		return( -1 );
-	}
-#endif
-	if( libphdi_internal_handle_seek_offset(
-	     internal_handle,
-	     offset,
-	     SEEK_SET,
-	     error ) == -1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_IO,
-		 LIBCERROR_IO_ERROR_SEEK_FAILED,
-		 "%s: unable to seek offset.",
-		 function );
-
-		goto on_error;
-	}
-	write_count = libphdi_internal_handle_write_buffer_to_file_io_handle(
-	               internal_handle,
-	               internal_handle->file_io_handle,
-	               buffer,
-	               buffer_size,
-	               error );
-
-	if( write_count == -1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_IO,
-		 LIBCERROR_IO_ERROR_READ_FAILED,
-		 "%s: unable to write buffer.",
-		 function );
-
-		goto on_error;
-	}
-#if defined( HAVE_LIBPHDI_MULTI_THREAD_SUPPORT )
-	if( libcthreads_read_write_lock_release_for_write(
-	     internal_handle->read_write_lock,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-		 "%s: unable to release read/write lock for writing.",
-		 function );
-
-		return( -1 );
-	}
-#endif
-	return( write_count );
-
-on_error:
-#if defined( HAVE_LIBPHDI_MULTI_THREAD_SUPPORT )
-	libcthreads_read_write_lock_release_for_write(
-	 internal_handle->read_write_lock,
-	 NULL );
-#endif
-	return( -1 );
-}
-
-#endif /* TODO_WRITE_SUPPORT */
-
 /* Seeks a certain offset of the (media) data
  * This function is not multi-thread safe acquire write lock before call
  * Returns the offset if seek is successful or -1 on error
@@ -1840,6 +1980,964 @@ int libphdi_handle_get_offset(
 #endif
 	return( 1 );
 }
+
+/* Retrieves the size of the basename
+ * Returns 1 if successful, 0 if value not present or -1 on error
+ */
+int libphdi_internal_handle_get_basename_size(
+     libphdi_internal_handle_t *internal_handle,
+     size_t *basename_size,
+     libcerror_error_t **error )
+{
+	static char *function = "libphdi_internal_handle_get_basename_size";
+
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
+	int result            = 0;
+#endif
+
+	if( internal_handle == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid handle.",
+		 function );
+
+		return( -1 );
+	}
+	if( basename_size == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid basename size.",
+		 function );
+
+		return( -1 );
+	}
+	if( internal_handle->basename == NULL )
+	{
+		return( 0 );
+	}
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
+	if( libclocale_codepage == 0 )
+	{
+#if SIZEOF_WCHAR_T == 4
+		result = libuna_utf8_string_size_from_utf32(
+		          (libuna_utf32_character_t *) internal_handle->basename,
+		          internal_handle->basename_size,
+		          basename_size,
+		          error );
+#elif SIZEOF_WCHAR_T == 2
+		result = libuna_utf8_string_size_from_utf16(
+		          (libuna_utf16_character_t *) internal_handle->basename,
+		          internal_handle->basename_size,
+		          basename_size,
+		          error );
+#else
+#error Unsupported size of wchar_t
+#endif /* SIZEOF_WCHAR_T */
+	}
+	else
+	{
+#if SIZEOF_WCHAR_T == 4
+		result = libuna_byte_stream_size_from_utf32(
+		          (libuna_utf32_character_t *) internal_handle->basename,
+		          internal_handle->basename_size,
+		          libclocale_codepage,
+		          basename_size,
+		          error );
+#elif SIZEOF_WCHAR_T == 2
+		result = libuna_byte_stream_size_from_utf16(
+		          (libuna_utf16_character_t *) internal_handle->basename,
+		          internal_handle->basename_size,
+		          libclocale_codepage,
+		          basename_size,
+		          error );
+#else
+#error Unsupported size of wchar_t
+#endif /* SIZEOF_WCHAR_T */
+	}
+	if( result != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_CONVERSION,
+		 LIBCERROR_CONVERSION_ERROR_GENERIC,
+		 "%s: unable to determine basename size.",
+		 function );
+
+		return( -1 );
+	}
+#else
+	*basename_size = internal_handle->basename_size;
+#endif /* defined( HAVE_WIDE_SYSTEM_CHARACTER ) */
+
+	return( 1 );
+}
+
+/* Retrieves the basename
+ * Returns 1 if successful, 0 if value not present or -1 on error
+ */
+int libphdi_internal_handle_get_basename(
+     libphdi_internal_handle_t *internal_handle,
+     char *basename,
+     size_t basename_size,
+     libcerror_error_t **error )
+{
+	static char *function       = "libphdi_internal_handle_get_basename";
+	size_t narrow_basename_size = 0;
+
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
+	int result                  = 0;
+#endif
+
+	if( internal_handle == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid handle.",
+		 function );
+
+		return( -1 );
+	}
+	if( basename == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid basename.",
+		 function );
+
+		return( -1 );
+	}
+	if( internal_handle->basename == NULL )
+	{
+		return( 0 );
+	}
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
+	if( libclocale_codepage == 0 )
+	{
+#if SIZEOF_WCHAR_T == 4
+		result = libuna_utf8_string_size_from_utf32(
+		          (libuna_utf32_character_t *) internal_handle->basename,
+		          internal_handle->basename_size,
+		          &narrow_basename_size,
+		          error );
+#elif SIZEOF_WCHAR_T == 2
+		result = libuna_utf8_string_size_from_utf16(
+		          (libuna_utf16_character_t *) internal_handle->basename,
+		          internal_handle->basename_size,
+		          &narrow_basename_size,
+		          error );
+#else
+#error Unsupported size of wchar_t
+#endif /* SIZEOF_WCHAR_T */
+	}
+	else
+	{
+#if SIZEOF_WCHAR_T == 4
+		result = libuna_byte_stream_size_from_utf32(
+		          (libuna_utf32_character_t *) internal_handle->basename,
+		          internal_handle->basename_size,
+		          libclocale_codepage,
+		          &narrow_basename_size,
+		          error );
+#elif SIZEOF_WCHAR_T == 2
+		result = libuna_byte_stream_size_from_utf16(
+		          (libuna_utf16_character_t *) internal_handle->basename,
+		          internal_handle->basename_size,
+		          libclocale_codepage,
+		          &narrow_basename_size,
+		          error );
+#else
+#error Unsupported size of wchar_t
+#endif /* SIZEOF_WCHAR_T */
+	}
+	if( result != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_CONVERSION,
+		 LIBCERROR_CONVERSION_ERROR_GENERIC,
+		 "%s: unable to determine narrow basename size.",
+		 function );
+
+		return( -1 );
+	}
+#else
+	narrow_basename_size = internal_handle->basename_size;
+#endif /* defined( HAVE_WIDE_SYSTEM_CHARACTER ) */
+
+	if( basename_size < narrow_basename_size )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_TOO_SMALL,
+		 "%s: basename too small.",
+		 function );
+
+		return( -1 );
+	}
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
+	if( libclocale_codepage == 0 )
+	{
+#if SIZEOF_WCHAR_T == 4
+		result = libuna_utf8_string_copy_from_utf32(
+		          (libuna_utf8_character_t *) basename,
+		          basename_size,
+		          (libuna_utf32_character_t *) internal_handle->basename,
+		          internal_handle->basename_size,
+		          error );
+#elif SIZEOF_WCHAR_T == 2
+		result = libuna_utf8_string_copy_from_utf16(
+		          (libuna_utf8_character_t *) basename,
+		          basename_size,
+		          (libuna_utf16_character_t *) internal_handle->basename,
+		          internal_handle->basename_size,
+		          error );
+#else
+#error Unsupported size of wchar_t
+#endif /* SIZEOF_WCHAR_T */
+	}
+	else
+	{
+#if SIZEOF_WCHAR_T == 4
+		result = libuna_byte_stream_copy_from_utf32(
+		          (uint8_t *) basename,
+		          basename_size,
+		          libclocale_codepage,
+		          (libuna_utf32_character_t *) internal_handle->basename,
+		          internal_handle->basename_size,
+		          error );
+#elif SIZEOF_WCHAR_T == 2
+		result = libuna_byte_stream_copy_from_utf16(
+		          (uint8_t *) basename,
+		          basename_size,
+		          libclocale_codepage,
+		          (libuna_utf16_character_t *) internal_handle->basename,
+		          internal_handle->basename_size,
+		          error );
+#else
+#error Unsupported size of wchar_t
+#endif /* SIZEOF_WCHAR_T */
+	}
+	if( result != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_CONVERSION,
+		 LIBCERROR_CONVERSION_ERROR_GENERIC,
+		 "%s: unable to set basename.",
+		 function );
+
+		return( -1 );
+	}
+#else
+	if( system_string_copy(
+	     basename,
+	     internal_handle->basename,
+	     internal_handle->basename_size ) == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_MEMORY,
+		 LIBCERROR_MEMORY_ERROR_COPY_FAILED,
+		 "%s: unable to set basename.",
+		 function );
+
+		return( -1 );
+	}
+	basename[ internal_handle->basename_size - 1 ] = 0;
+#endif /* defined( HAVE_WIDE_SYSTEM_CHARACTER ) */
+
+	return( 1 );
+}
+
+/* Sets the basename
+ * Returns 1 if successful or -1 on error
+ */
+int libphdi_internal_handle_set_basename(
+     libphdi_internal_handle_t *internal_handle,
+     const char *basename,
+     size_t basename_length,
+     libcerror_error_t **error )
+{
+	static char *function = "libphdi_internal_handle_set_basename";
+
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
+	int result            = 0;
+#endif
+
+	if( internal_handle == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid handle.",
+		 function );
+
+		return( -1 );
+	}
+	if( basename == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid basename.",
+		 function );
+
+		return( -1 );
+	}
+	if( internal_handle->basename != NULL )
+	{
+		memory_free(
+		 internal_handle->basename );
+
+		internal_handle->basename      = NULL;
+		internal_handle->basename_size = 0;
+	}
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
+	if( libclocale_codepage == 0 )
+	{
+#if SIZEOF_WCHAR_T == 4
+		result = libuna_utf32_string_size_from_utf8(
+		          (libuna_utf8_character_t *) basename,
+		          basename_length + 1,
+		          &( internal_handle->basename_size ),
+		          error );
+#elif SIZEOF_WCHAR_T == 2
+		result = libuna_utf16_string_size_from_utf8(
+		          (libuna_utf8_character_t *) basename,
+		          basename_length + 1,
+		          &( internal_handle->basename_size ),
+		          error );
+#else
+#error Unsupported size of wchar_t
+#endif /* SIZEOF_WCHAR_T */
+	}
+	else
+	{
+#if SIZEOF_WCHAR_T == 4
+		result = libuna_utf32_string_size_from_byte_stream(
+		          (uint8_t *) basename,
+		          basename_length + 1,
+		          libclocale_codepage,
+		          &( internal_handle->basename_size ),
+		          error );
+#elif SIZEOF_WCHAR_T == 2
+		result = libuna_utf16_string_size_from_byte_stream(
+		          (uint8_t *) basename,
+		          basename_length + 1,
+		          libclocale_codepage,
+		          &( internal_handle->basename_size ),
+		          error );
+#else
+#error Unsupported size of wchar_t
+#endif /* SIZEOF_WCHAR_T */
+	}
+	if( result != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_CONVERSION,
+		 LIBCERROR_CONVERSION_ERROR_GENERIC,
+		 "%s: unable to determine basename size.",
+		 function );
+
+		return( -1 );
+	}
+#else
+	internal_handle->basename_size = basename_length + 1;
+#endif
+	internal_handle->basename = system_string_allocate(
+	                             internal_handle->basename_size );
+
+	if( internal_handle->basename == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_MEMORY,
+		 LIBCERROR_MEMORY_ERROR_INSUFFICIENT,
+		 "%s: unable to create basename.",
+		 function );
+
+		internal_handle->basename_size = 0;
+
+		return( -1 );
+	}
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
+	if( libclocale_codepage == 0 )
+	{
+#if SIZEOF_WCHAR_T == 4
+		result = libuna_utf32_string_copy_from_utf8(
+		          (libuna_utf32_character_t *) internal_handle->basename,
+		          internal_handle->basename_size,
+		          (libuna_utf8_character_t *) basename,
+		          basename_length + 1,
+		          error );
+#elif SIZEOF_WCHAR_T == 2
+		result = libuna_utf16_string_copy_from_utf8(
+		          (libuna_utf16_character_t *) internal_handle->basename,
+		          internal_handle->basename_size,
+		          (libuna_utf8_character_t *) basename,
+		          basename_length + 1,
+		          error );
+#else
+#error Unsupported size of wchar_t
+#endif /* SIZEOF_WCHAR_T */
+	}
+	else
+	{
+#if SIZEOF_WCHAR_T == 4
+		result = libuna_utf32_string_copy_from_byte_stream(
+		          (libuna_utf32_character_t *) internal_handle->basename,
+		          internal_handle->basename_size,
+		          (uint8_t *) basename,
+		          basename_length + 1,
+		          libclocale_codepage,
+		          error );
+#elif SIZEOF_WCHAR_T == 2
+		result = libuna_utf16_string_copy_from_byte_stream(
+		          (libuna_utf16_character_t *) internal_handle->basename,
+		          internal_handle->basename_size,
+		          (uint8_t *) basename,
+		          basename_length + 1,
+		          libclocale_codepage,
+		          error );
+#else
+#error Unsupported size of wchar_t
+#endif /* SIZEOF_WCHAR_T */
+	}
+	if( result != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_CONVERSION,
+		 LIBCERROR_CONVERSION_ERROR_GENERIC,
+		 "%s: unable to set basename.",
+		 function );
+
+		memory_free(
+		 internal_handle->basename );
+
+		internal_handle->basename      = NULL;
+		internal_handle->basename_size = 0;
+
+		return( -1 );
+	}
+#else
+	if( system_string_copy(
+	     internal_handle->basename,
+	     basename,
+	     basename_length ) == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_MEMORY,
+		 LIBCERROR_MEMORY_ERROR_COPY_FAILED,
+		 "%s: unable to set basename.",
+		 function );
+
+		memory_free(
+		 internal_handle->basename );
+
+		internal_handle->basename      = NULL;
+		internal_handle->basename_size = 0;
+
+		return( -1 );
+	}
+	internal_handle->basename[ basename_length ] = 0;
+#endif /* defined( HAVE_WIDE_SYSTEM_CHARACTER ) */
+
+	return( 1 );
+}
+
+#if defined( HAVE_WIDE_CHARACTER_TYPE )
+
+/* Retrieves the size of the basename
+ * Returns 1 if successful, 0 if value not present or -1 on error
+ */
+int libphdi_internal_handle_get_basename_size_wide(
+     libphdi_internal_handle_t *internal_handle,
+     size_t *basename_size,
+     libcerror_error_t **error )
+{
+	static char *function = "libphdi_internal_handle_get_basename_size_wide";
+
+#if !defined( HAVE_WIDE_SYSTEM_CHARACTER )
+	int result            = 0;
+#endif
+
+	if( internal_handle == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid handle.",
+		 function );
+
+		return( -1 );
+	}
+	if( basename_size == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid basename size.",
+		 function );
+
+		return( -1 );
+	}
+	if( internal_handle->basename == NULL )
+	{
+		return( 0 );
+	}
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
+	*basename_size = internal_handle->basename_size;
+#else
+	if( libclocale_codepage == 0 )
+	{
+#if SIZEOF_WCHAR_T == 4
+		result = libuna_utf32_string_size_from_utf8(
+		          (libuna_utf8_character_t *) internal_handle->basename,
+		          internal_handle->basename_size,
+		          basename_size,
+		          error );
+#elif SIZEOF_WCHAR_T == 2
+		result = libuna_utf16_string_size_from_utf8(
+		          (libuna_utf8_character_t *) internal_handle->basename,
+		          internal_handle->basename_size,
+		          basename_size,
+		          error );
+#else
+#error Unsupported size of wchar_t
+#endif /* SIZEOF_WCHAR_T */
+	}
+	else
+	{
+#if SIZEOF_WCHAR_T == 4
+		result = libuna_utf32_string_size_from_byte_stream(
+		          (uint8_t *) internal_handle->basename,
+		          internal_handle->basename_size,
+		          libclocale_codepage,
+		          basename_size,
+		          error );
+#elif SIZEOF_WCHAR_T == 2
+		result = libuna_utf16_string_size_from_byte_stream(
+		          (uint8_t *) internal_handle->basename,
+		          internal_handle->basename_size,
+		          libclocale_codepage,
+		          basename_size,
+		          error );
+#else
+#error Unsupported size of wchar_t
+#endif /* SIZEOF_WCHAR_T */
+	}
+	if( result != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_CONVERSION,
+		 LIBCERROR_CONVERSION_ERROR_GENERIC,
+		 "%s: unable to determine basename size.",
+		 function );
+
+		return( -1 );
+	}
+#endif /* defined( HAVE_WIDE_SYSTEM_CHARACTER ) */
+	return( 1 );
+}
+
+/* Retrieves the basename
+ * Returns 1 if successful, 0 if value not present or -1 on error
+ */
+int libphdi_internal_handle_get_basename_wide(
+     libphdi_internal_handle_t *internal_handle,
+     wchar_t *basename,
+     size_t basename_size,
+     libcerror_error_t **error )
+{
+	static char *function     = "libphdi_internal_handle_get_basename_wide";
+	size_t wide_basename_size = 0;
+
+#if !defined( HAVE_WIDE_SYSTEM_CHARACTER )
+	int result                = 0;
+#endif
+
+	if( internal_handle == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid handle.",
+		 function );
+
+		return( -1 );
+	}
+	if( basename == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid basename.",
+		 function );
+
+		return( -1 );
+	}
+	if( internal_handle->basename == NULL )
+	{
+		return( 0 );
+	}
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
+	wide_basename_size = internal_handle->basename_size;
+#else
+	if( libclocale_codepage == 0 )
+	{
+#if SIZEOF_WCHAR_T == 4
+		result = libuna_utf32_string_size_from_utf8(
+		          (libuna_utf8_character_t *) internal_handle->basename,
+		          internal_handle->basename_size,
+		          &wide_basename_size,
+		          error );
+#elif SIZEOF_WCHAR_T == 2
+		result = libuna_utf16_string_size_from_utf8(
+		          (libuna_utf8_character_t *) internal_handle->basename,
+		          internal_handle->basename_size,
+		          &wide_basename_size,
+		          error );
+#else
+#error Unsupported size of wchar_t
+#endif /* SIZEOF_WCHAR_T */
+	}
+	else
+	{
+#if SIZEOF_WCHAR_T == 4
+		result = libuna_utf32_string_size_from_byte_stream(
+		          (uint8_t *) internal_handle->basename,
+		          internal_handle->basename_size,
+		          libclocale_codepage,
+		          &wide_basename_size,
+		          error );
+#elif SIZEOF_WCHAR_T == 2
+		result = libuna_utf16_string_size_from_byte_stream(
+		          (uint8_t *) internal_handle->basename,
+		          internal_handle->basename_size,
+		          libclocale_codepage,
+		          &wide_basename_size,
+		          error );
+#else
+#error Unsupported size of wchar_t
+#endif /* SIZEOF_WCHAR_T */
+	}
+	if( result != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_CONVERSION,
+		 LIBCERROR_CONVERSION_ERROR_GENERIC,
+		 "%s: unable to determine basename size.",
+		 function );
+
+		return( -1 );
+	}
+#endif /* defined( HAVE_WIDE_SYSTEM_CHARACTER ) */
+	if( basename_size < wide_basename_size )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_TOO_SMALL,
+		 "%s: basename too small.",
+		 function );
+
+		return( -1 );
+	}
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
+	if( system_string_copy(
+	     basename,
+	     internal_handle->basename,
+	     internal_handle->basename_size ) == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_MEMORY,
+		 LIBCERROR_MEMORY_ERROR_COPY_FAILED,
+		 "%s: unable to set basename.",
+		 function );
+
+		return( -1 );
+	}
+	basename[ internal_handle->basename_size - 1 ] = 0;
+#else
+	if( libclocale_codepage == 0 )
+	{
+#if SIZEOF_WCHAR_T == 4
+		result = libuna_utf32_string_copy_from_utf8(
+		          (libuna_utf32_character_t *) basename,
+		          basename_size,
+		          (libuna_utf8_character_t *) internal_handle->basename,
+		          internal_handle->basename_size,
+		          error );
+#elif SIZEOF_WCHAR_T == 2
+		result = libuna_utf16_string_copy_from_utf8(
+		          (libuna_utf16_character_t *) basename,
+		          basename_size,
+		          (libuna_utf8_character_t *) internal_handle->basename,
+		          internal_handle->basename_size,
+		          error );
+#else
+#error Unsupported size of wchar_t
+#endif /* SIZEOF_WCHAR_T */
+	}
+	else
+	{
+#if SIZEOF_WCHAR_T == 4
+		result = libuna_utf32_string_copy_from_byte_stream(
+		          (libuna_utf32_character_t *) basename,
+		          basename_size,
+		          (uint8_t *) internal_handle->basename,
+		          internal_handle->basename_size,
+		          libclocale_codepage,
+		          error );
+#elif SIZEOF_WCHAR_T == 2
+		result = libuna_utf16_string_copy_from_byte_stream(
+		          (libuna_utf16_character_t *) basename,
+		          basename_size,
+		          (uint8_t *) internal_handle->basename,
+		          internal_handle->basename_size,
+		          libclocale_codepage,
+		          error );
+#else
+#error Unsupported size of wchar_t
+#endif /* SIZEOF_WCHAR_T */
+	}
+	if( result != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_CONVERSION,
+		 LIBCERROR_CONVERSION_ERROR_GENERIC,
+		 "%s: unable to set basename.",
+		 function );
+
+		return( -1 );
+	}
+#endif /* defined( HAVE_WIDE_SYSTEM_CHARACTER ) */
+	return( 1 );
+}
+
+/* Sets the basename
+ * Returns 1 if successful or -1 on error
+ */
+int libphdi_internal_handle_set_basename_wide(
+     libphdi_internal_handle_t *internal_handle,
+     const wchar_t *basename,
+     size_t basename_length,
+     libcerror_error_t **error )
+{
+	static char *function = "libphdi_internal_handle_set_basename_wide";
+
+#if !defined( HAVE_WIDE_SYSTEM_CHARACTER )
+	int result            = 0;
+#endif
+
+	if( internal_handle == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid handle.",
+		 function );
+
+		return( -1 );
+	}
+	if( basename == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid basename.",
+		 function );
+
+		return( -1 );
+	}
+	if( internal_handle->basename != NULL )
+	{
+		memory_free(
+		 internal_handle->basename );
+
+		internal_handle->basename      = NULL;
+		internal_handle->basename_size = 0;
+	}
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
+	internal_handle->basename_size = basename_length + 1;
+#else
+	if( libclocale_codepage == 0 )
+	{
+#if SIZEOF_WCHAR_T == 4
+		result = libuna_utf8_string_size_from_utf32(
+		          (libuna_utf32_character_t *) basename,
+		          basename_length + 1,
+		          &( internal_handle->basename_size ),
+		          error );
+#elif SIZEOF_WCHAR_T == 2
+		result = libuna_utf8_string_size_from_utf16(
+		          (libuna_utf16_character_t *) basename,
+		          basename_length + 1,
+		          &( internal_handle->basename_size ),
+		          error );
+#else
+#error Unsupported size of wchar_t
+#endif /* SIZEOF_WCHAR_T */
+	}
+	else
+	{
+#if SIZEOF_WCHAR_T == 4
+		result = libuna_byte_stream_size_from_utf32(
+		          (libuna_utf32_character_t *) basename,
+		          basename_length + 1,
+		          libclocale_codepage,
+		          &( internal_handle->basename_size ),
+		          error );
+#elif SIZEOF_WCHAR_T == 2
+		result = libuna_byte_stream_size_from_utf16(
+		          (libuna_utf16_character_t *) basename,
+		          basename_length + 1,
+		          libclocale_codepage,
+		          &( internal_handle->basename_size ),
+		          error );
+#else
+#error Unsupported size of wchar_t
+#endif /* SIZEOF_WCHAR_T */
+	}
+	if( result != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_CONVERSION,
+		 LIBCERROR_CONVERSION_ERROR_GENERIC,
+		 "%s: unable to determine basename size.",
+		 function );
+
+		return( -1 );
+	}
+#endif /* defined( HAVE_WIDE_SYSTEM_CHARACTER ) */
+	internal_handle->basename = system_string_allocate(
+	                             internal_handle->basename_size );
+
+	if( internal_handle->basename == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_MEMORY,
+		 LIBCERROR_MEMORY_ERROR_INSUFFICIENT,
+		 "%s: unable to create basename.",
+		 function );
+
+		return( -1 );
+	}
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
+	if( system_string_copy(
+	     internal_handle->basename,
+	     basename,
+	     basename_length ) == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_MEMORY,
+		 LIBCERROR_MEMORY_ERROR_COPY_FAILED,
+		 "%s: unable to set basename.",
+		 function );
+
+		memory_free(
+		 internal_handle->basename );
+
+		internal_handle->basename      = NULL;
+		internal_handle->basename_size = 0;
+
+		return( -1 );
+	}
+	internal_handle->basename[ basename_length ] = 0;
+#else
+	if( libclocale_codepage == 0 )
+	{
+#if SIZEOF_WCHAR_T == 4
+		result = libuna_utf8_string_copy_from_utf32(
+		          (libuna_utf8_character_t *) internal_handle->basename,
+		          internal_handle->basename_size,
+		          (libuna_utf32_character_t *) basename,
+		          basename_length + 1,
+		          error );
+#elif SIZEOF_WCHAR_T == 2
+		result = libuna_utf8_string_copy_from_utf16(
+		          (libuna_utf8_character_t *) internal_handle->basename,
+		          internal_handle->basename_size,
+		          (libuna_utf16_character_t *) basename,
+		          basename_length + 1,
+		          error );
+#else
+#error Unsupported size of wchar_t
+#endif /* SIZEOF_WCHAR_T */
+	}
+	else
+	{
+#if SIZEOF_WCHAR_T == 4
+		result = libuna_byte_stream_copy_from_utf32(
+		          (uint8_t *) internal_handle->basename,
+		          internal_handle->basename_size,
+		          libclocale_codepage,
+		          (libuna_utf32_character_t *) basename,
+		          basename_length + 1,
+		          error );
+#elif SIZEOF_WCHAR_T == 2
+		result = libuna_byte_stream_copy_from_utf16(
+		          (uint8_t *) internal_handle->basename,
+		          internal_handle->basename_size,
+		          libclocale_codepage,
+		          (libuna_utf16_character_t *) basename,
+		          basename_length + 1,
+		          error );
+#else
+#error Unsupported size of wchar_t
+#endif /* SIZEOF_WCHAR_T */
+	}
+	if( result != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_CONVERSION,
+		 LIBCERROR_CONVERSION_ERROR_GENERIC,
+		 "%s: unable to set basename.",
+		 function );
+
+		memory_free(
+		 internal_handle->basename );
+
+		internal_handle->basename      = NULL;
+		internal_handle->basename_size = 0;
+
+		return( -1 );
+	}
+#endif /* defined( HAVE_WIDE_SYSTEM_CHARACTER ) */
+	return( 1 );
+}
+
+#endif /* defined( HAVE_WIDE_CHARACTER_TYPE ) */
 
 /* Retrieves the number of media size
  * Returns 1 if successful or -1 on error

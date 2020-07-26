@@ -29,19 +29,22 @@
 
 #include "pyphdi.h"
 #include "pyphdi_error.h"
+#include "pyphdi_file_object_io_handle.h"
+#include "pyphdi_handle.h"
+#include "pyphdi_libbfio.h"
 #include "pyphdi_libcerror.h"
 #include "pyphdi_libphdi.h"
-#include "pyphdi_handle.h"
-#include "pyphdi_file_object_io_handle.h"
 #include "pyphdi_python.h"
 #include "pyphdi_unused.h"
 
 #if !defined( LIBPHDI_HAVE_BFIO )
+
 LIBPHDI_EXTERN \
 int libphdi_check_file_signature_file_io_handle(
      libbfio_handle_t *file_io_handle,
      libphdi_error_t **error );
-#endif
+
+#endif /* !defined( LIBPHDI_HAVE_BFIO ) */
 
 /* The pyphdi module methods
  */
@@ -63,21 +66,21 @@ PyMethodDef pyphdi_module_methods[] = {
 	{ "check_file_signature_file_object",
 	  (PyCFunction) pyphdi_check_file_signature_file_object,
 	  METH_VARARGS | METH_KEYWORDS,
-	  "check_file_signature(file_object) -> Boolean\n"
+	  "check_file_signature_file_object(file_object) -> Boolean\n"
 	  "\n"
 	  "Checks if a file has a Parallels Hard Disk image file signature using a file-like object." },
 
 	{ "open",
-	  (PyCFunction) pyphdi_handle_new_open,
+	  (PyCFunction) pyphdi_open_new_handle,
 	  METH_VARARGS | METH_KEYWORDS,
 	  "open(filename, mode='r') -> Object\n"
 	  "\n"
 	  "Opens a handle." },
 
 	{ "open_file_object",
-	  (PyCFunction) pyphdi_handle_new_open_file_object,
+	  (PyCFunction) pyphdi_open_new_handle_with_file_object,
 	  METH_VARARGS | METH_KEYWORDS,
-	  "open_handle_object(file_object, mode='r') -> Object\n"
+	  "open_file_object(file_object, mode='r') -> Object\n"
 	  "\n"
 	  "Opens a handle using a file-like object." },
 
@@ -118,7 +121,7 @@ PyObject *pyphdi_get_version(
 	         errors ) );
 }
 
-/* Checks if the file has a Parallels Hard Disk image file signature
+/* Checks if a file has a Parallels Hard Disk image file signature
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyphdi_check_file_signature(
@@ -126,12 +129,12 @@ PyObject *pyphdi_check_file_signature(
            PyObject *arguments,
            PyObject *keywords )
 {
-	PyObject *string_object      = NULL;
-	libcerror_error_t *error     = NULL;
-	static char *function        = "pyphdi_check_file_signature";
-	static char *keyword_list[]  = { "filename", NULL };
-	const char *filename_narrow  = NULL;
-	int result                   = 0;
+	PyObject *string_object     = NULL;
+	libcerror_error_t *error    = NULL;
+	const char *filename_narrow = NULL;
+	static char *function       = "pyphdi_check_file_signature";
+	static char *keyword_list[] = { "filename", NULL };
+	int result                  = 0;
 
 #if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	const wchar_t *filename_wide = NULL;
@@ -149,7 +152,7 @@ PyObject *pyphdi_check_file_signature(
 	if( PyArg_ParseTupleAndKeywords(
 	     arguments,
 	     keywords,
-	     "|O",
+	     "O|",
 	     keyword_list,
 	     &string_object ) == 0 )
 	{
@@ -164,8 +167,8 @@ PyObject *pyphdi_check_file_signature(
 	if( result == -1 )
 	{
 		pyphdi_error_fetch_and_raise(
-	         PyExc_RuntimeError,
-		 "%s: unable to determine if string object is of type unicode.",
+		 PyExc_RuntimeError,
+		 "%s: unable to determine if string object is of type Unicode.",
 		 function );
 
 		return( NULL );
@@ -192,17 +195,17 @@ PyObject *pyphdi_check_file_signature(
 		{
 			pyphdi_error_fetch_and_raise(
 			 PyExc_RuntimeError,
-			 "%s: unable to convert unicode string to UTF-8.",
+			 "%s: unable to convert Unicode string to UTF-8.",
 			 function );
 
 			return( NULL );
 		}
 #if PY_MAJOR_VERSION >= 3
 		filename_narrow = PyBytes_AsString(
-				   utf8_string_object );
+		                   utf8_string_object );
 #else
 		filename_narrow = PyString_AsString(
-				   utf8_string_object );
+		                   utf8_string_object );
 #endif
 		Py_BEGIN_ALLOW_THREADS
 
@@ -214,7 +217,9 @@ PyObject *pyphdi_check_file_signature(
 
 		Py_DecRef(
 		 utf8_string_object );
-#endif
+
+#endif /* defined( HAVE_WIDE_SYSTEM_CHARACTER ) */
+
 		if( result == -1 )
 		{
 			pyphdi_error_raise(
@@ -244,17 +249,17 @@ PyObject *pyphdi_check_file_signature(
 
 #if PY_MAJOR_VERSION >= 3
 	result = PyObject_IsInstance(
-		  string_object,
-		  (PyObject *) &PyBytes_Type );
+	          string_object,
+	          (PyObject *) &PyBytes_Type );
 #else
 	result = PyObject_IsInstance(
-		  string_object,
-		  (PyObject *) &PyString_Type );
+	          string_object,
+	          (PyObject *) &PyString_Type );
 #endif
 	if( result == -1 )
 	{
 		pyphdi_error_fetch_and_raise(
-	         PyExc_RuntimeError,
+		 PyExc_RuntimeError,
 		 "%s: unable to determine if string object is of type string.",
 		 function );
 
@@ -266,10 +271,10 @@ PyObject *pyphdi_check_file_signature(
 
 #if PY_MAJOR_VERSION >= 3
 		filename_narrow = PyBytes_AsString(
-				   string_object );
+		                   string_object );
 #else
 		filename_narrow = PyString_AsString(
-				   string_object );
+		                   string_object );
 #endif
 		Py_BEGIN_ALLOW_THREADS
 
@@ -312,7 +317,7 @@ PyObject *pyphdi_check_file_signature(
 	return( NULL );
 }
 
-/* Checks if the file has a Parallels Hard Disk image file signature using a file-like object
+/* Checks if a file has a Parallels Hard Disk image file signature using a file-like object
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyphdi_check_file_signature_file_object(
@@ -320,9 +325,9 @@ PyObject *pyphdi_check_file_signature_file_object(
            PyObject *arguments,
            PyObject *keywords )
 {
-	libcerror_error_t *error         = NULL;
-	libbfio_handle_t *file_io_handle = NULL;
 	PyObject *file_object            = NULL;
+	libbfio_handle_t *file_io_handle = NULL;
+	libcerror_error_t *error         = NULL;
 	static char *function            = "pyphdi_check_file_signature_file_object";
 	static char *keyword_list[]      = { "file_object", NULL };
 	int result                       = 0;
@@ -412,6 +417,108 @@ on_error:
 	return( NULL );
 }
 
+/* Creates a new handle object and opens it
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pyphdi_open_new_handle(
+           PyObject *self PYPHDI_ATTRIBUTE_UNUSED,
+           PyObject *arguments,
+           PyObject *keywords )
+{
+	pyphdi_handle_t *pyphdi_handle = NULL;
+	static char *function          = "pyphdi_open_new_handle";
+
+	PYPHDI_UNREFERENCED_PARAMETER( self )
+
+	/* PyObject_New does not invoke tp_init
+	 */
+	pyphdi_handle = PyObject_New(
+	                 struct pyphdi_handle,
+	                 &pyphdi_handle_type_object );
+
+	if( pyphdi_handle == NULL )
+	{
+		PyErr_Format(
+		 PyExc_MemoryError,
+		 "%s: unable to create handle.",
+		 function );
+
+		goto on_error;
+	}
+	if( pyphdi_handle_init(
+	     pyphdi_handle ) != 0 )
+	{
+		goto on_error;
+	}
+	if( pyphdi_handle_open(
+	     pyphdi_handle,
+	     arguments,
+	     keywords ) == NULL )
+	{
+		goto on_error;
+	}
+	return( (PyObject *) pyphdi_handle );
+
+on_error:
+	if( pyphdi_handle != NULL )
+	{
+		Py_DecRef(
+		 (PyObject *) pyphdi_handle );
+	}
+	return( NULL );
+}
+
+/* Creates a new handle object and opens it using a file-like object
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pyphdi_open_new_handle_with_file_object(
+           PyObject *self PYPHDI_ATTRIBUTE_UNUSED,
+           PyObject *arguments,
+           PyObject *keywords )
+{
+	pyphdi_handle_t *pyphdi_handle = NULL;
+	static char *function          = "pyphdi_open_new_handle_with_file_object";
+
+	PYPHDI_UNREFERENCED_PARAMETER( self )
+
+	/* PyObject_New does not invoke tp_init
+	 */
+	pyphdi_handle = PyObject_New(
+	                 struct pyphdi_handle,
+	                 &pyphdi_handle_type_object );
+
+	if( pyphdi_handle == NULL )
+	{
+		PyErr_Format(
+		 PyExc_MemoryError,
+		 "%s: unable to create handle.",
+		 function );
+
+		goto on_error;
+	}
+	if( pyphdi_handle_init(
+	     pyphdi_handle ) != 0 )
+	{
+		goto on_error;
+	}
+	if( pyphdi_handle_open_file_object(
+	     pyphdi_handle,
+	     arguments,
+	     keywords ) == NULL )
+	{
+		goto on_error;
+	}
+	return( (PyObject *) pyphdi_handle );
+
+on_error:
+	if( pyphdi_handle != NULL )
+	{
+		Py_DecRef(
+		 (PyObject *) pyphdi_handle );
+	}
+	return( NULL );
+}
+
 #if PY_MAJOR_VERSION >= 3
 
 /* The pyphdi module definition
@@ -449,9 +556,8 @@ PyMODINIT_FUNC initpyphdi(
                 void )
 #endif
 {
-	PyObject *module                 = NULL;
-	PyTypeObject *handle_type_object = NULL;
-	PyGILState_STATE gil_state       = 0;
+	PyObject *module           = NULL;
+	PyGILState_STATE gil_state = 0;
 
 #if defined( HAVE_DEBUG_OUTPUT )
 	libphdi_notify_set_stream(
@@ -498,12 +604,10 @@ PyMODINIT_FUNC initpyphdi(
 	Py_IncRef(
 	 (PyObject *) &pyphdi_handle_type_object );
 
-	handle_type_object = &pyphdi_handle_type_object;
-
 	PyModule_AddObject(
 	 module,
 	 "handle",
-	 (PyObject *) handle_type_object );
+	 (PyObject *) &pyphdi_handle_type_object );
 
 	PyGILState_Release(
 	 gil_state );

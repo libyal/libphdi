@@ -53,19 +53,6 @@ struct pyphdi_handle
 extern PyMethodDef pyphdi_handle_object_methods[];
 extern PyTypeObject pyphdi_handle_type_object;
 
-PyObject *pyphdi_handle_new(
-           void );
-
-PyObject *pyphdi_handle_new_open(
-           PyObject *self,
-           PyObject *arguments,
-           PyObject *keywords );
-
-PyObject *pyphdi_handle_new_open_file_object(
-           PyObject *self,
-           PyObject *arguments,
-           PyObject *keywords );
-
 int pyphdi_handle_init(
      pyphdi_handle_t *pyphdi_handle );
 

@@ -25,6 +25,7 @@
 #include <common.h>
 #include <types.h>
 
+#include "libphdi_disk_parameters.h"
 #include "libphdi_extern.h"
 #include "libphdi_io_handle.h"
 #include "libphdi_libbfio.h"
@@ -45,6 +46,14 @@ struct libphdi_internal_handle
 	 */
 	off64_t current_offset;
 
+	/* The basename
+	 */
+	system_character_t *basename;
+
+	/* The basename size
+	 */
+	size_t basename_size;
+
 	/* The IO handle
 	 */
 	libphdi_io_handle_t *io_handle;
@@ -60,6 +69,10 @@ struct libphdi_internal_handle
 	/* Value to indicate if the file IO handle was opened inside the library
 	 */
 	uint8_t file_io_handle_opened_in_library;
+
+	/* The disk parameters
+	 */
+	libphdi_disk_parameters_t *disk_parameters;
 
 	/* The data block vector
 	 */
@@ -121,7 +134,7 @@ int libphdi_handle_close(
      libphdi_handle_t *handle,
      libcerror_error_t **error );
 
-int libphdi_handle_open_read(
+int libphdi_internal_handle_open_read(
      libphdi_internal_handle_t *internal_handle,
      libbfio_handle_t *file_io_handle,
      libcerror_error_t **error );
@@ -148,32 +161,6 @@ ssize_t libphdi_handle_read_buffer_at_offset(
          off64_t offset,
          libcerror_error_t **error );
 
-#ifdef TODO_WRITE_SUPPORT
-
-ssize_t libphdi_internal_handle_write_buffer_to_file_io_handle(
-         libphdi_internal_handle_t *internal_handle,
-         libbfio_handle_t *file_io_handle,
-         void *buffer,
-         size_t buffer_size,
-         libcerror_error_t **error );
-
-LIBPHDI_EXTERN \
-ssize_t libphdi_handle_write_buffer(
-         libphdi_handle_t *handle,
-         const void *buffer,
-         size_t buffer_size,
-         libcerror_error_t **error );
-
-LIBPHDI_EXTERN \
-ssize_t libphdi_handle_write_buffer_at_offset(
-         libphdi_handle_t *handle,
-         void *buffer,
-         size_t buffer_size,
-         off64_t offset,
-         libcerror_error_t **error );
-
-#endif /* TODO_WRITE_SUPPORT */
-
 off64_t libphdi_internal_handle_seek_offset(
          libphdi_internal_handle_t *internal_handle,
          off64_t offset,
@@ -192,6 +179,44 @@ int libphdi_handle_get_offset(
      libphdi_handle_t *handle,
      off64_t *offset,
      libcerror_error_t **error );
+
+int libphdi_internal_handle_get_basename_size(
+     libphdi_internal_handle_t *internal_handle,
+     size_t *basename_size,
+     libcerror_error_t **error );
+
+int libphdi_internal_handle_get_basename(
+     libphdi_internal_handle_t *internal_handle,
+     char *basename,
+     size_t basename_size,
+     libcerror_error_t **error );
+
+int libphdi_internal_handle_set_basename(
+     libphdi_internal_handle_t *internal_handle,
+     const char *basename,
+     size_t basename_length,
+     libcerror_error_t **error );
+
+#if defined( HAVE_WIDE_CHARACTER_TYPE )
+
+int libphdi_internal_handle_get_basename_size_wide(
+     libphdi_internal_handle_t *internal_handle,
+     size_t *basename_size,
+     libcerror_error_t **error );
+
+int libphdi_internal_handle_get_basename_wide(
+     libphdi_internal_handle_t *internal_handle,
+     wchar_t *basename,
+     size_t basename_size,
+     libcerror_error_t **error );
+
+int libphdi_internal_handle_set_basename_wide(
+     libphdi_internal_handle_t *internal_handle,
+     const wchar_t *basename,
+     size_t basename_length,
+     libcerror_error_t **error );
+
+#endif /* defined( HAVE_WIDE_CHARACTER_TYPE ) */
 
 LIBPHDI_EXTERN \
 int libphdi_handle_get_media_size(

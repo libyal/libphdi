@@ -122,6 +122,10 @@ stamp-h[1-9]
 /libphdi.spec
 /libphdi/libphdi.rc
 /libphdi/libphdi_definitions.h
+/libphdi/libphdi_xml_parser.c
+/libphdi/libphdi_xml_parser.h
+/libphdi/libphdi_xml_parser.output
+/libphdi/libphdi_xml_scanner.c
 /pyphdi-python[23]/*.[ch]
 /phditools/*.exe
 /phditools/phdiinfo

@@ -1,5 +1,5 @@
 /*
- * Python bindings for libphdi (pyphdi)
+ * Python bindings module for libphdi (pyphdi)
  *
  * Copyright (C) 2015-2020, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -41,6 +41,16 @@ PyObject *pyphdi_check_file_signature(
            PyObject *keywords );
 
 PyObject *pyphdi_check_file_signature_file_object(
+           PyObject *self,
+           PyObject *arguments,
+           PyObject *keywords );
+
+PyObject *pyphdi_open_new_handle(
+           PyObject *self,
+           PyObject *arguments,
+           PyObject *keywords );
+
+PyObject *pyphdi_open_new_handle_with_file_object(
            PyObject *self,
            PyObject *arguments,
            PyObject *keywords );

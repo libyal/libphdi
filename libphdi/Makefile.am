@@ -1,3 +1,6 @@
+AM_LFLAGS = -Cf
+AM_YFLAGS = -d -v -l -p xml_scanner_
+
 AM_CPPFLAGS = \
 	-DLOCALEDIR=\"$(datadir)/locale\" \
 	-I$(top_srcdir)/include \
@@ -18,6 +21,8 @@ AM_CPPFLAGS = \
 	@PTHREAD_CPPFLAGS@ \
 	@LIBPHDI_DLL_EXPORT@
 
+BUILT_SOURCES = libphdi_xml_parser.h
+
 lib_LTLIBRARIES = libphdi.la
 
 libphdi_la_SOURCES = \
@@ -25,25 +30,33 @@ libphdi_la_SOURCES = \
 	libphdi_codepage.h \
 	libphdi_debug.c libphdi_debug.h \
 	libphdi_definitions.h \
+	libphdi_disk_descriptor_xml_file.c libphdi_disk_descriptor_xml_file.h \
+	libphdi_disk_parameters.c libphdi_disk_parameters.h \
 	libphdi_error.c libphdi_error.h \
 	libphdi_extern.h \
 	libphdi_handle.c libphdi_handle.h \
 	libphdi_i18n.c libphdi_i18n.h \
 	libphdi_io_handle.c libphdi_io_handle.h \
 	libphdi_libbfio.h \
+	libphdi_libcdata.h \
 	libphdi_libcdirectory.h \
 	libphdi_libcerror.h \
 	libphdi_libclocale.h \
 	libphdi_libcnotify.h \
+	libphdi_libcpath.h \
 	libphdi_libcthreads.h \
 	libphdi_libfcache.h \
 	libphdi_libfdata.h \
 	libphdi_libuna.h \
 	libphdi_notify.c libphdi_notify.h \
+	libphdi_segment_table.c libphdi_segment_table.h \
 	libphdi_support.c libphdi_support.h \
 	libphdi_types.h \
 	libphdi_unused.h \
-	phdi_file_footer.h
+	libphdi_xml_attribute.c libphdi_xml_attribute.h \
+	libphdi_xml_parser.y \
+	libphdi_xml_scanner.l \
+	libphdi_xml_tag.c libphdi_xml_tag.h
 
 libphdi_la_LIBADD = \
 	@LIBCERROR_LIBADD@ \
@@ -65,6 +78,8 @@ libphdi_la_LDFLAGS = -no-undefined -version-info 1:0:0
 
 EXTRA_DIST = \
 	libphdi_definitions.h.in \
+	libphdi_xml_parser.c libphdi_xml_parser.h \
+	libphdi_xml_scanner.c \
 	libphdi.rc \
 	libphdi.rc.in
 
@@ -74,6 +89,10 @@ MAINTAINERCLEANFILES = \
 distclean: clean
 	/bin/rm -f libphdi_definitions.h
 	/bin/rm -f libphdi.rc
+	/bin/rm -f libphdi_xml_parser.c
+	/bin/rm -f libphdi_xml_parser.h
+	/bin/rm -f libphdi_xml_parser.output
+	/bin/rm -f libphdi_xml_scanner.c
 	/bin/rm -f Makefile
 
 splint:

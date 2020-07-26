@@ -244,93 +244,6 @@ PyTypeObject pyphdi_handle_type_object = {
 	0
 };
 
-/* Creates a new handle object
- * Returns a Python object if successful or NULL on error
- */
-PyObject *pyphdi_handle_new(
-           void )
-{
-	pyphdi_handle_t *pyphdi_handle = NULL;
-	static char *function          = "pyphdi_handle_new";
-
-	pyphdi_handle = PyObject_New(
-	                 struct pyphdi_handle,
-	                 &pyphdi_handle_type_object );
-
-	if( pyphdi_handle == NULL )
-	{
-		PyErr_Format(
-		 PyExc_MemoryError,
-		 "%s: unable to initialize handle.",
-		 function );
-
-		goto on_error;
-	}
-	if( pyphdi_handle_init(
-	     pyphdi_handle ) != 0 )
-	{
-		PyErr_Format(
-		 PyExc_MemoryError,
-		 "%s: unable to initialize handle.",
-		 function );
-
-		goto on_error;
-	}
-	return( (PyObject *) pyphdi_handle );
-
-on_error:
-	if( pyphdi_handle != NULL )
-	{
-		Py_DecRef(
-		 (PyObject *) pyphdi_handle );
-	}
-	return( NULL );
-}
-
-/* Creates a new handle object and opens it
- * Returns a Python object if successful or NULL on error
- */
-PyObject *pyphdi_handle_new_open(
-           PyObject *self PYPHDI_ATTRIBUTE_UNUSED,
-           PyObject *arguments,
-           PyObject *keywords )
-{
-	PyObject *pyphdi_handle = NULL;
-
-	PYPHDI_UNREFERENCED_PARAMETER( self )
-
-	pyphdi_handle = pyphdi_handle_new();
-
-	pyphdi_handle_open(
-	 (pyphdi_handle_t *) pyphdi_handle,
-	 arguments,
-	 keywords );
-
-	return( pyphdi_handle );
-}
-
-/* Creates a new handle object and opens it using a file-like object
- * Returns a Python object if successful or NULL on error
- */
-PyObject *pyphdi_handle_new_open_file_object(
-           PyObject *self PYPHDI_ATTRIBUTE_UNUSED,
-           PyObject *arguments,
-           PyObject *keywords )
-{
-	PyObject *pyphdi_handle = NULL;
-
-	PYPHDI_UNREFERENCED_PARAMETER( self )
-
-	pyphdi_handle = pyphdi_handle_new();
-
-	pyphdi_handle_open_file_object(
-	 (pyphdi_handle_t *) pyphdi_handle,
-	 arguments,
-	 keywords );
-
-	return( pyphdi_handle );
-}
-
 /* Intializes a handle object
  * Returns 0 if successful or -1 on error
  */
@@ -389,15 +302,6 @@ void pyphdi_handle_free(
 
 		return;
 	}
-	if( pyphdi_handle->handle == NULL )
-	{
-		PyErr_Format(
-		 PyExc_ValueError,
-		 "%s: invalid handle - missing libphdi handle.",
-		 function );
-
-		return;
-	}
 	ob_type = Py_TYPE(
 	           pyphdi_handle );
 
@@ -419,24 +323,27 @@ void pyphdi_handle_free(
 
 		return;
 	}
-	Py_BEGIN_ALLOW_THREADS
-
-	result = libphdi_handle_free(
-	          &( pyphdi_handle->handle ),
-	          &error );
-
-	Py_END_ALLOW_THREADS
-
-	if( result != 1 )
+	if( pyphdi_handle->handle != NULL )
 	{
-		pyphdi_error_raise(
-		 error,
-		 PyExc_MemoryError,
-		 "%s: unable to free libphdi handle.",
-		 function );
+		Py_BEGIN_ALLOW_THREADS
 
-		libcerror_error_free(
-		 &error );
+		result = libphdi_handle_free(
+		          &( pyphdi_handle->handle ),
+		          &error );
+
+		Py_END_ALLOW_THREADS
+
+		if( result != 1 )
+		{
+			pyphdi_error_raise(
+			 error,
+			 PyExc_MemoryError,
+			 "%s: unable to free libphdi handle.",
+			 function );
+
+			libcerror_error_free(
+			 &error );
+		}
 	}
 	ob_type->tp_free(
 	 (PyObject*) pyphdi_handle );
@@ -739,6 +646,36 @@ PyObject *pyphdi_handle_open_file_object(
 		 "%s: unsupported mode: %s.",
 		 function,
 		 mode );
+
+		return( NULL );
+	}
+	PyErr_Clear();
+
+	result = PyObject_HasAttrString(
+	          file_object,
+	          "read" );
+
+	if( result != 1 )
+	{
+		PyErr_Format(
+		 PyExc_TypeError,
+		 "%s: unsupported file object - missing read attribute.",
+		 function );
+
+		return( NULL );
+	}
+	PyErr_Clear();
+
+	result = PyObject_HasAttrString(
+	          file_object,
+	          "seek" );
+
+	if( result != 1 )
+	{
+		PyErr_Format(
+		 PyExc_TypeError,
+		 "%s: unsupported file object - missing seek attribute.",
+		 function );
 
 		return( NULL );
 	}
