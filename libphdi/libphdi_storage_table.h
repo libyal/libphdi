@@ -19,8 +19,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#if !defined( _LIBPHDI_SEGMENT_TABLE_H )
-#define _LIBPHDI_SEGMENT_TABLE_H
+#if !defined( _LIBPHDI_STORAGE_TABLE_H )
+#define _LIBPHDI_STORAGE_TABLE_H
 
 #include <common.h>
 #include <types.h>
@@ -34,9 +34,9 @@
 extern "C" {
 #endif
 
-typedef struct libphdi_segment_table libphdi_segment_table_t;
+typedef struct libphdi_storage_table libphdi_storage_table_t;
 
-struct libphdi_segment_table
+struct libphdi_storage_table
 {
 	/* The basename
 	 */
@@ -55,54 +55,50 @@ struct libphdi_segment_table
 	libfcache_cache_t *segment_files_cache;
 };
 
-int libphdi_segment_table_initialize(
-     libphdi_segment_table_t **segment_table,
+int libphdi_storage_table_initialize(
+     libphdi_storage_table_t **storage_table,
      libcerror_error_t **error );
 
-int libphdi_segment_table_free(
-     libphdi_segment_table_t **segment_table,
+int libphdi_storage_table_free(
+     libphdi_storage_table_t **storage_table,
      libcerror_error_t **error );
 
-int libphdi_segment_table_clear(
-     libphdi_segment_table_t *segment_table,
+int libphdi_storage_table_clear(
+     libphdi_storage_table_t *storage_table,
      libcerror_error_t **error );
 
-int libphdi_segment_table_empty(
-     libphdi_segment_table_t *segment_table,
-     libcerror_error_t **error );
-
-int libphdi_segment_table_get_basename_size(
-     libphdi_segment_table_t *segment_table,
+int libphdi_storage_table_get_basename_size(
+     libphdi_storage_table_t *storage_table,
      size_t *basename_size,
      libcerror_error_t **error );
 
-int libphdi_segment_table_get_basename(
-     libphdi_segment_table_t *segment_table,
+int libphdi_storage_table_get_basename(
+     libphdi_storage_table_t *storage_table,
      char *basename,
      size_t basename_size,
      libcerror_error_t **error );
 
-int libphdi_segment_table_set_basename(
-     libphdi_segment_table_t *segment_table,
+int libphdi_storage_table_set_basename(
+     libphdi_storage_table_t *storage_table,
      const char *basename,
      size_t basename_length,
      libcerror_error_t **error );
 
 #if defined( HAVE_WIDE_CHARACTER_TYPE )
 
-int libphdi_segment_table_get_basename_size_wide(
-     libphdi_segment_table_t *segment_table,
+int libphdi_storage_table_get_basename_size_wide(
+     libphdi_storage_table_t *storage_table,
      size_t *basename_size,
      libcerror_error_t **error );
 
-int libphdi_segment_table_get_basename_wide(
-     libphdi_segment_table_t *segment_table,
+int libphdi_storage_table_get_basename_wide(
+     libphdi_storage_table_t *storage_table,
      wchar_t *basename,
      size_t basename_size,
      libcerror_error_t **error );
 
-int libphdi_segment_table_set_basename_wide(
-     libphdi_segment_table_t *segment_table,
+int libphdi_storage_table_set_basename_wide(
+     libphdi_storage_table_t *storage_table,
      const wchar_t *basename,
      size_t basename_length,
      libcerror_error_t **error );
@@ -113,5 +109,5 @@ int libphdi_segment_table_set_basename_wide(
 }
 #endif
 
-#endif /* !defined( _LIBPHDI_SEGMENT_TABLE_H ) */
+#endif /* !defined( _LIBPHDI_STORAGE_TABLE_H ) */
 

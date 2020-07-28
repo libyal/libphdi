@@ -27,6 +27,7 @@
 #include "libphdi_libbfio.h"
 #include "libphdi_libcerror.h"
 #include "libphdi_libcnotify.h"
+#include "libphdi_libfvalue.h"
 #include "libphdi_types.h"
 #include "libphdi_xml_parser.h"
 
@@ -875,12 +876,14 @@ int libphdi_disk_descriptor_xml_file_get_disk_parameters(
  */
 int libphdi_disk_descriptor_xml_file_get_storage_data(
      libphdi_disk_descriptor_xml_file_t *disk_descriptor_xml_file,
+     libphdi_storage_table_t *storage_table,
      libcerror_error_t **error )
 {
 	libphdi_xml_tag_t *element_tag = NULL;
 	libphdi_xml_tag_t *image_tag   = NULL;
 	libphdi_xml_tag_t *storage_tag = NULL;
 	static char *function          = "libphdi_disk_descriptor_xml_file_get_storage_data";
+	uint64_t value_64bit           = 0;
 	int element_index              = 0;
 	int number_of_elements         = 0;
 	int number_of_storage_elements = 0;
@@ -1019,7 +1022,35 @@ int libphdi_disk_descriptor_xml_file_get_storage_data(
 			}
 			else if( result == 0 )
 			{
-/* TODO set block size value */
+				if( libfvalue_utf8_string_copy_to_integer(
+				     storage_tag->value,
+				     storage_tag->value_size - 1,
+				     (uint64_t *) &value_64bit,
+				     64,
+				     LIBFVALUE_INTEGER_FORMAT_TYPE_DECIMAL | LIBFVALUE_INTEGER_FORMAT_FLAG_UNSIGNED,
+				     error ) != 1 )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
+					 "%s: unable to convert value to integer.",
+					 function );
+
+					return( -1 );
+				}
+				if( value_64bit != 2048 )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBCERROR_RUNTIME_ERROR_UNSUPPORTED_VALUE,
+					 "%s: unsupported block size: %" PRIu64 ".",
+					 function,
+					 value_64bit );
+
+					return( -1 );
+				}
 				continue;
 			}
 			result = libphdi_xml_tag_compare_name(
@@ -1098,6 +1129,7 @@ int libphdi_disk_descriptor_xml_file_get_storage_data(
 /* TODO handle Image tag */
 /* TODO print unsupported tags */
 		}
+/* TODO add storage image to table */
 	}
 	return( 1 );
 }

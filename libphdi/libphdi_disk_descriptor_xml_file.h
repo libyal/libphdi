@@ -28,6 +28,7 @@
 #include "libphdi_disk_parameters.h"
 #include "libphdi_libbfio.h"
 #include "libphdi_libcerror.h"
+#include "libphdi_storage_table.h"
 #include "libphdi_types.h"
 #include "libphdi_xml_tag.h"
 
@@ -82,6 +83,7 @@ int libphdi_disk_descriptor_xml_file_get_disk_parameters(
 
 int libphdi_disk_descriptor_xml_file_get_storage_data(
      libphdi_disk_descriptor_xml_file_t *disk_descriptor_xml_file,
+     libphdi_storage_table_t *storage_table,
      libcerror_error_t **error );
 
 int libphdi_disk_descriptor_xml_file_get_snapshots(

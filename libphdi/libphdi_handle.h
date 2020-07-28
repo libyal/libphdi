@@ -33,6 +33,7 @@
 #include "libphdi_libcthreads.h"
 #include "libphdi_libfcache.h"
 #include "libphdi_libfdata.h"
+#include "libphdi_storage_table.h"
 
 #if defined( __cplusplus )
 extern "C" {
@@ -46,17 +47,13 @@ struct libphdi_internal_handle
 	 */
 	off64_t current_offset;
 
-	/* The basename
-	 */
-	system_character_t *basename;
-
-	/* The basename size
-	 */
-	size_t basename_size;
-
 	/* The IO handle
 	 */
 	libphdi_io_handle_t *io_handle;
+
+	/* The storage table
+	 */
+	libphdi_storage_table_t *storage_table;
 
 	/* The file IO handle
 	 */
@@ -179,44 +176,6 @@ int libphdi_handle_get_offset(
      libphdi_handle_t *handle,
      off64_t *offset,
      libcerror_error_t **error );
-
-int libphdi_internal_handle_get_basename_size(
-     libphdi_internal_handle_t *internal_handle,
-     size_t *basename_size,
-     libcerror_error_t **error );
-
-int libphdi_internal_handle_get_basename(
-     libphdi_internal_handle_t *internal_handle,
-     char *basename,
-     size_t basename_size,
-     libcerror_error_t **error );
-
-int libphdi_internal_handle_set_basename(
-     libphdi_internal_handle_t *internal_handle,
-     const char *basename,
-     size_t basename_length,
-     libcerror_error_t **error );
-
-#if defined( HAVE_WIDE_CHARACTER_TYPE )
-
-int libphdi_internal_handle_get_basename_size_wide(
-     libphdi_internal_handle_t *internal_handle,
-     size_t *basename_size,
-     libcerror_error_t **error );
-
-int libphdi_internal_handle_get_basename_wide(
-     libphdi_internal_handle_t *internal_handle,
-     wchar_t *basename,
-     size_t basename_size,
-     libcerror_error_t **error );
-
-int libphdi_internal_handle_set_basename_wide(
-     libphdi_internal_handle_t *internal_handle,
-     const wchar_t *basename,
-     size_t basename_length,
-     libcerror_error_t **error );
-
-#endif /* defined( HAVE_WIDE_CHARACTER_TYPE ) */
 
 LIBPHDI_EXTERN \
 int libphdi_handle_get_media_size(

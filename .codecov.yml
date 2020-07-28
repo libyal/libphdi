@@ -19,5 +19,7 @@ coverage:
     - "libcthreads/*"
     - "libfcache/*"
     - "libfdata/*"
+    - "libfguid/*"
+    - "libfvalue/*"
     - "libuna/*"
     - "tests/*"

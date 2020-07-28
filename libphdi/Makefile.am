@@ -18,6 +18,8 @@ AM_CPPFLAGS = \
 	@LIBBFIO_CPPFLAGS@ \
 	@LIBFCACHE_CPPFLAGS@ \
 	@LIBFDATA_CPPFLAGS@ \
+	@LIBFGUID_CPPFLAGS@ \
+	@LIBFVALUE_CPPFLAGS@ \
 	@PTHREAD_CPPFLAGS@ \
 	@LIBPHDI_DLL_EXPORT@
 
@@ -47,16 +49,20 @@ libphdi_la_SOURCES = \
 	libphdi_libcthreads.h \
 	libphdi_libfcache.h \
 	libphdi_libfdata.h \
+	libphdi_libdguid.h \
+	libphdi_libfvalue.h \
 	libphdi_libuna.h \
 	libphdi_notify.c libphdi_notify.h \
-	libphdi_segment_table.c libphdi_segment_table.h \
+	libphdi_storage_table.c libphdi_storage_table.h \
+	libphdi_sparse_image_header.c libphdi_sparse_image_header.h \
 	libphdi_support.c libphdi_support.h \
 	libphdi_types.h \
 	libphdi_unused.h \
 	libphdi_xml_attribute.c libphdi_xml_attribute.h \
 	libphdi_xml_parser.y \
 	libphdi_xml_scanner.l \
-	libphdi_xml_tag.c libphdi_xml_tag.h
+	libphdi_xml_tag.c libphdi_xml_tag.h \
+	phdi_sparse_image_header.h
 
 libphdi_la_LIBADD = \
 	@LIBCERROR_LIBADD@ \
@@ -72,6 +78,8 @@ libphdi_la_LIBADD = \
 	@LIBBFIO_LIBADD@ \
 	@LIBFCACHE_LIBADD@ \
 	@LIBFDATA_LIBADD@ \
+	@LIBFGUID_LIBADD@ \
+	@LIBFVALUE_LIBADD@ \
 	@PTHREAD_LIBADD@
 
 libphdi_la_LDFLAGS = -no-undefined -version-info 1:0:0
