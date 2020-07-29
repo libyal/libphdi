@@ -22,7 +22,10 @@
 #include <common.h>
 #include <byte_stream.h>
 #include <memory.h>
+#include <narrow_string.h>
+#include <system_string.h>
 #include <types.h>
+#include <wide_string.h>
 
 #include "info_handle.h"
 #include "phditools_libcerror.h"
@@ -83,14 +86,14 @@ int info_handle_initialize(
 			goto on_error;
 		}
 		if( libphdi_handle_initialize(
-		     &( ( *info_handle )->input ),
+		     &( ( *info_handle )->input_handle ),
 		     error ) != 1 )
 		{
 			libcerror_error_set(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-			 "%s: unable to initialize input.",
+			 "%s: unable to initialize input handle.",
 			 function );
 
 			goto on_error;
@@ -133,10 +136,10 @@ int info_handle_free(
 	}
 	if( *info_handle != NULL )
 	{
-		if( ( *info_handle )->input != NULL )
+		if( ( *info_handle )->input_handle != NULL )
 		{
 			if( libphdi_handle_free(
-			     &( ( *info_handle )->input ),
+			     &( ( *info_handle )->input_handle ),
 			     error ) != 1 )
 			{
 				libcerror_error_set(
@@ -177,17 +180,17 @@ int info_handle_signal_abort(
 
 		return( -1 );
 	}
-	if( info_handle->input != NULL )
+	if( info_handle->input_handle != NULL )
 	{
 		if( libphdi_handle_signal_abort(
-		     info_handle->input,
+		     info_handle->input_handle,
 		     error ) != 1 )
 		{
 			libcerror_error_set(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-			 "%s: unable to signal input to abort.",
+			 "%s: unable to signal input handle to abort.",
 			 function );
 
 			return( -1 );
@@ -219,13 +222,13 @@ int info_handle_open_input(
 	}
 #if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	if( libphdi_handle_open_wide(
-	     info_handle->input,
+	     info_handle->input_handle,
 	     filename,
 	     LIBPHDI_OPEN_READ,
 	     error ) != 1 )
 #else
 	if( libphdi_handle_open(
-	     info_handle->input,
+	     info_handle->input_handle,
 	     filename,
 	     LIBPHDI_OPEN_READ,
 	     error ) != 1 )
@@ -235,7 +238,7 @@ int info_handle_open_input(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_IO,
 		 LIBCERROR_IO_ERROR_OPEN_FAILED,
-		 "%s: unable to open input.",
+		 "%s: unable to open input handle.",
 		 function );
 
 		return( -1 );
@@ -263,26 +266,26 @@ int info_handle_close(
 
 		return( -1 );
 	}
-	if( info_handle->input == NULL )
+	if( info_handle->input_handle == NULL )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid info handle - missing input.",
+		 "%s: invalid info handle - missing input handle.",
 		 function );
 
 		return( -1 );
 	}
 	if( libphdi_handle_close(
-	     info_handle->input,
+	     info_handle->input_handle,
 	     error ) != 0 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_IO,
 		 LIBCERROR_IO_ERROR_CLOSE_FAILED,
-		 "%s: unable to close input.",
+		 "%s: unable to close input handle.",
 		 function );
 
 		return( -1 );
@@ -319,7 +322,7 @@ int info_handle_file_fprint(
 	 "Parallels Hard Disk image information:\n" );
 
 	if( libphdi_handle_get_media_size(
-	     info_handle->input,
+	     info_handle->input_handle,
 	     &media_size,
 	     error ) != 1 )
 	{
@@ -337,7 +340,81 @@ int info_handle_file_fprint(
 	 "\tMedia size:\t\t%" PRIu64 " bytes\n",
 	 media_size );
 
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
+	result = libphdi_handle_get_utf16_name_size(
+	          info_handle->input_handle,
+	          &value_string_size,
+	          error );
+#else
+	result = libphdi_handle_get_utf8_name_size(
+	          info_handle->input_handle,
+	          &value_string_size,
+	          error );
+#endif
+	if( result == -1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve name string size.",
+		 function );
+
+		goto on_error;
+	}
+	if( ( result != 0 )
+	 && ( value_string_size > 0 ) )
+	{
+		value_string = system_string_allocate(
+		                value_string_size );
+
+		if( value_string == NULL )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_MEMORY,
+			 LIBCERROR_MEMORY_ERROR_INSUFFICIENT,
+			 "%s: unable to create name string.",
+			 function );
+
+			goto on_error;
+		}
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
+		result = libphdi_handle_get_utf16_name(
+		          info_handle->input_handle,
+		          (uint16_t *) value_string,
+		          value_string_size,
+		          error );
+#else
+		result = libphdi_handle_get_utf8_name(
+		          info_handle->input_handle,
+		          (uint8_t *) value_string,
+		          value_string_size,
+		          error );
+#endif
+		if( result != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve name string.",
+			 function );
+
+			goto on_error;
+		}
+		fprintf(
+		 info_handle->notify_stream,
+		 "\tName\t\t\t: %" PRIs_SYSTEM "\n",
+		 value_string );
+
+		memory_free(
+		 value_string );
+
+		value_string = NULL;
+	}
 /* TODO add more info */
+
 	fprintf(
 	 info_handle->notify_stream,
 	 "\n" );

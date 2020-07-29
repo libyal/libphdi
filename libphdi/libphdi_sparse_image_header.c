@@ -143,7 +143,7 @@ int libphdi_sparse_image_header_free(
 }
 
 /* Reads the sparse image header data
- * Returns 1 if successful or -1 on error
+ * Returns 1 if successful, 0 if the signature does not match or -1 on error
  */
 int libphdi_sparse_image_header_read_data(
      libphdi_sparse_image_header_t *sparse_image_header,
@@ -313,7 +313,7 @@ int libphdi_sparse_image_header_read_data(
 }
 
 /* Reads the sparse image header
- * Returns 1 if successful or -1 on error
+ * Returns 1 if successful, 0 if the signature does not match or -1 on error
  */
 int libphdi_sparse_image_header_read_file_io_handle(
      libphdi_sparse_image_header_t *sparse_image_header,

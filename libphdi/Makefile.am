@@ -53,6 +53,7 @@ libphdi_la_SOURCES = \
 	libphdi_libfvalue.h \
 	libphdi_libuna.h \
 	libphdi_notify.c libphdi_notify.h \
+	libphdi_storage_image.c libphdi_storage_image.h \
 	libphdi_storage_table.c libphdi_storage_table.h \
 	libphdi_sparse_image_header.c libphdi_sparse_image_header.h \
 	libphdi_support.c libphdi_support.h \

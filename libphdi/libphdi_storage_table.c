@@ -101,7 +101,7 @@ int libphdi_storage_table_initialize(
 		return( -1 );
 	}
 	if( libfdata_list_initialize(
-	     &( ( *storage_table )->segment_files_list ),
+	     &( ( *storage_table )->storage_images_list ),
 	     NULL,
 	     NULL,
 	     NULL,
@@ -114,13 +114,13 @@ int libphdi_storage_table_initialize(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-		 "%s: unable to create segment files list.",
+		 "%s: unable to create storage images list.",
 		 function );
 
 		goto on_error;
 	}
 	if( libfcache_cache_initialize(
-	     &( ( *storage_table )->segment_files_cache ),
+	     &( ( *storage_table )->storage_images_cache ),
 	     LIBPHDI_MAXIMUM_CACHE_ENTRIES_DATA_BLOCKS,
 	     error ) != 1 )
 	{
@@ -128,7 +128,7 @@ int libphdi_storage_table_initialize(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-		 "%s: unable to create segment files cache.",
+		 "%s: unable to create storage images cache.",
 		 function );
 
 		goto on_error;
@@ -138,10 +138,10 @@ int libphdi_storage_table_initialize(
 on_error:
 	if( *storage_table != NULL )
 	{
-		if( ( *storage_table )->segment_files_list != NULL )
+		if( ( *storage_table )->storage_images_list != NULL )
 		{
 			libfdata_list_free(
-			 &( ( *storage_table )->segment_files_list ),
+			 &( ( *storage_table )->storage_images_list ),
 			 NULL );
 		}
 		memory_free(
@@ -189,27 +189,27 @@ int libphdi_storage_table_free(
 			result = -1;
 		}
 		if( libfcache_cache_free(
-		     &( ( *storage_table )->segment_files_cache ),
+		     &( ( *storage_table )->storage_images_cache ),
 		     error ) != 1 )
 		{
 			libcerror_error_set(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-			 "%s: unable to free segment files cache.",
+			 "%s: unable to free storage images cache.",
 			 function );
 
 			result = -1;
 		}
 		if( libfdata_list_free(
-		     &( ( *storage_table )->segment_files_list ),
+		     &( ( *storage_table )->storage_images_list ),
 		     error ) != 1 )
 		{
 			libcerror_error_set(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-			 "%s: unable to free segment files list.",
+			 "%s: unable to free storage images list.",
 			 function );
 
 			result = -1;
@@ -250,27 +250,27 @@ int libphdi_storage_table_clear(
 		storage_table->basename = NULL;
 	}
 	if( libfdata_list_empty(
-	     storage_table->segment_files_list,
+	     storage_table->storage_images_list,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-		 "%s: unable to empty segment files list.",
+		 "%s: unable to empty storage images list.",
 		 function );
 
 		return( -1 );
 	}
 	if( libfcache_cache_empty(
-	     storage_table->segment_files_cache,
+	     storage_table->storage_images_cache,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-		 "%s: unable to empty segment files cache.",
+		 "%s: unable to empty storage images cache.",
 		 function );
 
 		return( -1 );

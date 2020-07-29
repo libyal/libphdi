@@ -183,6 +183,32 @@ int libphdi_handle_get_media_size(
      size64_t *media_size,
      libcerror_error_t **error );
 
+LIBPHDI_EXTERN \
+int libphdi_handle_get_utf8_name_size(
+     libphdi_handle_t *handle,
+     size_t *utf8_string_size,
+     libcerror_error_t **error );
+
+LIBPHDI_EXTERN \
+int libphdi_handle_get_utf8_name(
+     libphdi_handle_t *handle,
+     uint8_t *utf8_string,
+     size_t utf8_string_size,
+     libcerror_error_t **error );
+
+LIBPHDI_EXTERN \
+int libphdi_handle_get_utf16_name_size(
+     libphdi_handle_t *handle,
+     size_t *utf16_string_size,
+     libcerror_error_t **error );
+
+LIBPHDI_EXTERN \
+int libphdi_handle_get_utf16_name(
+     libphdi_handle_t *handle,
+     uint16_t *utf16_string,
+     size_t utf16_string_size,
+     libcerror_error_t **error );
+
 #if defined( __cplusplus )
 }
 #endif

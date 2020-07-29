@@ -25,9 +25,7 @@
 #include <common.h>
 #include <types.h>
 
-#include "libphdi_libbfio.h"
 #include "libphdi_libcerror.h"
-#include "libphdi_libfdata.h"
 #include "libphdi_types.h"
 
 #if defined( __cplusplus )
@@ -40,34 +38,6 @@ typedef struct libphdi_io_handle libphdi_io_handle_t;
 
 struct libphdi_io_handle
 {
-	/* The (storage) media size
-	 */
-	size64_t media_size;
-
-	/* The format version
-	 */
-	uint32_t format_version;
-
-	/* The disk type
-	 */
-	uint32_t disk_type;
-
-	/* The block data offset
- 	 */
-	off64_t block_data_offset;
-
-	/* The block size
-	 */
-	uint32_t block_size;
-
-	/* The block bitmap size
-	 */
-	uint32_t block_bitmap_size;
-
-	/* The number of blocks
-	 */
-	uint32_t number_of_blocks;
-
 	/* Value to indicate if abort was signalled
 	 */
 	int abort;
@@ -83,19 +53,6 @@ int libphdi_io_handle_free(
 
 int libphdi_io_handle_clear(
      libphdi_io_handle_t *io_handle,
-     libcerror_error_t **error );
-
-int libphdi_io_handle_read_data_block(
-     libphdi_io_handle_t *io_handle,
-     libbfio_handle_t *file_io_handle,
-     libfdata_vector_t *vector,
-     libfdata_cache_t *cache,
-     int element_index,
-     int element_data_file_index,
-     off64_t element_data_offset,
-     size64_t element_data_size,
-     uint32_t element_data_flags,
-     uint8_t read_flags,
      libcerror_error_t **error );
 
 #if defined( __cplusplus )

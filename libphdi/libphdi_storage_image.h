@@ -1,5 +1,5 @@
 /*
- * Info handle
+ * Storage image functions
  *
  * Copyright (C) 2015-2020, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -19,62 +19,57 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#if !defined( _INFO_HANDLE_H )
-#define _INFO_HANDLE_H
+#if !defined( _LIBPHDI_STORAGE_IMAGE_H )
+#define _LIBPHDI_STORAGE_IMAGE_H
 
 #include <common.h>
-#include <file_stream.h>
 #include <types.h>
 
-#include "phditools_libcerror.h"
-#include "phditools_libcnotify.h"
-#include "phditools_libphdi.h"
+#include "libphdi_libcerror.h"
+#include "libphdi_sparse_image_header.h"
 
 #if defined( __cplusplus )
 extern "C" {
 #endif
 
-typedef struct info_handle info_handle_t;
+typedef struct libphdi_storage_image libphdi_storage_image_t;
 
-struct info_handle
+struct libphdi_storage_image
 {
-	/* The input handle
+	/* The sparse image header
 	 */
-	libphdi_handle_t *input_handle;
-
-	/* The notification output stream
-	 */
-	FILE *notify_stream;
+	libphdi_sparse_image_header_t *sparse_image_header;
 };
 
-int info_handle_initialize(
-     info_handle_t **info_handle,
+int libphdi_storage_image_initialize(
+     libphdi_storage_image_t **storage_image,
      libcerror_error_t **error );
 
-int info_handle_free(
-     info_handle_t **info_handle,
+int libphdi_storage_image_free(
+     libphdi_storage_image_t **storage_image,
      libcerror_error_t **error );
 
-int info_handle_signal_abort(
-     info_handle_t *info_handle,
+int libphdi_storage_image_open_read(
+     libphdi_storage_image_t *storage_image,
+     libbfio_pool_t *file_io_pool,
+     int file_io_pool_entry,
      libcerror_error_t **error );
 
-int info_handle_open_input(
-     info_handle_t *info_handle,
-     const system_character_t *filename,
-     libcerror_error_t **error );
-
-int info_handle_close(
-     info_handle_t *info_handle,
-     libcerror_error_t **error );
-
-int info_handle_file_fprint(
-     info_handle_t *info_handle,
+int libphdi_storage_image_read_element_data(
+     intptr_t *data_handle,
+     libbfio_pool_t *file_io_pool,
+     libfdata_list_element_t *element,
+     libfdata_cache_t *storage_image_cache,
+     int file_io_pool_entry,
+     off64_t element_offset,
+     size64_t storage_image_size,
+     uint32_t element_flags,
+     uint8_t read_flags,
      libcerror_error_t **error );
 
 #if defined( __cplusplus )
 }
 #endif
 
-#endif /* !defined( _INFO_HANDLE_H ) */
+#endif /* !defined( _LIBPHDI_STORAGE_IMAGE_H ) */
 

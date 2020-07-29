@@ -46,13 +46,13 @@ struct libphdi_storage_table
 	 */
 	size_t basename_size;
 
-	/* The segment files list
+	/* The storage images list
 	 */
-	libfdata_list_t *segment_files_list;
+	libfdata_list_t *storage_images_list;
 
-	/* The segment files cache
+	/* The storage images cache
 	 */
-	libfcache_cache_t *segment_files_cache;
+	libfcache_cache_t *storage_images_cache;
 };
 
 int libphdi_storage_table_initialize(

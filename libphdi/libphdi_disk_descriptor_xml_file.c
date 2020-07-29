@@ -610,6 +610,7 @@ int libphdi_disk_descriptor_xml_file_get_disk_parameters(
 	libphdi_xml_tag_t *encryption_tag    = NULL;
 	libphdi_xml_tag_t *miscellaneous_tag = NULL;
 	static char *function                = "libphdi_disk_descriptor_xml_file_get_disk_parameters";
+	uint64_t value_64bit                 = 0;
 	int element_index                    = 0;
 	int number_of_elements               = 0;
 	int result                           = 0;
@@ -655,7 +656,7 @@ int libphdi_disk_descriptor_xml_file_get_disk_parameters(
 	     element_index++ )
 	{
 		if( libphdi_xml_tag_get_element(
-		     disk_descriptor_xml_file->root_tag,
+		     disk_descriptor_xml_file->disk_parameters_tag,
 		     element_index,
 		     &element_tag,
 		     error ) != 1 )
@@ -669,6 +670,58 @@ int libphdi_disk_descriptor_xml_file_get_disk_parameters(
 			 element_index );
 
 			return( -1 );
+		}
+		result = libphdi_xml_tag_compare_name(
+			  element_tag,
+			  (uint8_t *) "Cylinders",
+			  9,
+			  error );
+
+		if( result == -1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to compare name of element tag: %d.",
+			 function,
+			 element_index );
+
+			return( -1 );
+		}
+		else if( result != 0 )
+		{
+			if( libfvalue_utf8_string_copy_to_integer(
+			     element_tag->value,
+			     element_tag->value_size - 1,
+			     (uint64_t *) &value_64bit,
+			     64,
+			     LIBFVALUE_INTEGER_FORMAT_TYPE_DECIMAL | LIBFVALUE_INTEGER_FORMAT_FLAG_UNSIGNED,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
+				 "%s: unable to convert value to integer.",
+				 function );
+
+				return( -1 );
+			}
+			if( value_64bit > (uint64_t) UINT32_MAX )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+				 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
+				 "%s: invalid number of cylinders value out of bounds.",
+				 function );
+
+				return( -1 );
+			}
+			disk_parameters->number_of_cylinders = value_64bit;
+
+			continue;
 		}
 		result = libphdi_xml_tag_compare_name(
 			  element_tag,
@@ -690,8 +743,35 @@ int libphdi_disk_descriptor_xml_file_get_disk_parameters(
 		}
 		else if( result != 0 )
 		{
-/* TODO set media size */
-			disk_parameters->media_size = 0;
+			if( libfvalue_utf8_string_copy_to_integer(
+			     element_tag->value,
+			     element_tag->value_size - 1,
+			     (uint64_t *) &value_64bit,
+			     64,
+			     LIBFVALUE_INTEGER_FORMAT_TYPE_DECIMAL | LIBFVALUE_INTEGER_FORMAT_FLAG_UNSIGNED,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
+				 "%s: unable to convert value to integer.",
+				 function );
+
+				return( -1 );
+			}
+			if( value_64bit > (uint64_t) ( UINT64_MAX / 512 ) )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+				 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
+				 "%s: invalid media size value out of bounds.",
+				 function );
+
+				return( -1 );
+			}
+			disk_parameters->media_size = (size64_t) value_64bit * 512;
 
 			continue;
 		}
@@ -716,6 +796,58 @@ int libphdi_disk_descriptor_xml_file_get_disk_parameters(
 		else if( result != 0 )
 		{
 			encryption_tag = element_tag;
+
+			continue;
+		}
+		result = libphdi_xml_tag_compare_name(
+			  element_tag,
+			  (uint8_t *) "Heads",
+			  5,
+			  error );
+
+		if( result == -1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to compare name of element tag: %d.",
+			 function,
+			 element_index );
+
+			return( -1 );
+		}
+		else if( result != 0 )
+		{
+			if( libfvalue_utf8_string_copy_to_integer(
+			     element_tag->value,
+			     element_tag->value_size - 1,
+			     (uint64_t *) &value_64bit,
+			     64,
+			     LIBFVALUE_INTEGER_FORMAT_TYPE_DECIMAL | LIBFVALUE_INTEGER_FORMAT_FLAG_UNSIGNED,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
+				 "%s: unable to convert value to integer.",
+				 function );
+
+				return( -1 );
+			}
+			if( value_64bit > (uint64_t) UINT32_MAX )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+				 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
+				 "%s: invalid number of heads value out of bounds.",
+				 function );
+
+				return( -1 );
+			}
+			disk_parameters->number_of_heads = value_64bit;
 
 			continue;
 		}
@@ -786,7 +918,21 @@ int libphdi_disk_descriptor_xml_file_get_disk_parameters(
 		}
 		else if( result != 0 )
 		{
-/* TODO set name */
+			if( libphdi_disk_parameters_set_name(
+			     disk_parameters,
+			     element_tag->value,
+			     element_tag->value_size,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+				 "%s: unable to set name in disk parameters.",
+				 function );
+
+				return( -1 );
+			}
 			continue;
 		}
 		result = libphdi_xml_tag_compare_name(
@@ -809,7 +955,35 @@ int libphdi_disk_descriptor_xml_file_get_disk_parameters(
 		}
 		else if( result != 0 )
 		{
-/* TODO check if LogicSectorSize value is 512 */
+			if( libfvalue_utf8_string_copy_to_integer(
+			     element_tag->value,
+			     element_tag->value_size - 1,
+			     (uint64_t *) &value_64bit,
+			     64,
+			     LIBFVALUE_INTEGER_FORMAT_TYPE_DECIMAL | LIBFVALUE_INTEGER_FORMAT_FLAG_UNSIGNED,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
+				 "%s: unable to convert value to integer.",
+				 function );
+
+				return( -1 );
+			}
+			if( value_64bit != 512 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_UNSUPPORTED_VALUE,
+				 "%s: unsupported logical sector size: %" PRIu64 ".",
+				 function,
+				 value_64bit );
+
+				return( -1 );
+			}
 			continue;
 		}
 		result = libphdi_xml_tag_compare_name(
@@ -832,7 +1006,35 @@ int libphdi_disk_descriptor_xml_file_get_disk_parameters(
 		}
 		else if( result != 0 )
 		{
-/* TODO check if Padding value is 0 */
+			if( libfvalue_utf8_string_copy_to_integer(
+			     element_tag->value,
+			     element_tag->value_size - 1,
+			     (uint64_t *) &value_64bit,
+			     64,
+			     LIBFVALUE_INTEGER_FORMAT_TYPE_DECIMAL | LIBFVALUE_INTEGER_FORMAT_FLAG_UNSIGNED,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
+				 "%s: unable to convert value to integer.",
+				 function );
+
+				return( -1 );
+			}
+			if( value_64bit != 0 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_UNSUPPORTED_VALUE,
+				 "%s: unsupported padding: %" PRIu64 ".",
+				 function,
+				 value_64bit );
+
+				return( -1 );
+			}
 			continue;
 		}
 		result = libphdi_xml_tag_compare_name(
@@ -855,7 +1057,76 @@ int libphdi_disk_descriptor_xml_file_get_disk_parameters(
 		}
 		else if( result != 0 )
 		{
-/* TODO check if PhysicalSectorSize value is 4096 */
+			if( libfvalue_utf8_string_copy_to_integer(
+			     element_tag->value,
+			     element_tag->value_size - 1,
+			     (uint64_t *) &value_64bit,
+			     64,
+			     LIBFVALUE_INTEGER_FORMAT_TYPE_DECIMAL | LIBFVALUE_INTEGER_FORMAT_FLAG_UNSIGNED,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
+				 "%s: unable to convert value to integer.",
+				 function );
+
+				return( -1 );
+			}
+			if( value_64bit != 4096 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_UNSUPPORTED_VALUE,
+				 "%s: unsupported physical sector size: %" PRIu64 ".",
+				 function,
+				 value_64bit );
+
+				return( -1 );
+			}
+			continue;
+		}
+		result = libphdi_xml_tag_compare_name(
+			  element_tag,
+			  (uint8_t *) "Sectors",
+			  7,
+			  error );
+
+		if( result == -1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to compare name of element tag: %d.",
+			 function,
+			 element_index );
+
+			return( -1 );
+		}
+		else if( result != 0 )
+		{
+			if( libfvalue_utf8_string_copy_to_integer(
+			     element_tag->value,
+			     element_tag->value_size - 1,
+			     (uint64_t *) &value_64bit,
+			     64,
+			     LIBFVALUE_INTEGER_FORMAT_TYPE_DECIMAL | LIBFVALUE_INTEGER_FORMAT_FLAG_UNSIGNED,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
+				 "%s: unable to convert value to integer.",
+				 function );
+
+				return( -1 );
+			}
+			disk_parameters->number_of_sectors = value_64bit;
+
 			continue;
 		}
 /* TODO print unsupported tags */

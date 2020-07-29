@@ -45,13 +45,20 @@ struct libphdi_disk_parameters
 
 	/* The number of heads
 	 */
-	uint32_t number_of_header;
+	uint32_t number_of_heads;
 
 	/* The number of sectors
 	 */
 	uint64_t number_of_sectors;
 
-/* TODO add name */
+	/* The name
+	 */
+	uint8_t *name;
+
+	/* The name size
+	 */
+	size_t name_size;
+
 /* TODO add identifier */
 };
 
@@ -61,6 +68,39 @@ int libphdi_disk_parameters_initialize(
 
 int libphdi_disk_parameters_free(
      libphdi_disk_parameters_t **disk_parameters,
+     libcerror_error_t **error );
+
+int libphdi_disk_parameters_get_media_size(
+     libphdi_disk_parameters_t *disk_parameters,
+     size64_t *media_size,
+     libcerror_error_t **error );
+
+int libphdi_disk_parameters_get_utf8_name_size(
+     libphdi_disk_parameters_t *disk_parameters,
+     size_t *utf8_string_size,
+     libcerror_error_t **error );
+
+int libphdi_disk_parameters_get_utf8_name(
+     libphdi_disk_parameters_t *disk_parameters,
+     uint8_t *utf8_string,
+     size_t utf8_string_size,
+     libcerror_error_t **error );
+
+int libphdi_disk_parameters_get_utf16_name_size(
+     libphdi_disk_parameters_t *disk_parameters,
+     size_t *utf16_string_size,
+     libcerror_error_t **error );
+
+int libphdi_disk_parameters_get_utf16_name(
+     libphdi_disk_parameters_t *disk_parameters,
+     uint16_t *utf16_string,
+     size_t utf16_string_size,
+     libcerror_error_t **error );
+
+int libphdi_disk_parameters_set_name(
+     libphdi_disk_parameters_t *disk_parameters,
+     const uint8_t *name,
+     size_t name_size,
      libcerror_error_t **error );
 
 #if defined( __cplusplus )
