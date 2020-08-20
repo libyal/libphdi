@@ -1285,17 +1285,6 @@ int libphdi_internal_handle_open_read(
 
 		return( -1 );
 	}
-	if( internal_handle->io_handle == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid handle - missing IO handle.",
-		 function );
-
-		return( -1 );
-	}
 	if( internal_handle->disk_parameters != NULL )
 	{
 		libcerror_error_set(
@@ -1390,8 +1379,20 @@ int libphdi_internal_handle_open_read(
 
 		goto on_error;
 	}
-/* TODO fill storage table based on disk descriptor XML file */
+	if( libphdi_disk_descriptor_xml_file_get_storage_data(
+	     disk_descriptor_xml_file,
+	     internal_handle->storage_table,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve storage data from disk descriptor XML file.",
+		 function );
 
+		goto on_error;
+	}
 /* TODO read snapshots */
 
 /* TODO set up data block vector and cache ? */

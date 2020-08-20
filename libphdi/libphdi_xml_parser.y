@@ -172,6 +172,7 @@ int xml_parser_parse_buffer(
 %token XML_PROLOGUE
 %token XML_TAG_END
 %token XML_TAG_END_SINGLE
+%token XML_UNDEFINED
 
 %token <string_value> XML_ATTRIBUTE_NAME
 %token <string_value> XML_ATTRIBUTE_VALUE
@@ -474,9 +475,13 @@ int xml_parser_parse_buffer(
 				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 				 "%s: unable to set root tag.",
 				 function );
+
+				result = -1;
 			}
 			else
 			{
+				parser_state.root_tag = NULL;
+
 				result = 1;
 			}
 		}
@@ -485,6 +490,12 @@ int xml_parser_parse_buffer(
 	}
 	xml_scanner_lex_destroy();
 
+	if( parser_state.root_tag != NULL )
+	{
+		libphdi_xml_tag_free(
+		 &( parser_state.root_tag ),
+		 NULL );
+	}
 	return( result );
 }
 

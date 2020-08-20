@@ -337,7 +337,7 @@ int info_handle_file_fprint(
 	}
 	fprintf(
 	 info_handle->notify_stream,
-	 "\tMedia size:\t\t%" PRIu64 " bytes\n",
+	 "\tMedia size\t\t: %" PRIu64 " bytes\n",
 	 media_size );
 
 #if defined( HAVE_WIDE_SYSTEM_CHARACTER )

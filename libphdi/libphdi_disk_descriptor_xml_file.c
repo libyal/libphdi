@@ -703,7 +703,7 @@ int libphdi_disk_descriptor_xml_file_get_disk_parameters(
 				 error,
 				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 				 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
-				 "%s: unable to convert value to integer.",
+				 "%s: unable to convert Cylinders value to integer.",
 				 function );
 
 				return( -1 );
@@ -755,7 +755,7 @@ int libphdi_disk_descriptor_xml_file_get_disk_parameters(
 				 error,
 				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 				 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
-				 "%s: unable to convert value to integer.",
+				 "%s: unable to convert Disk_size value to integer.",
 				 function );
 
 				return( -1 );
@@ -831,7 +831,7 @@ int libphdi_disk_descriptor_xml_file_get_disk_parameters(
 				 error,
 				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 				 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
-				 "%s: unable to convert value to integer.",
+				 "%s: unable to convert Heads value to integer.",
 				 function );
 
 				return( -1 );
@@ -967,7 +967,7 @@ int libphdi_disk_descriptor_xml_file_get_disk_parameters(
 				 error,
 				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 				 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
-				 "%s: unable to convert value to integer.",
+				 "%s: unable to convert LogicSectorSize value to integer.",
 				 function );
 
 				return( -1 );
@@ -1018,7 +1018,7 @@ int libphdi_disk_descriptor_xml_file_get_disk_parameters(
 				 error,
 				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 				 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
-				 "%s: unable to convert value to integer.",
+				 "%s: unable to convert Padding value to integer.",
 				 function );
 
 				return( -1 );
@@ -1069,7 +1069,7 @@ int libphdi_disk_descriptor_xml_file_get_disk_parameters(
 				 error,
 				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 				 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
-				 "%s: unable to convert value to integer.",
+				 "%s: unable to convert PhysicalSectorSize value to integer.",
 				 function );
 
 				return( -1 );
@@ -1120,7 +1120,7 @@ int libphdi_disk_descriptor_xml_file_get_disk_parameters(
 				 error,
 				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 				 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
-				 "%s: unable to convert value to integer.",
+				 "%s: unable to convert Sectors value to integer.",
 				 function );
 
 				return( -1 );
@@ -1150,16 +1150,19 @@ int libphdi_disk_descriptor_xml_file_get_storage_data(
      libphdi_storage_table_t *storage_table,
      libcerror_error_t **error )
 {
-	libphdi_xml_tag_t *element_tag = NULL;
-	libphdi_xml_tag_t *image_tag   = NULL;
-	libphdi_xml_tag_t *storage_tag = NULL;
-	static char *function          = "libphdi_disk_descriptor_xml_file_get_storage_data";
-	uint64_t value_64bit           = 0;
-	int element_index              = 0;
-	int number_of_elements         = 0;
-	int number_of_storage_elements = 0;
-	int result                     = 0;
-	int storage_element_index      = 0;
+	libphdi_xml_tag_t *element_tag    = NULL;
+	libphdi_xml_tag_t *image_file_tag = NULL;
+	libphdi_xml_tag_t *image_tag      = NULL;
+	libphdi_xml_tag_t *storage_tag    = NULL;
+	static char *function             = "libphdi_disk_descriptor_xml_file_get_storage_data";
+	off64_t end_offset                = 0;
+	off64_t start_offset              = 0;
+	uint64_t value_64bit              = 0;
+	int element_index                 = 0;
+	int number_of_elements            = 0;
+	int number_of_storage_elements    = 0;
+	int result                        = 0;
+	int storage_element_index         = 0;
 
 	if( disk_descriptor_xml_file == NULL )
 	{
@@ -1251,6 +1254,11 @@ int libphdi_disk_descriptor_xml_file_get_storage_data(
 
 			return( -1 );
 		}
+		image_tag      = NULL;
+		image_file_tag = NULL;
+		start_offset   = -1;
+		end_offset     = -1;
+
 		for( element_index = 0;
 		     element_index < number_of_elements;
 		     element_index++ )
@@ -1273,7 +1281,7 @@ int libphdi_disk_descriptor_xml_file_get_storage_data(
 				return( -1 );
 			}
 			result = libphdi_xml_tag_compare_name(
-				  storage_tag,
+				  element_tag,
 				  (uint8_t *) "Blocksize",
 				  9,
 				  error );
@@ -1291,11 +1299,11 @@ int libphdi_disk_descriptor_xml_file_get_storage_data(
 
 				return( -1 );
 			}
-			else if( result == 0 )
+			else if( result != 0 )
 			{
 				if( libfvalue_utf8_string_copy_to_integer(
-				     storage_tag->value,
-				     storage_tag->value_size - 1,
+				     element_tag->value,
+				     element_tag->value_size - 1,
 				     (uint64_t *) &value_64bit,
 				     64,
 				     LIBFVALUE_INTEGER_FORMAT_TYPE_DECIMAL | LIBFVALUE_INTEGER_FORMAT_FLAG_UNSIGNED,
@@ -1305,7 +1313,7 @@ int libphdi_disk_descriptor_xml_file_get_storage_data(
 					 error,
 					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 					 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
-					 "%s: unable to convert value to integer.",
+					 "%s: unable to convert Blocksize value to integer.",
 					 function );
 
 					return( -1 );
@@ -1325,7 +1333,7 @@ int libphdi_disk_descriptor_xml_file_get_storage_data(
 				continue;
 			}
 			result = libphdi_xml_tag_compare_name(
-				  storage_tag,
+				  element_tag,
 				  (uint8_t *) "End",
 				  3,
 				  error );
@@ -1343,13 +1351,43 @@ int libphdi_disk_descriptor_xml_file_get_storage_data(
 
 				return( -1 );
 			}
-			else if( result == 0 )
+			else if( result != 0 )
 			{
-/* TODO set end value */
+				if( libfvalue_utf8_string_copy_to_integer(
+				     element_tag->value,
+				     element_tag->value_size - 1,
+				     (uint64_t *) &value_64bit,
+				     64,
+				     LIBFVALUE_INTEGER_FORMAT_TYPE_DECIMAL | LIBFVALUE_INTEGER_FORMAT_FLAG_UNSIGNED,
+				     error ) != 1 )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
+					 "%s: unable to convert End value to integer.",
+					 function );
+
+					return( -1 );
+				}
+				if( value_64bit > (uint64_t) ( INT64_MAX / 512 ) )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBCERROR_RUNTIME_ERROR_UNSUPPORTED_VALUE,
+					 "%s: unsupported end sector: %" PRIu64 ".",
+					 function,
+					 value_64bit );
+
+					return( -1 );
+				}
+				end_offset = (off64_t) value_64bit * 512;
+
 				continue;
 			}
 			result = libphdi_xml_tag_compare_name(
-				  storage_tag,
+				  element_tag,
 				  (uint8_t *) "Image",
 				  5,
 				  error );
@@ -1367,14 +1405,25 @@ int libphdi_disk_descriptor_xml_file_get_storage_data(
 
 				return( -1 );
 			}
-			else if( result == 0 )
+			else if( result != 0 )
 			{
+				if( image_tag != NULL )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
+					 "%s: invalid image tag value already set.",
+					 function );
+
+					return( -1 );
+				}
 				image_tag = element_tag;
 
 				continue;
 			}
 			result = libphdi_xml_tag_compare_name(
-				  storage_tag,
+				  element_tag,
 				  (uint8_t *) "Start",
 				  5,
 				  error );
@@ -1392,13 +1441,158 @@ int libphdi_disk_descriptor_xml_file_get_storage_data(
 
 				return( -1 );
 			}
-			else if( result == 0 )
+			else if( result != 0 )
 			{
-/* TODO set start value */
+				if( libfvalue_utf8_string_copy_to_integer(
+				     element_tag->value,
+				     element_tag->value_size - 1,
+				     (uint64_t *) &value_64bit,
+				     64,
+				     LIBFVALUE_INTEGER_FORMAT_TYPE_DECIMAL | LIBFVALUE_INTEGER_FORMAT_FLAG_UNSIGNED,
+				     error ) != 1 )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
+					 "%s: unable to convert Start value to integer.",
+					 function );
+
+					return( -1 );
+				}
+				if( value_64bit > (uint64_t) ( INT64_MAX / 512 ) )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBCERROR_RUNTIME_ERROR_UNSUPPORTED_VALUE,
+					 "%s: unsupported start sector: %" PRIu64 ".",
+					 function,
+					 value_64bit );
+
+					return( -1 );
+				}
+				start_offset = (off64_t) value_64bit * 512;
+			}
+/* TODO print unsupported tags */
+		}
+		if( libphdi_xml_tag_get_number_of_elements(
+		     image_tag,
+		     &number_of_elements,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve number of elements of image tag of storage tag: %d.",
+			 function,
+			 storage_element_index );
+
+			return( -1 );
+		}
+		for( element_index = 0;
+		     element_index < number_of_elements;
+		     element_index++ )
+		{
+			if( libphdi_xml_tag_get_element(
+			     storage_tag,
+			     element_index,
+			     &element_tag,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+				 "%s: unable to retrieve element: %d of image tag of storage tag: %d.",
+				 function,
+				 element_index,
+				 storage_element_index );
+
+				return( -1 );
+			}
+			result = libphdi_xml_tag_compare_name(
+				  element_tag,
+				  (uint8_t *) "File",
+				  4,
+				  error );
+
+			if( result == -1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+				 "%s: unable to compare name of element: %d of image tag of storage tag: %d.",
+				 function,
+				 element_index,
+				 storage_element_index );
+
+				return( -1 );
+			}
+			else if( result != 0 )
+			{
+				if( image_file_tag != NULL )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
+					 "%s: invalid image file tag value already set.",
+					 function );
+
+					return( -1 );
+				}
+				image_file_tag = element_tag;
+
 				continue;
 			}
-/* TODO handle Image tag */
 /* TODO print unsupported tags */
+		}
+		if( image_file_tag == NULL )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+			 "%s: missing image file tag.",
+			 function );
+
+			return( -1 );
+		}
+		if( start_offset < 0 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+			 "%s: missing start offset.",
+			 function );
+
+			return( -1 );
+		}
+		if( end_offset < 0 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+			 "%s: missing end offset.",
+			 function );
+
+			return( -1 );
+		}
+		if( start_offset >= end_offset )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+			 "%s: invalid end offset value out of bounds.",
+			 function );
+
+			return( -1 );
 		}
 /* TODO add storage image to table */
 	}
@@ -1551,7 +1745,7 @@ int libphdi_disk_descriptor_xml_file_get_snapshots(
 
 				return( -1 );
 			}
-			else if( result == 0 )
+			else if( result != 0 )
 			{
 /* TODO set GUID value */
 				continue;
@@ -1575,7 +1769,7 @@ int libphdi_disk_descriptor_xml_file_get_snapshots(
 
 				return( -1 );
 			}
-			else if( result == 0 )
+			else if( result != 0 )
 			{
 /* TODO set ParentGUID value */
 				continue;

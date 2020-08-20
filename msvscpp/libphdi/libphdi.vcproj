@@ -210,6 +210,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\libphdi\libphdi_storage_image.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\libphdi\libphdi_storage_table.c"
 				>
 			</File>
@@ -337,6 +341,10 @@
 			</File>
 			<File
 				RelativePath="..\..\libphdi\libphdi_sparse_image_header.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libphdi\libphdi_storage_image.h"
 				>
 			</File>
 			<File
