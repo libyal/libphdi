@@ -244,7 +244,7 @@ PyTypeObject pyphdi_handle_type_object = {
 	0
 };
 
-/* Intializes a handle object
+/* Initializes a handle object
  * Returns 0 if successful or -1 on error
  */
 int pyphdi_handle_init(
