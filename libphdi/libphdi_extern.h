@@ -30,7 +30,7 @@
 
 #include <libphdi/extern.h>
 
-#if defined( __CYGWIN__ )
+#if defined( __CYGWIN__ ) || defined( __MINGW32__ )
 #define LIBPHDI_EXTERN_VARIABLE	extern
 #else
 #define LIBPHDI_EXTERN_VARIABLE	LIBPHDI_EXTERN
