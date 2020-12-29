@@ -27,9 +27,6 @@
 #include "libphdi_libcerror.h"
 #include "libphdi_libcnotify.h"
 
-/* TODO implement read PHDI signature */
-const uint8_t *phdi_file_signature         = (uint8_t *) "conectix";
-
 /* Creates an IO handle
  * Make sure the value io_handle is referencing, is set to NULL
  * Returns 1 if successful or -1 on error

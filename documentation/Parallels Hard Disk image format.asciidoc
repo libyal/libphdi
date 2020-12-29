@@ -10,12 +10,11 @@ Analysis of the Parallels harddisk.hdd format
 
 The image format used in Parallels virtualization product is the Parallels
 Hard Disk Image (PHDI) format. It is both used the store hard disk images and
-snapshots. This specification is based on available documentation and was
-enhanced by analyzing test data.
+snapshots. This specification is based on publicly available work on the format
+and was enhanced by analyzing test data.
 
-This document is intended as a working document for the Parallels Hard Disk
-Imageformat specification. Which should allow existing Open Source forensic
-tooling to be able to process this file type.
+This document is intended as a working document of the data format specification
+for the libphdi project.
 
 [preface]
 == Document information

@@ -344,25 +344,11 @@ int libphdi_sparse_image_header_read_file_io_handle(
 		 function );
 	}
 #endif
-	if( libbfio_handle_seek_offset(
-	     file_io_handle,
-	     0,
-	     SEEK_SET,
-	     error ) == -1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_IO,
-		 LIBCERROR_IO_ERROR_SEEK_FAILED,
-		 "%s: unable to seek sparse image header offset: 0 (0x00000000).",
-		 function );
-
-		return( -1 );
-	}
-	read_count = libbfio_handle_read_buffer(
+	read_count = libbfio_handle_read_buffer_at_offset(
 	              file_io_handle,
 	              sparse_image_header_data,
 	              sizeof( phdi_sparse_image_header_t ),
+	              0,
 	              error );
 
 	if( read_count != (ssize_t) sizeof( phdi_sparse_image_header_t ) )
@@ -371,7 +357,7 @@ int libphdi_sparse_image_header_read_file_io_handle(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_IO,
 		 LIBCERROR_IO_ERROR_READ_FAILED,
-		 "%s: unable to read sparse image header data.",
+		 "%s: unable to read sparse image header data at offset: 0 (0x00000000).",
 		 function );
 
 		return( -1 );

@@ -477,29 +477,6 @@ int libphdi_disk_descriptor_xml_file_read_file_io_handle(
 
 		goto on_error;
 	}
-#if defined( HAVE_DEBUG_OUTPUT )
-	if( libcnotify_verbose != 0 )
-	{
-		libcnotify_printf(
-		 "%s: reading disk descriptor XML file at offset: 0 (0x00000000)\n",
-		 function );
-	}
-#endif
-	if( libbfio_handle_seek_offset(
-	     file_io_handle,
-	     0,
-	     SEEK_SET,
-	     error ) == -1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_IO,
-		 LIBCERROR_IO_ERROR_SEEK_FAILED,
-		 "%s: unable to seek file header offset: 0.",
-		 function );
-
-		goto on_error;
-	}
 	/* Reserve space for 2 zero bytes at the end of the buffer
 	 */
 	data = (uint8_t *) memory_allocate(
@@ -530,10 +507,19 @@ int libphdi_disk_descriptor_xml_file_read_file_io_handle(
 
 		goto on_error;
 	}
-	read_count = libbfio_handle_read_buffer(
+#if defined( HAVE_DEBUG_OUTPUT )
+	if( libcnotify_verbose != 0 )
+	{
+		libcnotify_printf(
+		 "%s: reading disk descriptor XML file at offset: 0 (0x00000000)\n",
+		 function );
+	}
+#endif
+	read_count = libbfio_handle_read_buffer_at_offset(
 	              file_io_handle,
 	              data,
 	              (size_t) file_size,
+	              0,
 	              error );
 
 	if( read_count != (ssize_t) file_size )
@@ -542,7 +528,7 @@ int libphdi_disk_descriptor_xml_file_read_file_io_handle(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_IO,
 		 LIBCERROR_IO_ERROR_READ_FAILED,
-		 "%s: unable to read data.",
+		 "%s: unable to read data at offset: 0 (0x00000000).",
 		 function );
 
 		goto on_error;

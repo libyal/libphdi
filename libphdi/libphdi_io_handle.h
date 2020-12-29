@@ -32,8 +32,6 @@
 extern "C" {
 #endif
 
-extern const uint8_t *phdi_file_signature;
-
 typedef struct libphdi_io_handle libphdi_io_handle_t;
 
 struct libphdi_io_handle
