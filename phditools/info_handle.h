@@ -1,7 +1,7 @@
 /*
  * Info handle
  *
- * Copyright (C) 2015-2020, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2015-2021, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
