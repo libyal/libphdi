@@ -138,6 +138,7 @@ stamp-h[1-9]
 /tests/phdi_test_io_handle
 /tests/phdi_test_notify
 /tests/phdi_test_support
+/tests/phdi_test_xml_tag
 /tests/tmp*
 
 # Local library dependencies specific files

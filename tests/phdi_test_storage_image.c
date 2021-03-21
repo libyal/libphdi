@@ -1,5 +1,5 @@
 /*
- * Library io_handle type test program
+ * Library storage_image type test program
  *
  * Copyright (C) 2015-2021, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -33,30 +33,30 @@
 #include "phdi_test_memory.h"
 #include "phdi_test_unused.h"
 
-#include "../libphdi/libphdi_io_handle.h"
+#include "../libphdi/libphdi_storage_image.h"
 
 #if defined( __GNUC__ ) && !defined( LIBPHDI_DLL_IMPORT )
 
-/* Tests the libphdi_io_handle_initialize function
+/* Tests the libphdi_storage_image_initialize function
  * Returns 1 if successful or 0 if not
  */
-int phdi_test_io_handle_initialize(
+int phdi_test_storage_image_initialize(
      void )
 {
-	libcerror_error_t *error        = NULL;
-	libphdi_io_handle_t *io_handle  = NULL;
-	int result                      = 0;
+	libcerror_error_t *error               = NULL;
+	libphdi_storage_image_t *storage_image = NULL;
+	int result                             = 0;
 
 #if defined( HAVE_PHDI_TEST_MEMORY )
-	int number_of_malloc_fail_tests = 1;
-	int number_of_memset_fail_tests = 1;
-	int test_number                 = 0;
+	int number_of_malloc_fail_tests        = 1;
+	int number_of_memset_fail_tests        = 1;
+	int test_number                        = 0;
 #endif
 
 	/* Test regular cases
 	 */
-	result = libphdi_io_handle_initialize(
-	          &io_handle,
+	result = libphdi_storage_image_initialize(
+	          &storage_image,
 	          &error );
 
 	PHDI_TEST_ASSERT_EQUAL_INT(
@@ -65,15 +65,15 @@ int phdi_test_io_handle_initialize(
 	 1 );
 
 	PHDI_TEST_ASSERT_IS_NOT_NULL(
-	 "io_handle",
-	 io_handle );
+	 "storage_image",
+	 storage_image );
 
 	PHDI_TEST_ASSERT_IS_NULL(
 	 "error",
 	 error );
 
-	result = libphdi_io_handle_free(
-	          &io_handle,
+	result = libphdi_storage_image_free(
+	          &storage_image,
 	          &error );
 
 	PHDI_TEST_ASSERT_EQUAL_INT(
@@ -82,8 +82,8 @@ int phdi_test_io_handle_initialize(
 	 1 );
 
 	PHDI_TEST_ASSERT_IS_NULL(
-	 "io_handle",
-	 io_handle );
+	 "storage_image",
+	 storage_image );
 
 	PHDI_TEST_ASSERT_IS_NULL(
 	 "error",
@@ -91,7 +91,7 @@ int phdi_test_io_handle_initialize(
 
 	/* Test error cases
 	 */
-	result = libphdi_io_handle_initialize(
+	result = libphdi_storage_image_initialize(
 	          NULL,
 	          &error );
 
@@ -107,13 +107,13 @@ int phdi_test_io_handle_initialize(
 	libcerror_error_free(
 	 &error );
 
-	io_handle = (libphdi_io_handle_t *) 0x12345678UL;
+	storage_image = (libphdi_storage_image_t *) 0x12345678UL;
 
-	result = libphdi_io_handle_initialize(
-	          &io_handle,
+	result = libphdi_storage_image_initialize(
+	          &storage_image,
 	          &error );
 
-	io_handle = NULL;
+	storage_image = NULL;
 
 	PHDI_TEST_ASSERT_EQUAL_INT(
 	 "result",
@@ -133,22 +133,22 @@ int phdi_test_io_handle_initialize(
 	     test_number < number_of_malloc_fail_tests;
 	     test_number++ )
 	{
-		/* Test libphdi_io_handle_initialize with malloc failing
+		/* Test libphdi_storage_image_initialize with malloc failing
 		 */
 		phdi_test_malloc_attempts_before_fail = test_number;
 
-		result = libphdi_io_handle_initialize(
-		          &io_handle,
+		result = libphdi_storage_image_initialize(
+		          &storage_image,
 		          &error );
 
 		if( phdi_test_malloc_attempts_before_fail != -1 )
 		{
 			phdi_test_malloc_attempts_before_fail = -1;
 
-			if( io_handle != NULL )
+			if( storage_image != NULL )
 			{
-				libphdi_io_handle_free(
-				 &io_handle,
+				libphdi_storage_image_free(
+				 &storage_image,
 				 NULL );
 			}
 		}
@@ -160,8 +160,8 @@ int phdi_test_io_handle_initialize(
 			 -1 );
 
 			PHDI_TEST_ASSERT_IS_NULL(
-			 "io_handle",
-			 io_handle );
+			 "storage_image",
+			 storage_image );
 
 			PHDI_TEST_ASSERT_IS_NOT_NULL(
 			 "error",
@@ -175,22 +175,22 @@ int phdi_test_io_handle_initialize(
 	     test_number < number_of_memset_fail_tests;
 	     test_number++ )
 	{
-		/* Test libphdi_io_handle_initialize with memset failing
+		/* Test libphdi_storage_image_initialize with memset failing
 		 */
 		phdi_test_memset_attempts_before_fail = test_number;
 
-		result = libphdi_io_handle_initialize(
-		          &io_handle,
+		result = libphdi_storage_image_initialize(
+		          &storage_image,
 		          &error );
 
 		if( phdi_test_memset_attempts_before_fail != -1 )
 		{
 			phdi_test_memset_attempts_before_fail = -1;
 
-			if( io_handle != NULL )
+			if( storage_image != NULL )
 			{
-				libphdi_io_handle_free(
-				 &io_handle,
+				libphdi_storage_image_free(
+				 &storage_image,
 				 NULL );
 			}
 		}
@@ -202,8 +202,8 @@ int phdi_test_io_handle_initialize(
 			 -1 );
 
 			PHDI_TEST_ASSERT_IS_NULL(
-			 "io_handle",
-			 io_handle );
+			 "storage_image",
+			 storage_image );
 
 			PHDI_TEST_ASSERT_IS_NOT_NULL(
 			 "error",
@@ -223,19 +223,19 @@ on_error:
 		libcerror_error_free(
 		 &error );
 	}
-	if( io_handle != NULL )
+	if( storage_image != NULL )
 	{
-		libphdi_io_handle_free(
-		 &io_handle,
+		libphdi_storage_image_free(
+		 &storage_image,
 		 NULL );
 	}
 	return( 0 );
 }
 
-/* Tests the libphdi_io_handle_free function
+/* Tests the libphdi_storage_image_free function
  * Returns 1 if successful or 0 if not
  */
-int phdi_test_io_handle_free(
+int phdi_test_storage_image_free(
      void )
 {
 	libcerror_error_t *error = NULL;
@@ -243,7 +243,7 @@ int phdi_test_io_handle_free(
 
 	/* Test error cases
 	 */
-	result = libphdi_io_handle_free(
+	result = libphdi_storage_image_free(
 	          NULL,
 	          &error );
 
@@ -266,134 +266,6 @@ on_error:
 	{
 		libcerror_error_free(
 		 &error );
-	}
-	return( 0 );
-}
-
-/* Tests the libphdi_io_handle_clear function
- * Returns 1 if successful or 0 if not
- */
-int phdi_test_io_handle_clear(
-     void )
-{
-	libcerror_error_t *error       = NULL;
-	libphdi_io_handle_t *io_handle = NULL;
-	int result                     = 0;
-
-	/* Initialize test
-	 */
-	result = libphdi_io_handle_initialize(
-	          &io_handle,
-	          &error );
-
-	PHDI_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 1 );
-
-	PHDI_TEST_ASSERT_IS_NOT_NULL(
-	 "io_handle",
-	 io_handle );
-
-	PHDI_TEST_ASSERT_IS_NULL(
-	 "error",
-	 error );
-
-	/* Test regular cases
-	 */
-	result = libphdi_io_handle_clear(
-	          io_handle,
-	          &error );
-
-	PHDI_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 1 );
-
-	PHDI_TEST_ASSERT_IS_NULL(
-	 "error",
-	 error );
-
-	/* Test error cases
-	 */
-	result = libphdi_io_handle_clear(
-	          NULL,
-	          &error );
-
-	PHDI_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 -1 );
-
-	PHDI_TEST_ASSERT_IS_NOT_NULL(
-	 "error",
-	 error );
-
-	libcerror_error_free(
-	 &error );
-
-#if defined( HAVE_PHDI_TEST_MEMORY )
-
-	/* Test libphdi_io_handle_clear with memset failing
-	 */
-	phdi_test_memset_attempts_before_fail = 0;
-
-	result = libphdi_io_handle_clear(
-	          io_handle,
-	          &error );
-
-	if( phdi_test_memset_attempts_before_fail != -1 )
-	{
-		phdi_test_memset_attempts_before_fail = -1;
-	}
-	else
-	{
-		PHDI_TEST_ASSERT_EQUAL_INT(
-		 "result",
-		 result,
-		 -1 );
-
-		PHDI_TEST_ASSERT_IS_NOT_NULL(
-		 "error",
-		 error );
-
-		libcerror_error_free(
-		 &error );
-	}
-#endif /* defined( HAVE_PHDI_TEST_MEMORY ) */
-
-	/* Clean up
-	 */
-	result = libphdi_io_handle_free(
-	          &io_handle,
-	          &error );
-
-	PHDI_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 1 );
-
-	PHDI_TEST_ASSERT_IS_NULL(
-	 "io_handle",
-	 io_handle );
-
-	PHDI_TEST_ASSERT_IS_NULL(
-	 "error",
-	 error );
-
-	return( 1 );
-
-on_error:
-	if( error != NULL )
-	{
-		libcerror_error_free(
-		 &error );
-	}
-	if( io_handle != NULL )
-	{
-		libphdi_io_handle_free(
-		 &io_handle,
-		 NULL );
 	}
 	return( 0 );
 }
@@ -418,16 +290,16 @@ int main(
 #if defined( __GNUC__ ) && !defined( LIBPHDI_DLL_IMPORT )
 
 	PHDI_TEST_RUN(
-	 "libphdi_io_handle_initialize",
-	 phdi_test_io_handle_initialize );
+	 "libphdi_storage_image_initialize",
+	 phdi_test_storage_image_initialize );
 
 	PHDI_TEST_RUN(
-	 "libphdi_io_handle_free",
-	 phdi_test_io_handle_free );
+	 "libphdi_storage_image_free",
+	 phdi_test_storage_image_free );
 
-	PHDI_TEST_RUN(
-	 "libphdi_io_handle_clear",
-	 phdi_test_io_handle_clear );
+	/* TODO: add tests for libphdi_storage_image_open_read */
+
+	/* TODO: add tests for libphdi_storage_image_read_element_data */
 
 #endif /* defined( __GNUC__ ) && !defined( LIBPHDI_DLL_IMPORT ) */
 

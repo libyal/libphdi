@@ -20,6 +20,7 @@ MSVSCPP_FILES = \
 	phdi_test_io_handle/phdi_test_io_handle.vcproj \
 	phdi_test_notify/phdi_test_notify.vcproj \
 	phdi_test_support/phdi_test_support.vcproj \
+	phdi_test_xml_tag/phdi_test_xml_tag.vcproj \
 	phdiinfo/phdiinfo.vcproj \
 	phdimount/phdimount.vcproj \
 	pyphdi/pyphdi.vcproj \

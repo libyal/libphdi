@@ -44,7 +44,8 @@ check_PROGRAMS = \
 	phdi_test_handle \
 	phdi_test_io_handle \
 	phdi_test_notify \
-	phdi_test_support
+	phdi_test_support \
+	phdi_test_xml_tag
 
 phdi_test_error_SOURCES = \
 	phdi_test_error.c \
@@ -129,6 +130,18 @@ phdi_test_support_LDADD = \
 	@LIBCNOTIFY_LIBADD@ \
 	@LIBCLOCALE_LIBADD@ \
 	@LIBCDATA_LIBADD@ \
+	../libphdi/libphdi.la \
+	@LIBCERROR_LIBADD@
+
+phdi_test_xml_tag_SOURCES = \
+	phdi_test_libcerror.h \
+	phdi_test_libphdi.h \
+	phdi_test_macros.h \
+	phdi_test_memory.c phdi_test_memory.h \
+	phdi_test_unused.h \
+	phdi_test_xml_tag.c
+
+phdi_test_xml_tag_LDADD = \
 	../libphdi/libphdi.la \
 	@LIBCERROR_LIBADD@
 

@@ -6,7 +6,7 @@ $ExitSuccess = 0
 $ExitFailure = 1
 $ExitIgnore = 77
 
-$LibraryTests = "error io_handle notify"
+$LibraryTests = "error io_handle notify xml_tag"
 $LibraryTestsWithInput = "handle support"
 $OptionSets = ""
 

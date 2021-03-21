@@ -7,7 +7,7 @@ EXIT_SUCCESS=0;
 EXIT_FAILURE=1;
 EXIT_IGNORE=77;
 
-LIBRARY_TESTS="error io_handle notify";
+LIBRARY_TESTS="error io_handle notify xml_tag";
 LIBRARY_TESTS_WITH_INPUT="handle support";
 OPTION_SETS="";
 

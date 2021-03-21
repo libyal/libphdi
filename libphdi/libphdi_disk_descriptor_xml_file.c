@@ -1482,7 +1482,7 @@ int libphdi_disk_descriptor_xml_file_get_storage_data(
 		     element_index++ )
 		{
 			if( libphdi_xml_tag_get_element(
-			     storage_tag,
+			     image_tag,
 			     element_index,
 			     &element_tag,
 			     error ) != 1 )

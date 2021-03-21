@@ -1,5 +1,5 @@
 /*
- * Library io_handle type test program
+ * Library disk_parameters type test program
  *
  * Copyright (C) 2015-2021, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -33,30 +33,30 @@
 #include "phdi_test_memory.h"
 #include "phdi_test_unused.h"
 
-#include "../libphdi/libphdi_io_handle.h"
+#include "../libphdi/libphdi_disk_parameters.h"
 
 #if defined( __GNUC__ ) && !defined( LIBPHDI_DLL_IMPORT )
 
-/* Tests the libphdi_io_handle_initialize function
+/* Tests the libphdi_disk_parameters_initialize function
  * Returns 1 if successful or 0 if not
  */
-int phdi_test_io_handle_initialize(
+int phdi_test_disk_parameters_initialize(
      void )
 {
-	libcerror_error_t *error        = NULL;
-	libphdi_io_handle_t *io_handle  = NULL;
-	int result                      = 0;
+	libcerror_error_t *error                   = NULL;
+	libphdi_disk_parameters_t *disk_parameters = NULL;
+	int result                                 = 0;
 
 #if defined( HAVE_PHDI_TEST_MEMORY )
-	int number_of_malloc_fail_tests = 1;
-	int number_of_memset_fail_tests = 1;
-	int test_number                 = 0;
+	int number_of_malloc_fail_tests            = 1;
+	int number_of_memset_fail_tests            = 1;
+	int test_number                            = 0;
 #endif
 
 	/* Test regular cases
 	 */
-	result = libphdi_io_handle_initialize(
-	          &io_handle,
+	result = libphdi_disk_parameters_initialize(
+	          &disk_parameters,
 	          &error );
 
 	PHDI_TEST_ASSERT_EQUAL_INT(
@@ -65,15 +65,15 @@ int phdi_test_io_handle_initialize(
 	 1 );
 
 	PHDI_TEST_ASSERT_IS_NOT_NULL(
-	 "io_handle",
-	 io_handle );
+	 "disk_parameters",
+	 disk_parameters );
 
 	PHDI_TEST_ASSERT_IS_NULL(
 	 "error",
 	 error );
 
-	result = libphdi_io_handle_free(
-	          &io_handle,
+	result = libphdi_disk_parameters_free(
+	          &disk_parameters,
 	          &error );
 
 	PHDI_TEST_ASSERT_EQUAL_INT(
@@ -82,8 +82,8 @@ int phdi_test_io_handle_initialize(
 	 1 );
 
 	PHDI_TEST_ASSERT_IS_NULL(
-	 "io_handle",
-	 io_handle );
+	 "disk_parameters",
+	 disk_parameters );
 
 	PHDI_TEST_ASSERT_IS_NULL(
 	 "error",
@@ -91,7 +91,7 @@ int phdi_test_io_handle_initialize(
 
 	/* Test error cases
 	 */
-	result = libphdi_io_handle_initialize(
+	result = libphdi_disk_parameters_initialize(
 	          NULL,
 	          &error );
 
@@ -107,13 +107,13 @@ int phdi_test_io_handle_initialize(
 	libcerror_error_free(
 	 &error );
 
-	io_handle = (libphdi_io_handle_t *) 0x12345678UL;
+	disk_parameters = (libphdi_disk_parameters_t *) 0x12345678UL;
 
-	result = libphdi_io_handle_initialize(
-	          &io_handle,
+	result = libphdi_disk_parameters_initialize(
+	          &disk_parameters,
 	          &error );
 
-	io_handle = NULL;
+	disk_parameters = NULL;
 
 	PHDI_TEST_ASSERT_EQUAL_INT(
 	 "result",
@@ -133,22 +133,22 @@ int phdi_test_io_handle_initialize(
 	     test_number < number_of_malloc_fail_tests;
 	     test_number++ )
 	{
-		/* Test libphdi_io_handle_initialize with malloc failing
+		/* Test libphdi_disk_parameters_initialize with malloc failing
 		 */
 		phdi_test_malloc_attempts_before_fail = test_number;
 
-		result = libphdi_io_handle_initialize(
-		          &io_handle,
+		result = libphdi_disk_parameters_initialize(
+		          &disk_parameters,
 		          &error );
 
 		if( phdi_test_malloc_attempts_before_fail != -1 )
 		{
 			phdi_test_malloc_attempts_before_fail = -1;
 
-			if( io_handle != NULL )
+			if( disk_parameters != NULL )
 			{
-				libphdi_io_handle_free(
-				 &io_handle,
+				libphdi_disk_parameters_free(
+				 &disk_parameters,
 				 NULL );
 			}
 		}
@@ -160,8 +160,8 @@ int phdi_test_io_handle_initialize(
 			 -1 );
 
 			PHDI_TEST_ASSERT_IS_NULL(
-			 "io_handle",
-			 io_handle );
+			 "disk_parameters",
+			 disk_parameters );
 
 			PHDI_TEST_ASSERT_IS_NOT_NULL(
 			 "error",
@@ -175,22 +175,22 @@ int phdi_test_io_handle_initialize(
 	     test_number < number_of_memset_fail_tests;
 	     test_number++ )
 	{
-		/* Test libphdi_io_handle_initialize with memset failing
+		/* Test libphdi_disk_parameters_initialize with memset failing
 		 */
 		phdi_test_memset_attempts_before_fail = test_number;
 
-		result = libphdi_io_handle_initialize(
-		          &io_handle,
+		result = libphdi_disk_parameters_initialize(
+		          &disk_parameters,
 		          &error );
 
 		if( phdi_test_memset_attempts_before_fail != -1 )
 		{
 			phdi_test_memset_attempts_before_fail = -1;
 
-			if( io_handle != NULL )
+			if( disk_parameters != NULL )
 			{
-				libphdi_io_handle_free(
-				 &io_handle,
+				libphdi_disk_parameters_free(
+				 &disk_parameters,
 				 NULL );
 			}
 		}
@@ -202,8 +202,8 @@ int phdi_test_io_handle_initialize(
 			 -1 );
 
 			PHDI_TEST_ASSERT_IS_NULL(
-			 "io_handle",
-			 io_handle );
+			 "disk_parameters",
+			 disk_parameters );
 
 			PHDI_TEST_ASSERT_IS_NOT_NULL(
 			 "error",
@@ -223,19 +223,19 @@ on_error:
 		libcerror_error_free(
 		 &error );
 	}
-	if( io_handle != NULL )
+	if( disk_parameters != NULL )
 	{
-		libphdi_io_handle_free(
-		 &io_handle,
+		libphdi_disk_parameters_free(
+		 &disk_parameters,
 		 NULL );
 	}
 	return( 0 );
 }
 
-/* Tests the libphdi_io_handle_free function
+/* Tests the libphdi_disk_parameters_free function
  * Returns 1 if successful or 0 if not
  */
-int phdi_test_io_handle_free(
+int phdi_test_disk_parameters_free(
      void )
 {
 	libcerror_error_t *error = NULL;
@@ -243,7 +243,7 @@ int phdi_test_io_handle_free(
 
 	/* Test error cases
 	 */
-	result = libphdi_io_handle_free(
+	result = libphdi_disk_parameters_free(
 	          NULL,
 	          &error );
 
@@ -270,20 +270,21 @@ on_error:
 	return( 0 );
 }
 
-/* Tests the libphdi_io_handle_clear function
+/* Tests the libphdi_disk_parameters_get_media_size function
  * Returns 1 if successful or 0 if not
  */
-int phdi_test_io_handle_clear(
+int phdi_test_disk_parameters_get_media_size(
      void )
 {
-	libcerror_error_t *error       = NULL;
-	libphdi_io_handle_t *io_handle = NULL;
-	int result                     = 0;
+	libcerror_error_t *error                   = NULL;
+	libphdi_disk_parameters_t *disk_parameters = NULL;
+	size64_t media_size                        = 0;
+	int result                                 = 0;
 
 	/* Initialize test
 	 */
-	result = libphdi_io_handle_initialize(
-	          &io_handle,
+	result = libphdi_disk_parameters_initialize(
+	          &disk_parameters,
 	          &error );
 
 	PHDI_TEST_ASSERT_EQUAL_INT(
@@ -292,8 +293,8 @@ int phdi_test_io_handle_clear(
 	 1 );
 
 	PHDI_TEST_ASSERT_IS_NOT_NULL(
-	 "io_handle",
-	 io_handle );
+	 "disk_parameters",
+	 disk_parameters );
 
 	PHDI_TEST_ASSERT_IS_NULL(
 	 "error",
@@ -301,8 +302,9 @@ int phdi_test_io_handle_clear(
 
 	/* Test regular cases
 	 */
-	result = libphdi_io_handle_clear(
-	          io_handle,
+	result = libphdi_disk_parameters_get_media_size(
+	          disk_parameters,
+	          &media_size,
 	          &error );
 
 	PHDI_TEST_ASSERT_EQUAL_INT(
@@ -316,7 +318,25 @@ int phdi_test_io_handle_clear(
 
 	/* Test error cases
 	 */
-	result = libphdi_io_handle_clear(
+	result = libphdi_disk_parameters_get_media_size(
+	          NULL,
+	          &media_size,
+	          &error );
+
+	PHDI_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	PHDI_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libphdi_disk_parameters_get_media_size(
+	          disk_parameters,
 	          NULL,
 	          &error );
 
@@ -332,40 +352,10 @@ int phdi_test_io_handle_clear(
 	libcerror_error_free(
 	 &error );
 
-#if defined( HAVE_PHDI_TEST_MEMORY )
-
-	/* Test libphdi_io_handle_clear with memset failing
-	 */
-	phdi_test_memset_attempts_before_fail = 0;
-
-	result = libphdi_io_handle_clear(
-	          io_handle,
-	          &error );
-
-	if( phdi_test_memset_attempts_before_fail != -1 )
-	{
-		phdi_test_memset_attempts_before_fail = -1;
-	}
-	else
-	{
-		PHDI_TEST_ASSERT_EQUAL_INT(
-		 "result",
-		 result,
-		 -1 );
-
-		PHDI_TEST_ASSERT_IS_NOT_NULL(
-		 "error",
-		 error );
-
-		libcerror_error_free(
-		 &error );
-	}
-#endif /* defined( HAVE_PHDI_TEST_MEMORY ) */
-
 	/* Clean up
 	 */
-	result = libphdi_io_handle_free(
-	          &io_handle,
+	result = libphdi_disk_parameters_free(
+	          &disk_parameters,
 	          &error );
 
 	PHDI_TEST_ASSERT_EQUAL_INT(
@@ -374,8 +364,8 @@ int phdi_test_io_handle_clear(
 	 1 );
 
 	PHDI_TEST_ASSERT_IS_NULL(
-	 "io_handle",
-	 io_handle );
+	 "disk_parameters",
+	 disk_parameters );
 
 	PHDI_TEST_ASSERT_IS_NULL(
 	 "error",
@@ -389,10 +379,10 @@ on_error:
 		libcerror_error_free(
 		 &error );
 	}
-	if( io_handle != NULL )
+	if( disk_parameters != NULL )
 	{
-		libphdi_io_handle_free(
-		 &io_handle,
+		libphdi_disk_parameters_free(
+		 &disk_parameters,
 		 NULL );
 	}
 	return( 0 );
@@ -418,16 +408,26 @@ int main(
 #if defined( __GNUC__ ) && !defined( LIBPHDI_DLL_IMPORT )
 
 	PHDI_TEST_RUN(
-	 "libphdi_io_handle_initialize",
-	 phdi_test_io_handle_initialize );
+	 "libphdi_disk_parameters_initialize",
+	 phdi_test_disk_parameters_initialize );
 
 	PHDI_TEST_RUN(
-	 "libphdi_io_handle_free",
-	 phdi_test_io_handle_free );
+	 "libphdi_disk_parameters_free",
+	 phdi_test_disk_parameters_free );
 
 	PHDI_TEST_RUN(
-	 "libphdi_io_handle_clear",
-	 phdi_test_io_handle_clear );
+	 "libphdi_disk_parameters_get_media_size",
+	 phdi_test_disk_parameters_get_media_size );
+
+	/* TODO: add tests for libphdi_disk_parameters_get_utf8_name_size */
+
+	/* TODO: add tests for libphdi_disk_parameters_get_utf8_name */
+
+	/* TODO: add tests for libphdi_disk_parameters_get_utf16_name_size */
+
+	/* TODO: add tests for libphdi_disk_parameters_get_utf16_name */
+
+	/* TODO: add tests for libphdi_disk_parameters_set_name */
 
 #endif /* defined( __GNUC__ ) && !defined( LIBPHDI_DLL_IMPORT ) */
 
