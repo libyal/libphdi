@@ -323,6 +323,15 @@ void pyphdi_handle_free(
 
 		return;
 	}
+	if( pyphdi_handle->file_io_handle != NULL )
+	{
+		if( pyphdi_handle_close(
+		     pyphdi_handle,
+		     NULL ) == NULL )
+		{
+			return;
+		}
+	}
 	if( pyphdi_handle->handle != NULL )
 	{
 		Py_BEGIN_ALLOW_THREADS
