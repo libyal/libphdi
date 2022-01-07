@@ -30,10 +30,13 @@
 #include "libphdi_definitions.h"
 #include "libphdi_disk_descriptor_xml_file.h"
 #include "libphdi_disk_parameters.h"
+#include "libphdi_extent_descriptor.h"
+#include "libphdi_extent_values.h"
 #include "libphdi_i18n.h"
 #include "libphdi_io_handle.h"
 #include "libphdi_handle.h"
 #include "libphdi_libbfio.h"
+#include "libphdi_libcdata.h"
 #include "libphdi_libcdirectory.h"
 #include "libphdi_libcerror.h"
 #include "libphdi_libcnotify.h"
@@ -120,6 +123,20 @@ int libphdi_handle_initialize(
 
 		goto on_error;
 	}
+	if( libcdata_array_initialize(
+	     &( internal_handle->extent_values_array ),
+	     0,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create extent values array.",
+		 function );
+
+		goto on_error;
+	}
 	if( libphdi_storage_table_initialize(
 	     &( internal_handle->storage_table ),
 	     error ) != 1 )
@@ -160,6 +177,8 @@ int libphdi_handle_initialize(
 		goto on_error;
 	}
 #endif
+	internal_handle->maximum_number_of_open_handles = LIBBFIO_POOL_UNLIMITED_NUMBER_OF_OPEN_HANDLES;
+
 	*handle = (libphdi_handle_t *) internal_handle;
 
 	return( 1 );
@@ -171,6 +190,13 @@ on_error:
 		{
 			libphdi_storage_table_free(
 			 &( internal_handle->storage_table ),
+			 NULL );
+		}
+		if( internal_handle->extent_values_array != NULL )
+		{
+			libcdata_array_free(
+			 &( internal_handle->extent_values_array ),
+			 NULL,
 			 NULL );
 		}
 		if( internal_handle->io_handle != NULL )
@@ -253,6 +279,20 @@ int libphdi_handle_free(
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
 			 "%s: unable to free IO handle.",
+			 function );
+
+			result = -1;
+		}
+		if( libcdata_array_free(
+		     &( internal_handle->extent_values_array ),
+		     (int (*)(intptr_t **, libcerror_error_t **)) &libphdi_extent_values_free,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 "%s: unable to free extent values array.",
 			 function );
 
 			result = -1;
@@ -1381,7 +1421,7 @@ int libphdi_internal_handle_open_read(
 	}
 	if( libphdi_disk_descriptor_xml_file_get_storage_data(
 	     disk_descriptor_xml_file,
-	     internal_handle->storage_table,
+	     internal_handle->extent_values_array,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
@@ -1393,6 +1433,7 @@ int libphdi_internal_handle_open_read(
 
 		goto on_error;
 	}
+/* TODO set up storage table */
 /* TODO read snapshots */
 
 /* TODO set up data block vector and cache ? */
@@ -1972,6 +2013,87 @@ int libphdi_handle_get_offset(
 	return( 1 );
 }
 
+/* Sets the maximum number of (concurrent) open file handles
+ * Returns 1 if successful or -1 on error
+ */
+int libphdi_handle_set_maximum_number_of_open_handles(
+     libphdi_handle_t *handle,
+     int maximum_number_of_open_handles,
+     libcerror_error_t **error )
+{
+	libphdi_internal_handle_t *internal_handle = NULL;
+	static char *function                      = "libphdi_handle_set_maximum_number_of_open_handles";
+	int result                                 = 1;
+
+	if( handle == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid handle.",
+		 function );
+
+		return( -1 );
+	}
+	internal_handle = (libphdi_internal_handle_t *) handle;
+
+#if defined( HAVE_LIBPHDI_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_grab_for_write(
+	     internal_handle->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to grab read/write lock for writing.",
+		 function );
+
+		return( -1 );
+	}
+#endif
+/* TODO
+	if( internal_handle->extent_data_file_io_pool != NULL )
+	{
+		if( libbfio_pool_set_maximum_number_of_open_handles(
+		     internal_handle->extent_data_file_io_pool,
+		     maximum_number_of_open_handles,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+			 "%s: unable to set maximum number of open handles in extent data file IO pool.",
+			 function );
+
+			result = -1;
+		}
+	}
+*/
+	if( result == 1 )
+	{
+		internal_handle->maximum_number_of_open_handles = maximum_number_of_open_handles;
+	}
+#if defined( HAVE_LIBPHDI_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_release_for_write(
+	     internal_handle->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to release read/write lock for writing.",
+		 function );
+
+		return( -1 );
+	}
+#endif
+	return( result );
+}
+
 /* Retrieves the number of media size
  * Returns 1 if successful or -1 on error
  */
@@ -2340,6 +2462,190 @@ int libphdi_handle_get_utf16_name(
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
 		 "%s: unable to release read/write lock for writing.",
+		 function );
+
+		return( -1 );
+	}
+#endif
+	return( result );
+}
+
+/* Retrieves the number of extents
+ * Returns 1 if successful or -1 on error
+ */
+int libphdi_handle_get_number_of_extents(
+     libphdi_handle_t *handle,
+     int *number_of_extents,
+     libcerror_error_t **error )
+{
+	libphdi_internal_handle_t *internal_handle = NULL;
+	static char *function                      = "libphdi_handle_get_number_of_extents";
+	int result                                 = 1;
+
+	if( handle == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid handle.",
+		 function );
+
+		return( -1 );
+	}
+	internal_handle = (libphdi_internal_handle_t *) handle;
+
+#if defined( HAVE_LIBPHDI_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_grab_for_read(
+	     internal_handle->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to grab read/write lock for reading.",
+		 function );
+
+		return( -1 );
+	}
+#endif
+	if( libcdata_array_get_number_of_entries(
+	     internal_handle->extent_values_array,
+	     number_of_extents,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve number of extents.",
+		 function );
+
+		result = -1;
+	}
+#if defined( HAVE_LIBPHDI_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_release_for_read(
+	     internal_handle->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to release read/write lock for reading.",
+		 function );
+
+		return( -1 );
+	}
+#endif
+	return( result );
+}
+
+/* Retrieves a specific extent descriptor
+ * Returns 1 if successful or -1 on error
+ */
+int libphdi_handle_get_extent_descriptor(
+     libphdi_handle_t *handle,
+     int extent_index,
+     libphdi_extent_descriptor_t **extent_descriptor,
+     libcerror_error_t **error )
+{
+	libphdi_extent_values_t *extent_values     = NULL;
+	libphdi_internal_handle_t *internal_handle = NULL;
+	static char *function                      = "libphdi_handle_get_extent_descriptor";
+	int result                                 = 1;
+
+	if( handle == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid handle.",
+		 function );
+
+		return( -1 );
+	}
+	internal_handle = (libphdi_internal_handle_t *) handle;
+
+	if( extent_descriptor == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid extent descriptor.",
+		 function );
+
+		return( -1 );
+	}
+	if( *extent_descriptor != NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
+		 "%s: invalid extent descriptor value already set.",
+		 function );
+
+		return( -1 );
+	}
+#if defined( HAVE_LIBPHDI_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_grab_for_read(
+	     internal_handle->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to grab read/write lock for reading.",
+		 function );
+
+		return( -1 );
+	}
+#endif
+	if( libcdata_array_get_entry_by_index(
+	     internal_handle->extent_values_array,
+	     extent_index,
+	     (intptr_t **) &extent_values,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve extent: %d from descriptor file.",
+		 function,
+		 extent_index );
+
+		result = -1;
+	}
+	else if( libphdi_extent_descriptor_initialize(
+	          extent_descriptor,
+	          extent_values,
+	          error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create extent descriptor.",
+		 function );
+
+		result = -1;
+	}
+#if defined( HAVE_LIBPHDI_MULTI_THREAD_SUPPORT )
+	if( libcthreads_read_write_lock_release_for_read(
+	     internal_handle->read_write_lock,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to release read/write lock for reading.",
 		 function );
 
 		return( -1 );

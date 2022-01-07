@@ -341,7 +341,8 @@ int libphdi_check_file_signature_file_io_handle(
      libbfio_handle_t *file_io_handle,
      libcerror_error_t **error )
 {
-	uint8_t signature[ 16 ];
+	uint8_t header_signature[ 16 ];
+	uint8_t footer_signature[ 24 ];
 
 	static char *function      = "libphdi_check_file_signature_file_io_handle";
 	ssize_t read_count         = 0;
@@ -392,7 +393,7 @@ int libphdi_check_file_signature_file_io_handle(
 	}
 	read_count = libbfio_handle_read_buffer_at_offset(
 	              file_io_handle,
-	              signature,
+	              header_signature,
 	              16,
 	              0,
 	              error );
@@ -403,7 +404,39 @@ int libphdi_check_file_signature_file_io_handle(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_IO,
 		 LIBCERROR_IO_ERROR_READ_FAILED,
-		 "%s: unable to read signature at offset: 0 (0x00000000).",
+		 "%s: unable to read header signature at offset: 0 (0x00000000).",
+		 function );
+
+		goto on_error;
+	}
+	if( libbfio_handle_seek_offset(
+	     file_io_handle,
+	     -24,
+	     SEEK_END,
+	     error ) == -1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_SEEK_FAILED,
+		 "%s: unable to seek footer signature offset: -24.",
+		 function );
+
+		goto on_error;
+	}
+	read_count = libbfio_handle_read_buffer(
+	              file_io_handle,
+	              footer_signature,
+	              24,
+	              error );
+
+	if( read_count != 24 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_READ_FAILED,
+		 "%s: unable to read footer signature at offset: -24.",
 		 function );
 
 		goto on_error;
@@ -426,15 +459,22 @@ int libphdi_check_file_signature_file_io_handle(
 	}
 	if( memory_compare(
 	     "WithoutFreeSpace",
-	     signature,
+	     header_signature,
 	     16 ) == 0 )
 	{
 		return( 1 );
 	}
 	if( memory_compare(
 	     "WithouFreSpacExt",
-	     signature,
+	     header_signature,
 	     16 ) == 0 )
+	{
+		return( 1 );
+	}
+	if( memory_compare(
+	     "</Parallels_disk_image>\n",
+	     footer_signature,
+	     24 ) == 0 )
 	{
 		return( 1 );
 	}

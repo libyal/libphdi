@@ -1,15 +1,8 @@
 TODO:
 * complete library
-
-20161103
-* worked on library
-
-20160110
-* 2016 update
-
-20151220
-* worked on library
+** complete read_buffer function
 
 20151219
+* see `git log' for more recent change log
 * initial version
 

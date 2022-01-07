@@ -35,6 +35,8 @@ libphdi_la_SOURCES = \
 	libphdi_disk_descriptor_xml_file.c libphdi_disk_descriptor_xml_file.h \
 	libphdi_disk_parameters.c libphdi_disk_parameters.h \
 	libphdi_error.c libphdi_error.h \
+	libphdi_extent_descriptor.c libphdi_extent_descriptor.h \
+	libphdi_extent_values.c libphdi_extent_values.h \
 	libphdi_extern.h \
 	libphdi_handle.c libphdi_handle.h \
 	libphdi_i18n.c libphdi_i18n.h \

@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
-	Name="phdiinfo"
-	ProjectGUID="{0F10AA8E-4EE3-4A64-9B9C-47ACC7C2B6C5}"
-	RootNamespace="phdiinfo"
+	Name="phdi_test_extent_descriptor"
+	ProjectGUID="{34C38914-56E3-462B-AE49-D41E91A60865}"
+	RootNamespace="phdi_test_extent_descriptor"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="131072"
 	>
@@ -41,8 +41,8 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\..\include;..\..\common;..\..\libcerror;..\..\libcdata;..\..\libclocale;..\..\libcnotify;..\..\libcsplit;..\..\libuna;..\..\libcfile;..\..\libcpath;..\..\libbfio;..\..\libfcache;..\..\libfdata"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE;HAVE_LOCAL_LIBCERROR;HAVE_LOCAL_LIBCDATA;HAVE_LOCAL_LIBCLOCALE;HAVE_LOCAL_LIBCNOTIFY;HAVE_LOCAL_LIBCSPLIT;HAVE_LOCAL_LIBUNA;HAVE_LOCAL_LIBCFILE;HAVE_LOCAL_LIBCPATH;HAVE_LOCAL_LIBBFIO;HAVE_LOCAL_LIBFCACHE;HAVE_LOCAL_LIBFDATA;LIBPHDI_DLL_IMPORT"
+				AdditionalIncludeDirectories="..\..\include;..\..\common;..\..\libcerror;..\..\libcthreads;..\..\libcdata;..\..\libclocale;..\..\libcnotify;..\..\libcsplit;..\..\libuna;..\..\libcdirectory;..\..\libcfile;..\..\libcpath;..\..\libbfio;..\..\libfcache;..\..\libfdata"
+				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE;HAVE_LOCAL_LIBCERROR;HAVE_LOCAL_LIBCTHREADS;HAVE_LOCAL_LIBCDATA;HAVE_LOCAL_LIBCLOCALE;HAVE_LOCAL_LIBCNOTIFY;HAVE_LOCAL_LIBCSPLIT;HAVE_LOCAL_LIBUNA;HAVE_LOCAL_LIBCDIRECTORY;HAVE_LOCAL_LIBCFILE;HAVE_LOCAL_LIBCPATH;HAVE_LOCAL_LIBBFIO;HAVE_LOCAL_LIBFCACHE;HAVE_LOCAL_LIBFDATA;LIBPHDI_DLL_IMPORT"
 				RuntimeLibrary="2"
 				WarningLevel="4"
 				CompileAs="1"
@@ -114,8 +114,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\include;..\..\common;..\..\libcerror;..\..\libcdata;..\..\libclocale;..\..\libcnotify;..\..\libcsplit;..\..\libuna;..\..\libcfile;..\..\libcpath;..\..\libbfio;..\..\libfcache;..\..\libfdata"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE;HAVE_LOCAL_LIBCERROR;HAVE_LOCAL_LIBCDATA;HAVE_LOCAL_LIBCLOCALE;HAVE_LOCAL_LIBCNOTIFY;HAVE_LOCAL_LIBCSPLIT;HAVE_LOCAL_LIBUNA;HAVE_LOCAL_LIBCFILE;HAVE_LOCAL_LIBCPATH;HAVE_LOCAL_LIBBFIO;HAVE_LOCAL_LIBFCACHE;HAVE_LOCAL_LIBFDATA;LIBPHDI_DLL_IMPORT"
+				AdditionalIncludeDirectories="..\..\include;..\..\common;..\..\libcerror;..\..\libcthreads;..\..\libcdata;..\..\libclocale;..\..\libcnotify;..\..\libcsplit;..\..\libuna;..\..\libcdirectory;..\..\libcfile;..\..\libcpath;..\..\libbfio;..\..\libfcache;..\..\libfdata"
+				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE;HAVE_LOCAL_LIBCERROR;HAVE_LOCAL_LIBCTHREADS;HAVE_LOCAL_LIBCDATA;HAVE_LOCAL_LIBCLOCALE;HAVE_LOCAL_LIBCNOTIFY;HAVE_LOCAL_LIBCSPLIT;HAVE_LOCAL_LIBUNA;HAVE_LOCAL_LIBCDIRECTORY;HAVE_LOCAL_LIBCFILE;HAVE_LOCAL_LIBCPATH;HAVE_LOCAL_LIBBFIO;HAVE_LOCAL_LIBFCACHE;HAVE_LOCAL_LIBFDATA;LIBPHDI_DLL_IMPORT"
 				BasicRuntimeChecks="3"
 				SmallerTypeCheck="true"
 				RuntimeLibrary="3"
@@ -176,27 +176,11 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\..\phditools\byte_size_string.c"
+				RelativePath="..\..\tests\phdi_test_extent_descriptor.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\phditools\info_handle.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\phditools\phdiinfo.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\phditools\phditools_getopt.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\phditools\phditools_output.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\phditools\phditools_signal.c"
+				RelativePath="..\..\tests\phdi_test_memory.c"
 				>
 			</File>
 		</Filter>
@@ -206,59 +190,23 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\..\phditools\byte_size_string.h"
+				RelativePath="..\..\tests\phdi_test_libcerror.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\phditools\info_handle.h"
+				RelativePath="..\..\tests\phdi_test_libphdi.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\phditools\phditools_getopt.h"
+				RelativePath="..\..\tests\phdi_test_macros.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\phditools\phditools_i18n.h"
+				RelativePath="..\..\tests\phdi_test_memory.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\phditools\phditools_libbfio.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\phditools\phditools_libcdata.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\phditools\phditools_libcerror.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\phditools\phditools_libclocale.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\phditools\phditools_libcnotify.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\phditools\phditools_libphdi.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\phditools\phditools_libuna.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\phditools\phditools_output.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\phditools\phditools_signal.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\phditools\phditools_unused.h"
+				RelativePath="..\..\tests\phdi_test_unused.h"
 				>
 			</File>
 		</Filter>

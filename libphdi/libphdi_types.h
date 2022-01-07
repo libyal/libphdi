@@ -34,9 +34,11 @@
 /* The following type definitions hide internal data structures
  */
 #if defined( HAVE_DEBUG_OUTPUT ) && !defined( WINAPI )
-typedef struct libphdi_handle {}	libphdi_handle_t;
+typedef struct libphdi_extent_descriptor {}	libphdi_extent_descriptor_t;
+typedef struct libphdi_handle {}		libphdi_handle_t;
 
 #else
+typedef intptr_t libphdi_extent_descriptor_t;
 typedef intptr_t libphdi_handle_t;
 
 #endif /* defined( HAVE_DEBUG_OUTPUT ) && !defined( WINAPI ) */

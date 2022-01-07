@@ -1,4 +1,4 @@
-.Dd October  4, 2020
+.Dd January  7, 2022
 .Dt libphdi 3
 .Os libphdi
 .Sh NAME
@@ -82,6 +82,10 @@ Handle functions
 .Fn libphdi_handle_get_utf16_name_size "libphdi_handle_t *handle" "size_t *utf16_string_size" "libphdi_error_t **error"
 .Ft int
 .Fn libphdi_handle_get_utf16_name "libphdi_handle_t *handle" "uint16_t *utf16_string" "size_t utf16_string_size" "libphdi_error_t **error"
+.Ft int
+.Fn libphdi_handle_get_number_of_extents "libphdi_handle_t *handle" "int *number_of_extents" "libphdi_error_t **error"
+.Ft int
+.Fn libphdi_handle_get_extent_descriptor "libphdi_handle_t *handle" "int extent_index" "libphdi_extent_descriptor_t **extent_descriptor" "libphdi_error_t **error"
 .Pp
 Available when compiled with wide character string support:
 .Ft int
@@ -90,6 +94,22 @@ Available when compiled with wide character string support:
 Available when compiled with libbfio support:
 .Ft int
 .Fn libphdi_handle_open_file_io_handle "libphdi_handle_t *handle" "libbfio_handle_t *file_io_handle" "int access_flags" "libphdi_error_t **error"
+.Pp
+Extent descriptor functions
+.Ft int
+.Fn libphdi_extent_descriptor_free "libphdi_extent_descriptor_t **extent_descriptor" "libphdi_error_t **error"
+.Ft int
+.Fn libphdi_extent_descriptor_get_type "libphdi_extent_descriptor_t *extent_descriptor" "int *type" "libphdi_error_t **error"
+.Ft int
+.Fn libphdi_extent_descriptor_get_range "libphdi_extent_descriptor_t *extent_descriptor" "off64_t *offset" "size64_t *size" "libphdi_error_t **error"
+.Ft int
+.Fn libphdi_extent_descriptor_get_utf8_filename_size "libphdi_extent_descriptor_t *extent_descriptor" "size_t *utf8_string_size" "libphdi_error_t **error"
+.Ft int
+.Fn libphdi_extent_descriptor_get_utf8_filename "libphdi_extent_descriptor_t *extent_descriptor" "uint8_t *utf8_string" "size_t utf8_string_size" "libphdi_error_t **error"
+.Ft int
+.Fn libphdi_extent_descriptor_get_utf16_filename_size "libphdi_extent_descriptor_t *extent_descriptor" "size_t *utf16_string_size" "libphdi_error_t **error"
+.Ft int
+.Fn libphdi_extent_descriptor_get_utf16_filename "libphdi_extent_descriptor_t *extent_descriptor" "uint16_t *utf16_string" "size_t utf16_string_size" "libphdi_error_t **error"
 .Sh DESCRIPTION
 The
 .Fn libphdi_get_version

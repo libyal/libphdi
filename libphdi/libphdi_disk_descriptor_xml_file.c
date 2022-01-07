@@ -21,14 +21,17 @@
 
 #include <common.h>
 #include <memory.h>
+#include <narrow_string.h>
 #include <types.h>
 
 #include "libphdi_disk_descriptor_xml_file.h"
+#include "libphdi_definitions.h"
 #include "libphdi_libbfio.h"
+#include "libphdi_libcdata.h"
 #include "libphdi_libcerror.h"
 #include "libphdi_libcnotify.h"
 #include "libphdi_libfvalue.h"
-#include "libphdi_types.h"
+#include "libphdi_extent_values.h"
 #include "libphdi_xml_parser.h"
 
 extern \
@@ -96,7 +99,12 @@ int libphdi_disk_descriptor_xml_file_initialize(
 		 "%s: unable to clear disk descriptor XML file.",
 		 function );
 	
-		goto on_error;
+		memory_free(
+		 *disk_descriptor_xml_file );
+
+		*disk_descriptor_xml_file = NULL;
+
+		return( -1 );
 	}
 	return( 1 );
 
@@ -1133,22 +1141,26 @@ int libphdi_disk_descriptor_xml_file_get_disk_parameters(
  */
 int libphdi_disk_descriptor_xml_file_get_storage_data(
      libphdi_disk_descriptor_xml_file_t *disk_descriptor_xml_file,
-     libphdi_storage_table_t *storage_table,
+     libcdata_array_t *extent_values_array,
      libcerror_error_t **error )
 {
-	libphdi_xml_tag_t *element_tag    = NULL;
-	libphdi_xml_tag_t *image_file_tag = NULL;
-	libphdi_xml_tag_t *image_tag      = NULL;
-	libphdi_xml_tag_t *storage_tag    = NULL;
-	static char *function             = "libphdi_disk_descriptor_xml_file_get_storage_data";
-	off64_t end_offset                = 0;
-	off64_t start_offset              = 0;
-	uint64_t value_64bit              = 0;
-	int element_index                 = 0;
-	int number_of_elements            = 0;
-	int number_of_storage_elements    = 0;
-	int result                        = 0;
-	int storage_element_index         = 0;
+	libphdi_extent_values_t *extent_values = NULL;
+	libphdi_xml_tag_t *element_tag         = NULL;
+	libphdi_xml_tag_t *image_file_tag      = NULL;
+	libphdi_xml_tag_t *image_tag           = NULL;
+	libphdi_xml_tag_t *image_type_tag      = NULL;
+	libphdi_xml_tag_t *storage_tag         = NULL;
+	static char *function                  = "libphdi_disk_descriptor_xml_file_get_storage_data";
+	off64_t end_offset                     = 0;
+	off64_t start_offset                   = 0;
+	uint64_t value_64bit                   = 0;
+	int entry_index                       = 0;
+	int element_index                      = 0;
+	int extent_type                       = 0;
+	int number_of_elements                 = 0;
+	int number_of_storage_elements         = 0;
+	int result                             = 0;
+	int storage_element_index              = 0;
 
 	if( disk_descriptor_xml_file == NULL )
 	{
@@ -1160,6 +1172,20 @@ int libphdi_disk_descriptor_xml_file_get_storage_data(
 		 function );
 
 		return( -1 );
+	}
+	if( libcdata_array_empty(
+	     extent_values_array,
+	     (int (*)(intptr_t **, libcerror_error_t **)) &libphdi_extent_values_free,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+		 "%s: unable to empty extent values array.",
+		 function );
+
+		goto on_error;
 	}
 	if( libphdi_xml_tag_get_number_of_elements(
 	     disk_descriptor_xml_file->storage_data_tag,
@@ -1173,7 +1199,7 @@ int libphdi_disk_descriptor_xml_file_get_storage_data(
 		 "%s: unable to retrieve number of storage elements.",
 		 function );
 
-		return( -1 );
+		goto on_error;
 	}
 	for( storage_element_index = 0;
 	     storage_element_index < number_of_storage_elements;
@@ -1193,7 +1219,7 @@ int libphdi_disk_descriptor_xml_file_get_storage_data(
 			 function,
 			 storage_element_index );
 
-			return( -1 );
+			goto on_error;
 		}
 		result = libphdi_xml_tag_compare_name(
 			  storage_tag,
@@ -1211,7 +1237,7 @@ int libphdi_disk_descriptor_xml_file_get_storage_data(
 			 function,
 			 storage_element_index );
 
-			return( -1 );
+			goto on_error;
 		}
 		else if( result == 0 )
 		{
@@ -1223,7 +1249,7 @@ int libphdi_disk_descriptor_xml_file_get_storage_data(
 			 function,
 			 storage_element_index );
 
-			return( -1 );
+			goto on_error;
 		}
 		if( libphdi_xml_tag_get_number_of_elements(
 		     storage_tag,
@@ -1238,10 +1264,11 @@ int libphdi_disk_descriptor_xml_file_get_storage_data(
 			 function,
 			 storage_element_index );
 
-			return( -1 );
+			goto on_error;
 		}
 		image_tag      = NULL;
 		image_file_tag = NULL;
+		image_type_tag = NULL;
 		start_offset   = -1;
 		end_offset     = -1;
 
@@ -1264,7 +1291,7 @@ int libphdi_disk_descriptor_xml_file_get_storage_data(
 				 element_index,
 				 storage_element_index );
 
-				return( -1 );
+				goto on_error;
 			}
 			result = libphdi_xml_tag_compare_name(
 				  element_tag,
@@ -1283,7 +1310,7 @@ int libphdi_disk_descriptor_xml_file_get_storage_data(
 				 element_index,
 				 storage_element_index );
 
-				return( -1 );
+				goto on_error;
 			}
 			else if( result != 0 )
 			{
@@ -1302,7 +1329,7 @@ int libphdi_disk_descriptor_xml_file_get_storage_data(
 					 "%s: unable to convert Blocksize value to integer.",
 					 function );
 
-					return( -1 );
+					goto on_error;
 				}
 				if( value_64bit != 2048 )
 				{
@@ -1314,7 +1341,7 @@ int libphdi_disk_descriptor_xml_file_get_storage_data(
 					 function,
 					 value_64bit );
 
-					return( -1 );
+					goto on_error;
 				}
 				continue;
 			}
@@ -1335,7 +1362,7 @@ int libphdi_disk_descriptor_xml_file_get_storage_data(
 				 element_index,
 				 storage_element_index );
 
-				return( -1 );
+				goto on_error;
 			}
 			else if( result != 0 )
 			{
@@ -1354,7 +1381,7 @@ int libphdi_disk_descriptor_xml_file_get_storage_data(
 					 "%s: unable to convert End value to integer.",
 					 function );
 
-					return( -1 );
+					goto on_error;
 				}
 				if( value_64bit > (uint64_t) ( INT64_MAX / 512 ) )
 				{
@@ -1366,7 +1393,7 @@ int libphdi_disk_descriptor_xml_file_get_storage_data(
 					 function,
 					 value_64bit );
 
-					return( -1 );
+					goto on_error;
 				}
 				end_offset = (off64_t) value_64bit * 512;
 
@@ -1389,7 +1416,7 @@ int libphdi_disk_descriptor_xml_file_get_storage_data(
 				 element_index,
 				 storage_element_index );
 
-				return( -1 );
+				goto on_error;
 			}
 			else if( result != 0 )
 			{
@@ -1402,7 +1429,7 @@ int libphdi_disk_descriptor_xml_file_get_storage_data(
 					 "%s: invalid image tag value already set.",
 					 function );
 
-					return( -1 );
+					goto on_error;
 				}
 				image_tag = element_tag;
 
@@ -1425,7 +1452,7 @@ int libphdi_disk_descriptor_xml_file_get_storage_data(
 				 element_index,
 				 storage_element_index );
 
-				return( -1 );
+				goto on_error;
 			}
 			else if( result != 0 )
 			{
@@ -1444,7 +1471,7 @@ int libphdi_disk_descriptor_xml_file_get_storage_data(
 					 "%s: unable to convert Start value to integer.",
 					 function );
 
-					return( -1 );
+					goto on_error;
 				}
 				if( value_64bit > (uint64_t) ( INT64_MAX / 512 ) )
 				{
@@ -1456,7 +1483,7 @@ int libphdi_disk_descriptor_xml_file_get_storage_data(
 					 function,
 					 value_64bit );
 
-					return( -1 );
+					goto on_error;
 				}
 				start_offset = (off64_t) value_64bit * 512;
 			}
@@ -1475,7 +1502,7 @@ int libphdi_disk_descriptor_xml_file_get_storage_data(
 			 function,
 			 storage_element_index );
 
-			return( -1 );
+			goto on_error;
 		}
 		for( element_index = 0;
 		     element_index < number_of_elements;
@@ -1496,7 +1523,7 @@ int libphdi_disk_descriptor_xml_file_get_storage_data(
 				 element_index,
 				 storage_element_index );
 
-				return( -1 );
+				goto on_error;
 			}
 			result = libphdi_xml_tag_compare_name(
 				  element_tag,
@@ -1515,7 +1542,7 @@ int libphdi_disk_descriptor_xml_file_get_storage_data(
 				 element_index,
 				 storage_element_index );
 
-				return( -1 );
+				goto on_error;
 			}
 			else if( result != 0 )
 			{
@@ -1528,9 +1555,45 @@ int libphdi_disk_descriptor_xml_file_get_storage_data(
 					 "%s: invalid image file tag value already set.",
 					 function );
 
-					return( -1 );
+					goto on_error;
 				}
 				image_file_tag = element_tag;
+
+				continue;
+			}
+			result = libphdi_xml_tag_compare_name(
+				  element_tag,
+				  (uint8_t *) "Type",
+				  4,
+				  error );
+
+			if( result == -1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+				 "%s: unable to compare name of element: %d of image tag of storage tag: %d.",
+				 function,
+				 element_index,
+				 storage_element_index );
+
+				goto on_error;
+			}
+			else if( result != 0 )
+			{
+				if( image_type_tag != NULL )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
+					 "%s: invalid image type tag value already set.",
+					 function );
+
+					goto on_error;
+				}
+				image_type_tag = element_tag;
 
 				continue;
 			}
@@ -1545,44 +1608,111 @@ int libphdi_disk_descriptor_xml_file_get_storage_data(
 			 "%s: missing image file tag.",
 			 function );
 
-			return( -1 );
+			goto on_error;
 		}
-		if( start_offset < 0 )
+		if( image_type_tag == NULL )
 		{
 			libcerror_error_set(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-			 "%s: missing start offset.",
+			 "%s: missing image type tag.",
 			 function );
 
-			return( -1 );
+			goto on_error;
 		}
-		if( end_offset < 0 )
+		if( image_type_tag->value == NULL )
 		{
 			libcerror_error_set(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-			 "%s: missing end offset.",
+			 "%s: invalid image type tag - missing value.",
 			 function );
 
-			return( -1 );
+			goto on_error;
 		}
-		if( start_offset >= end_offset )
+		extent_type = LIBPHDI_EXTENT_TYPE_UNKNOWN;
+
+		if( ( image_type_tag->value_size == 6 )
+		 && ( narrow_string_compare(
+		       "Plain",
+		       image_type_tag->value,
+		       image_type_tag->value_size ) == 0 ) )
+		{
+			extent_type = LIBPHDI_EXTENT_TYPE_PLAIN;
+		}
+		else if( ( image_type_tag->value_size == 11 )
+		      && ( narrow_string_compare(
+		            "Compressed",
+		            image_type_tag->value,
+		            image_type_tag->value_size ) == 0 ) )
+		{
+			extent_type = LIBPHDI_EXTENT_TYPE_COMPRESSED;
+		}
+		if( libphdi_extent_values_initialize(
+		     &extent_values,
+		     error ) != 1 )
 		{
 			libcerror_error_set(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
-			 "%s: invalid end offset value out of bounds.",
+			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 "%s: unable to create extent values.",
 			 function );
 
-			return( -1 );
+			goto on_error;
 		}
-/* TODO add storage image to table */
+		if( libphdi_extent_values_set(
+		     extent_values,
+		     image_file_tag->value,
+		     image_file_tag->value_size,
+		     extent_type,
+		     start_offset,
+		     end_offset,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+			 "%s: unable to set extent values.",
+			 function );
+
+			goto on_error;
+		}
+		if( libcdata_array_append_entry(
+		     extent_values_array,
+		     &entry_index,
+		     (intptr_t *) extent_values,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_APPEND_FAILED,
+			 "%s: unable to append extent values to array.",
+			 function );
+
+			goto on_error;
+		}
+		extent_values = NULL;
 	}
 	return( 1 );
+
+on_error:
+	if( extent_values != NULL )
+	{
+		libphdi_extent_values_free(
+		 &extent_values,
+		 NULL );
+	}
+	libcdata_array_empty(
+	 extent_values_array,
+	 (int (*)(intptr_t **, libcerror_error_t **)) &libphdi_extent_values_free,
+	 NULL );
+
+	return( -1 );
 }
 
 /* Retrieves the snapshots

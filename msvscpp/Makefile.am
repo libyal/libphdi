@@ -16,6 +16,8 @@ MSVSCPP_FILES = \
 	libphdi/libphdi.vcproj \
 	libuna/libuna.vcproj \
 	phdi_test_error/phdi_test_error.vcproj \
+	phdi_test_extent_descriptor/phdi_test_extent_descriptor.vcproj \
+	phdi_test_extent_values/phdi_test_extent_values.vcproj \
 	phdi_test_handle/phdi_test_handle.vcproj \
 	phdi_test_io_handle/phdi_test_io_handle.vcproj \
 	phdi_test_notify/phdi_test_notify.vcproj \

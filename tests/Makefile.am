@@ -41,6 +41,8 @@ EXTRA_DIST = \
 
 check_PROGRAMS = \
 	phdi_test_error \
+	phdi_test_extent_descriptor \
+	phdi_test_extent_values \
 	phdi_test_handle \
 	phdi_test_io_handle \
 	phdi_test_notify \
@@ -55,6 +57,30 @@ phdi_test_error_SOURCES = \
 
 phdi_test_error_LDADD = \
 	../libphdi/libphdi.la
+
+phdi_test_extent_descriptor_SOURCES = \
+	phdi_test_extent_descriptor.c \
+	phdi_test_libcerror.h \
+	phdi_test_libphdi.h \
+	phdi_test_macros.h \
+	phdi_test_memory.c phdi_test_memory.h \
+	phdi_test_unused.h
+
+phdi_test_extent_descriptor_LDADD = \
+	../libphdi/libphdi.la \
+	@LIBCERROR_LIBADD@
+
+phdi_test_extent_values_SOURCES = \
+	phdi_test_extent_values.c \
+	phdi_test_libcerror.h \
+	phdi_test_libphdi.h \
+	phdi_test_macros.h \
+	phdi_test_memory.c phdi_test_memory.h \
+	phdi_test_unused.h
+
+phdi_test_extent_values_LDADD = \
+	../libphdi/libphdi.la \
+	@LIBCERROR_LIBADD@
 
 phdi_test_handle_SOURCES = \
 	phdi_test_functions.c phdi_test_functions.h \

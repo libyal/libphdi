@@ -363,6 +363,98 @@ int libphdi_handle_get_utf16_name(
      size_t utf16_string_size,
      libphdi_error_t **error );
 
+/* Retrieves the number of extents
+ * Returns 1 if successful or -1 on error
+ */
+LIBPHDI_EXTERN \
+int libphdi_handle_get_number_of_extents(
+     libphdi_handle_t *handle,
+     int *number_of_extents,
+     libphdi_error_t **error );
+
+/* Retrieves a specific extent descriptor
+ * Returns 1 if successful or -1 on error
+ */
+LIBPHDI_EXTERN \
+int libphdi_handle_get_extent_descriptor(
+     libphdi_handle_t *handle,
+     int extent_index,
+     libphdi_extent_descriptor_t **extent_descriptor,
+     libphdi_error_t **error );
+
+/* -------------------------------------------------------------------------
+ * Extent descriptor functions
+ * ------------------------------------------------------------------------- */
+
+/* Frees an extent descriptor
+ * Returns 1 if successful or -1 on error
+ */
+LIBPHDI_EXTERN \
+int libphdi_extent_descriptor_free(
+     libphdi_extent_descriptor_t **extent_descriptor,
+     libphdi_error_t **error );
+
+/* Retrieves the extent type
+ * Returns 1 if successful or -1 on error
+ */
+LIBPHDI_EXTERN \
+int libphdi_extent_descriptor_get_type(
+     libphdi_extent_descriptor_t *extent_descriptor,
+     int *type,
+     libphdi_error_t **error );
+
+/* Retrieves the extent range (offset and size)
+ * Returns 1 if successful or -1 on error
+ */
+LIBPHDI_EXTERN \
+int libphdi_extent_descriptor_get_range(
+     libphdi_extent_descriptor_t *extent_descriptor,
+     off64_t *offset,
+     size64_t *size,
+     libphdi_error_t **error );
+
+/* Retrieves the size of the UTF-8 encoded filename
+ * The returned size includes the end of string character
+ * Returns 1 if successful, 0 if not available or -1 on error
+ */
+LIBPHDI_EXTERN \
+int libphdi_extent_descriptor_get_utf8_filename_size(
+     libphdi_extent_descriptor_t *extent_descriptor,
+     size_t *utf8_string_size,
+     libphdi_error_t **error );
+
+/* Retrieves the UTF-8 encoded filename
+ * The size should include the end of string character
+ * Returns 1 if successful, 0 if not available or -1 on error
+ */
+LIBPHDI_EXTERN \
+int libphdi_extent_descriptor_get_utf8_filename(
+     libphdi_extent_descriptor_t *extent_descriptor,
+     uint8_t *utf8_string,
+     size_t utf8_string_size,
+     libphdi_error_t **error );
+
+/* Retrieves the size of the UTF-16 encoded filename
+ * The returned size includes the end of string character
+ * Returns 1 if successful, 0 if not available or -1 on error
+ */
+LIBPHDI_EXTERN \
+int libphdi_extent_descriptor_get_utf16_filename_size(
+     libphdi_extent_descriptor_t *extent_descriptor,
+     size_t *utf16_string_size,
+     libphdi_error_t **error );
+
+/* Retrieves the UTF-16 encoded filename
+ * The size should include the end of string character
+ * Returns 1 if successful, 0 if not available or -1 on error
+ */
+LIBPHDI_EXTERN \
+int libphdi_extent_descriptor_get_utf16_filename(
+     libphdi_extent_descriptor_t *extent_descriptor,
+     uint16_t *utf16_string,
+     size_t utf16_string_size,
+     libphdi_error_t **error );
+
 #if defined( __cplusplus )
 }
 #endif

@@ -2840,7 +2840,7 @@ int main(
 
 #if defined( __GNUC__ ) && !defined( LIBPHDI_DLL_IMPORT )
 
-		/* TODO: add tests for libphdi_handle_open_read */
+		/* TODO: add tests for libphdi_internal_handle_open_read */
 
 		PHDI_TEST_RUN_WITH_ARGS(
 		 "libphdi_internal_handle_read_buffer_from_file_io_handle",
@@ -2858,16 +2858,6 @@ int main(
 		 "libphdi_handle_read_buffer_at_offset",
 		 phdi_test_handle_read_buffer_at_offset,
 		 handle );
-
-#if defined( __GNUC__ ) && !defined( LIBPHDI_DLL_IMPORT )
-
-		/* TODO: add tests for libphdi_internal_handle_write_buffer_to_file_io_handle */
-
-#endif /* defined( __GNUC__ ) && !defined( LIBPHDI_DLL_IMPORT ) */
-
-		/* TODO: add tests for libphdi_handle_write_buffer */
-
-		/* TODO: add tests for libphdi_handle_write_buffer_at_offset */
 
 #if defined( __GNUC__ ) && !defined( LIBPHDI_DLL_IMPORT )
 
@@ -2889,6 +2879,14 @@ int main(
 		 "libphdi_handle_get_media_size",
 		 phdi_test_handle_get_media_size,
 		 handle );
+
+		/* TODO: add tests for libphdi_handle_get_utf8_name_size */
+
+		/* TODO: add tests for libphdi_handle_get_utf8_name */
+
+		/* TODO: add tests for libphdi_handle_get_utf16_name_size */
+
+		/* TODO: add tests for libphdi_handle_get_utf16_name */
 
 		/* Clean up
 		 */

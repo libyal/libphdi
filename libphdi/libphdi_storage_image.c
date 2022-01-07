@@ -29,7 +29,7 @@
 #include "libphdi_storage_image.h"
 #include "libphdi_unused.h"
 
-/* Creates storage image
+/* Creates a storage image
  * Make sure the value storage_image is referencing, is set to NULL
  * Returns 1 if successful or -1 on error
  */

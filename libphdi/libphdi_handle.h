@@ -29,6 +29,7 @@
 #include "libphdi_extern.h"
 #include "libphdi_io_handle.h"
 #include "libphdi_libbfio.h"
+#include "libphdi_libcdata.h"
 #include "libphdi_libcerror.h"
 #include "libphdi_libcthreads.h"
 #include "libphdi_libfcache.h"
@@ -71,6 +72,10 @@ struct libphdi_internal_handle
 	 */
 	libphdi_disk_parameters_t *disk_parameters;
 
+	/* The extent values array
+	 */
+	libcdata_array_t *extent_values_array;
+
 	/* The data block vector
 	 */
 	libfdata_vector_t *data_block_vector;
@@ -78,6 +83,10 @@ struct libphdi_internal_handle
 	/* The data block cache
 	 */
 	libfcache_cache_t *data_block_cache;
+
+	/* The maximum number of open handles in the file IO pool
+	 */
+	int maximum_number_of_open_handles;
 
 #if defined( HAVE_LIBPHDI_MULTI_THREAD_SUPPORT )
 	/* The read/write lock
@@ -178,6 +187,12 @@ int libphdi_handle_get_offset(
      libcerror_error_t **error );
 
 LIBPHDI_EXTERN \
+int libphdi_handle_set_maximum_number_of_open_handles(
+     libphdi_handle_t *handle,
+     int maximum_number_of_open_handles,
+     libcerror_error_t **error );
+
+LIBPHDI_EXTERN \
 int libphdi_handle_get_media_size(
      libphdi_handle_t *handle,
      size64_t *media_size,
@@ -207,6 +222,19 @@ int libphdi_handle_get_utf16_name(
      libphdi_handle_t *handle,
      uint16_t *utf16_string,
      size_t utf16_string_size,
+     libcerror_error_t **error );
+
+LIBPHDI_EXTERN \
+int libphdi_handle_get_number_of_extents(
+     libphdi_handle_t *handle,
+     int *number_of_extents,
+     libcerror_error_t **error );
+
+LIBPHDI_EXTERN \
+int libphdi_handle_get_extent_descriptor(
+     libphdi_handle_t *handle,
+     int extent_index,
+     libphdi_extent_descriptor_t **extent_descriptor,
      libcerror_error_t **error );
 
 #if defined( __cplusplus )

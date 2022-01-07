@@ -22,6 +22,7 @@ bin_PROGRAMS = \
 	phdimount
 
 phdiinfo_SOURCES = \
+	byte_size_string.c byte_size_string.h \
 	info_handle.c info_handle.h \
 	phdiinfo.c \
 	phditools_getopt.c phditools_getopt.h \

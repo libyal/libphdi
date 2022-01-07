@@ -68,7 +68,7 @@ A Parallels Hard Disk Image is a directory that contains the following files:
 |===
 | Characteristics | Description
 | Byte order | little-endian
-| Date and time values | 
+| Date and time values |
 | Character strings | UTF-8 by default, encoding is defined in the disk descriptor XML file.
 |===
 
@@ -151,7 +151,7 @@ The "StorageData" XML element contains the following values.
 [cols="1,5",options="header"]
 |===
 | Identifier | Description
-| Storage | 
+| Storage |
 |===
 
 ==== Storage
@@ -166,7 +166,7 @@ Contains the sector number within the disk in 512 byte sectors
 | End | End of the segment stored in the storage data image file +
 Contains the sector number within the disk in 512 byte sectors
 | Blocksize | Block size in number of sectors
-| Image | 
+| Image |
 |===
 
 ===== Image
@@ -189,7 +189,7 @@ The "Snapshots" XML element contains the following values.
 [cols="1,5",options="header"]
 |===
 | Identifier | Description
-| Shot | 
+| Shot |
 |===
 
 ==== Shot

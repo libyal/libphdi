@@ -27,6 +27,7 @@
 #include <types.h>
 #include <wide_string.h>
 
+#include "byte_size_string.h"
 #include "info_handle.h"
 #include "phditools_libcerror.h"
 #include "phditools_libcnotify.h"
@@ -300,11 +301,19 @@ int info_handle_file_fprint(
      info_handle_t *info_handle,
      libcerror_error_t **error )
 {
-	system_character_t *value_string = NULL;
-	static char *function            = "info_handle_file_fprint";
-	size64_t media_size              = 0;
-	size_t value_string_size         = 0;
-	int result                       = 0;
+	system_character_t byte_size_string[ 16 ];
+
+	libphdi_extent_descriptor_t *extent_descriptor = NULL;
+	system_character_t *value_string               = NULL;
+	static char *function                          = "info_handle_file_fprint";
+	size64_t extent_size                           = 0;
+	size64_t media_size                            = 0;
+	size_t value_string_size                       = 0;
+	off64_t extent_offset                          = 0;
+	int extent_index                               = 0;
+	int extent_type                                = 0;
+	int number_of_extents                          = 0;
+	int result                                     = 0;
 
 	if( info_handle == NULL )
 	{
@@ -413,15 +422,253 @@ int info_handle_file_fprint(
 
 		value_string = NULL;
 	}
-/* TODO add more info */
+	if( libphdi_handle_get_number_of_extents(
+	     info_handle->input_handle,
+	     &number_of_extents,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve number of extents.",
+		 function );
+
+		goto on_error;
+	}
+	fprintf(
+	 info_handle->notify_stream,
+	 "\tNumber of extents\t: %d\n",
+	 number_of_extents );
 
 	fprintf(
 	 info_handle->notify_stream,
 	 "\n" );
 
+	for( extent_index = 0;
+	     extent_index < number_of_extents;
+	     extent_index++ )
+	{
+		fprintf(
+		 info_handle->notify_stream,
+		 "Extent: %d\n",
+		 extent_index + 1 );
+
+		if( libphdi_handle_get_extent_descriptor(
+		     info_handle->input_handle,
+		     extent_index,
+		     &extent_descriptor,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve extent: %d descriptor.",
+			 function,
+			 extent_index );
+
+			goto on_error;
+		}
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
+		result = libphdi_extent_descriptor_get_utf16_filename_size(
+		          extent_descriptor,
+		          &value_string_size,
+		          error );
+#else
+		result = libphdi_extent_descriptor_get_utf8_filename_size(
+		          extent_descriptor,
+		          &value_string_size,
+		          error );
+#endif
+		if( result == -1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve extent: %d descriptor filename size.",
+			 function,
+			 extent_index );
+
+			goto on_error;
+		}
+		else if( result != 0 )
+		{
+			if( ( value_string_size == 0 )
+			 || ( value_string_size > ( (size_t) MEMORY_MAXIMUM_ALLOCATION_SIZE / sizeof( system_character_t ) ) ) )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+				 "%s: invalid filename size value out of bounds.",
+				 function );
+
+				goto on_error;
+			}
+			value_string = system_string_allocate(
+			                value_string_size );
+
+			if( value_string == NULL )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_MEMORY,
+				 LIBCERROR_MEMORY_ERROR_INSUFFICIENT,
+				 "%s: unable to create filename string.",
+				 function );
+
+				goto on_error;
+			}
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
+			result = libphdi_extent_descriptor_get_utf16_filename(
+			          extent_descriptor,
+				  (uint16_t *) value_string,
+				  value_string_size,
+				  error );
+#else
+			result = libphdi_extent_descriptor_get_utf8_filename(
+			          extent_descriptor,
+				  (uint8_t *) value_string,
+				  value_string_size,
+				  error );
+#endif
+			if( result != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+				 "%s: unable to retrieve extent: %d descriptor filename.",
+				 function,
+				 extent_index );
+
+				goto on_error;
+			}
+			fprintf(
+			 info_handle->notify_stream,
+			 "\tFilename\t\t: %" PRIs_SYSTEM "\n",
+			 value_string );
+
+			memory_free(
+			 value_string );
+
+			value_string = NULL;
+		}
+		if( libphdi_extent_descriptor_get_type(
+		     extent_descriptor,
+		     &extent_type,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve extent: %d descriptor type.",
+			 function,
+			 extent_index );
+
+			goto on_error;
+		}
+		fprintf(
+		 info_handle->notify_stream,
+		 "\tType\t\t\t: " );
+
+		switch( extent_type )
+		{
+			case LIBPHDI_EXTENT_TYPE_COMPRESSED:
+				fprintf(
+				 info_handle->notify_stream,
+				 "Compressed" );
+				break;
+
+			case LIBPHDI_EXTENT_TYPE_PLAIN:
+				fprintf(
+				 info_handle->notify_stream,
+				 "Plain" );
+				break;
+
+			default:
+				fprintf(
+				 info_handle->notify_stream,
+				 "Unknown" );
+				break;
+		}
+		fprintf(
+		 info_handle->notify_stream,
+		 "\n" );
+
+		if( libphdi_extent_descriptor_get_range(
+		     extent_descriptor,
+		     &extent_offset,
+		     &extent_size,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve extent: %d descriptor range.",
+			 function,
+			 extent_index );
+
+			goto on_error;
+		}
+		fprintf(
+		 info_handle->notify_stream,
+		 "\tStart offset\t\t: %" PRIi64 "\n",
+		 extent_offset );
+
+		result = byte_size_string_create(
+		          byte_size_string,
+		          16,
+		          extent_size,
+		          BYTE_SIZE_STRING_UNIT_MEBIBYTE,
+		          NULL );
+
+		if( result == 1 )
+		{
+			fprintf(
+			 info_handle->notify_stream,
+			 "\tSize\t\t\t: %" PRIs_SYSTEM " (%" PRIu64 " bytes)\n",
+			 byte_size_string,
+			 extent_size );
+		}
+		else
+		{
+			fprintf(
+			 info_handle->notify_stream,
+			 "\tSize\t\t\t: %" PRIu64 " bytes\n",
+			 extent_size );
+		}
+		if( libphdi_extent_descriptor_free(
+		     &extent_descriptor,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 "%s: unable to free extent: %d descriptor.",
+			 function,
+			 extent_index );
+
+			goto on_error;
+		}
+		fprintf(
+		 info_handle->notify_stream,
+		 "\n" );
+	}
 	return( 1 );
 
 on_error:
+	if( extent_descriptor != NULL )
+	{
+		libphdi_extent_descriptor_free(
+		 &extent_descriptor,
+		 NULL );
+	}
 	if( value_string != NULL )
 	{
 		memory_free(

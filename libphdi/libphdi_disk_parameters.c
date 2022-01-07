@@ -431,6 +431,8 @@ int libphdi_disk_parameters_set_name(
 
 		goto on_error;
 	}
+	disk_parameters->name_size = name_size;
+
 	if( memory_copy(
 	     disk_parameters->name,
 	     name,
@@ -445,8 +447,6 @@ int libphdi_disk_parameters_set_name(
 
 		goto on_error;
 	}
-	disk_parameters->name_size = name_size;
-
 	return( 1 );
 
 on_error:

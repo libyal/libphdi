@@ -136,6 +136,8 @@ stamp-h[1-9]
 /tests/phdi_test_disk_descriptor_xml_file
 /tests/phdi_test_disk_parameters
 /tests/phdi_test_error
+/tests/phdi_test_extent_descriptor
+/tests/phdi_test_extent_values
 /tests/phdi_test_handle
 /tests/phdi_test_io_handle
 /tests/phdi_test_notify

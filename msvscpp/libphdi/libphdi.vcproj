@@ -190,6 +190,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\libphdi\libphdi_extent_descriptor.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libphdi\libphdi_extent_values.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\libphdi\libphdi_handle.c"
 				>
 			</File>
@@ -265,6 +273,14 @@
 			</File>
 			<File
 				RelativePath="..\..\libphdi\libphdi_error.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libphdi\libphdi_extent_descriptor.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libphdi\libphdi_extent_values.h"
 				>
 			</File>
 			<File
