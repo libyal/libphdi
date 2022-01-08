@@ -151,11 +151,11 @@ int libphdi_sparse_image_header_read_data(
      size_t data_size,
      libcerror_error_t **error )
 {
-	static char *function = "libphdi_sparse_image_header_read_data";
+	static char *function   = "libphdi_sparse_image_header_read_data";
+	uint32_t format_version = 0;
 
 #if defined( HAVE_DEBUG_OUTPUT )
-	uint32_t value_32bit  = 0;
-	uint16_t value_16bit  = 0;
+	uint32_t value_32bit   = 0;
 #endif
 
 	if( sparse_image_header == NULL )
@@ -220,11 +220,31 @@ int libphdi_sparse_image_header_read_data(
 
 		return( -1 );
 	}
+	byte_stream_copy_to_uint32_little_endian(
+	 ( (phdi_sparse_image_header_t *) data )->format_version,
+	 format_version );
+
+	byte_stream_copy_to_uint32_little_endian(
+	 ( (phdi_sparse_image_header_t *) data )->block_size,
+	 sparse_image_header->block_size );
+
+	byte_stream_copy_to_uint32_little_endian(
+	 ( (phdi_sparse_image_header_t *) data )->number_of_allocation_table_entries,
+	 sparse_image_header->number_of_allocation_table_entries );
+
+	byte_stream_copy_to_uint64_little_endian(
+	 ( (phdi_sparse_image_header_t *) data )->number_of_sectors,
+	 sparse_image_header->number_of_sectors );
+
+	byte_stream_copy_to_uint32_little_endian(
+	 ( (phdi_sparse_image_header_t *) data )->data_start_sector,
+	 sparse_image_header->data_start_sector );
+
 #if defined( HAVE_DEBUG_OUTPUT )
 	if( libcnotify_verbose != 0 )
 	{
 		libcnotify_printf(
-		 "%s: signature\t\t\t\t: %c%c%c%c%c%c%c%c%c\n",
+		 "%s: signature\t\t\t\t: %c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c\n",
 		 function,
 		 ( (phdi_sparse_image_header_t *) data )->signature[ 0 ],
 		 ( (phdi_sparse_image_header_t *) data )->signature[ 1 ],
@@ -233,21 +253,26 @@ int libphdi_sparse_image_header_read_data(
 		 ( (phdi_sparse_image_header_t *) data )->signature[ 4 ],
 		 ( (phdi_sparse_image_header_t *) data )->signature[ 5 ],
 		 ( (phdi_sparse_image_header_t *) data )->signature[ 6 ],
-		 ( (phdi_sparse_image_header_t *) data )->signature[ 7 ] );
+		 ( (phdi_sparse_image_header_t *) data )->signature[ 7 ],
+		 ( (phdi_sparse_image_header_t *) data )->signature[ 8 ],
+		 ( (phdi_sparse_image_header_t *) data )->signature[ 9 ],
+		 ( (phdi_sparse_image_header_t *) data )->signature[ 10 ],
+		 ( (phdi_sparse_image_header_t *) data )->signature[ 11 ],
+		 ( (phdi_sparse_image_header_t *) data )->signature[ 12 ],
+		 ( (phdi_sparse_image_header_t *) data )->signature[ 13 ],
+		 ( (phdi_sparse_image_header_t *) data )->signature[ 14 ],
+		 ( (phdi_sparse_image_header_t *) data )->signature[ 15 ] );
 
-		byte_stream_copy_to_uint16_little_endian(
-		 ( (phdi_sparse_image_header_t *) data )->format_version,
-		 value_16bit );
 		libcnotify_printf(
-		 "%s: format version\t\t\t\t\t: %" PRIu16 "\n",
+		 "%s: format version\t\t\t\t: %" PRIu32 "\n",
 		 function,
-		 value_16bit );
+		 format_version );
 
 		byte_stream_copy_to_uint32_little_endian(
 		 ( (phdi_sparse_image_header_t *) data )->number_of_heads,
 		 value_32bit );
 		libcnotify_printf(
-		 "%s: number of heads\t\t\t\t\t: %" PRIu32 "\n",
+		 "%s: number of heads\t\t\t\t: %" PRIu32 "\n",
 		 function,
 		 value_32bit );
 
@@ -255,33 +280,24 @@ int libphdi_sparse_image_header_read_data(
 		 ( (phdi_sparse_image_header_t *) data )->number_of_cylinders,
 		 value_32bit );
 		libcnotify_printf(
-		 "%s: number of cylinders\t\t\t\t\t: %" PRIu32 "\n",
+		 "%s: number of cylinders\t\t\t: %" PRIu32 "\n",
 		 function,
 		 value_32bit );
 
-		byte_stream_copy_to_uint32_little_endian(
-		 ( (phdi_sparse_image_header_t *) data )->block_size,
-		 value_32bit );
 		libcnotify_printf(
-		 "%s: block size\t\t\t\t\t: %" PRIu32 "\n",
+		 "%s: block size\t\t\t\t: %" PRIu32 "\n",
 		 function,
-		 value_32bit );
+		 sparse_image_header->block_size );
 
-		byte_stream_copy_to_uint32_little_endian(
-		 ( (phdi_sparse_image_header_t *) data )->number_of_allocation_table_entries,
-		 value_32bit );
 		libcnotify_printf(
 		 "%s: number of allocation table entries\t: %" PRIu32 "\n",
 		 function,
-		 value_32bit );
+		 sparse_image_header->number_of_allocation_table_entries );
 
-		byte_stream_copy_to_uint32_little_endian(
-		 ( (phdi_sparse_image_header_t *) data )->number_of_sectors,
-		 value_32bit );
 		libcnotify_printf(
-		 "%s: number of sectors\t\t\t\t\t: %" PRIu32 "\n",
+		 "%s: number of sectors\t\t\t: %" PRIu64 "\n",
 		 function,
-		 value_32bit );
+		 sparse_image_header->number_of_sectors );
 
 		byte_stream_copy_to_uint32_little_endian(
 		 ( (phdi_sparse_image_header_t *) data )->unknown1,
@@ -291,13 +307,10 @@ int libphdi_sparse_image_header_read_data(
 		 function,
 		 value_32bit );
 
-		byte_stream_copy_to_uint32_little_endian(
-		 ( (phdi_sparse_image_header_t *) data )->data_start_sector,
-		 value_32bit );
 		libcnotify_printf(
-		 "%s: data start sector\t\t\t\t\t: %" PRIu32 "\n",
+		 "%s: data start sector\t\t\t: %" PRIu32 "\n",
 		 function,
-		 value_32bit );
+		 sparse_image_header->data_start_sector );
 
 		libcnotify_printf(
 		 "%s: unknown2:\n",
@@ -309,6 +322,29 @@ int libphdi_sparse_image_header_read_data(
 	}
 #endif /* defined( HAVE_DEBUG_OUTPUT ) */
 
+	if( format_version != 2 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_UNSUPPORTED_VALUE,
+		 "%s: unsupported format version: %" PRIu32 ".",
+		 function,
+		 format_version );
+
+		return( -1 );
+	}
+	if( sparse_image_header->block_size == 0 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid block size value out of bounds.",
+		 function );
+
+		return( -1 );
+	}
 	return( 1 );
 }
 
@@ -380,4 +416,40 @@ int libphdi_sparse_image_header_read_file_io_handle(
 	return( 1 );
 }
 
+/* Retrieves the block size
+ * Returns 1 if successful or -1 on error
+ */
+int libphdi_sparse_image_header_get_block_size(
+     libphdi_sparse_image_header_t *sparse_image_header,
+     size64_t *block_size,
+     libcerror_error_t **error )
+{
+	static char *function = "libphdi_sparse_image_header_get_block_size";
+
+	if( sparse_image_header == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid sparse image header.",
+		 function );
+
+		return( -1 );
+	}
+	if( block_size == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid block size.",
+		 function );
+
+		return( -1 );
+	}
+	*block_size = (size64_t) sparse_image_header->block_size * 512;
+
+	return( 1 );
+}
 

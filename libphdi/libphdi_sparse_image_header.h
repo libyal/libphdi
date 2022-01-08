@@ -35,9 +35,21 @@ typedef struct libphdi_sparse_image_header libphdi_sparse_image_header_t;
 
 struct libphdi_sparse_image_header
 {
-	/* Bogus
+	/* The block size
 	 */
-	int bogus;
+	uint32_t block_size;
+
+	/* The number of allocation table entries
+	 */
+	uint32_t number_of_allocation_table_entries;
+
+	/* The number of sectors
+	 */
+	uint64_t number_of_sectors;
+
+	/* The data start sector
+	 */
+	uint32_t data_start_sector;
 };
 
 int libphdi_sparse_image_header_initialize(
@@ -57,6 +69,11 @@ int libphdi_sparse_image_header_read_data(
 int libphdi_sparse_image_header_read_file_io_handle(
      libphdi_sparse_image_header_t *sparse_image_header,
      libbfio_handle_t *file_io_handle,
+     libcerror_error_t **error );
+
+int libphdi_sparse_image_header_get_block_size(
+     libphdi_sparse_image_header_t *sparse_image_header,
+     size64_t *block_size,
      libcerror_error_t **error );
 
 #if defined( __cplusplus )

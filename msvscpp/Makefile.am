@@ -15,6 +15,10 @@ MSVSCPP_FILES = \
 	libfvalue/libfvalue.vcproj \
 	libphdi/libphdi.vcproj \
 	libuna/libuna.vcproj \
+	phdi_test_block_descriptor/phdi_test_block_descriptor.vcproj \
+	phdi_test_block_tree/phdi_test_block_tree.vcproj \
+	phdi_test_block_tree_node/phdi_test_block_tree_node.vcproj \
+	phdi_test_disk_parameters/phdi_test_disk_parameters.vcproj \
 	phdi_test_error/phdi_test_error.vcproj \
 	phdi_test_extent_descriptor/phdi_test_extent_descriptor.vcproj \
 	phdi_test_extent_table/phdi_test_extent_table.vcproj \

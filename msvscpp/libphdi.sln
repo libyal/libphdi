@@ -26,9 +26,33 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libfguid", "libfguid\libfgu
 		{1128D4A2-34AE-4A04-A803-0A210F4640B7} = {1128D4A2-34AE-4A04-A803-0A210F4640B7}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "phdi_test_block_descriptor", "phdi_test_block_descriptor\phdi_test_block_descriptor.vcproj", "{76A34D69-E8BD-4F3D-9882-891CE6CFA400}"
+	ProjectSection(ProjectDependencies) = postProject
+		{590C1718-49FC-4F82-8797-6928B911FAB7} = {590C1718-49FC-4F82-8797-6928B911FAB7}
+		{1128D4A2-34AE-4A04-A803-0A210F4640B7} = {1128D4A2-34AE-4A04-A803-0A210F4640B7}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "phdi_test_block_tree", "phdi_test_block_tree\phdi_test_block_tree.vcproj", "{25968E1B-1810-4D80-82EB-09DABF4CF629}"
+	ProjectSection(ProjectDependencies) = postProject
+		{590C1718-49FC-4F82-8797-6928B911FAB7} = {590C1718-49FC-4F82-8797-6928B911FAB7}
+		{1128D4A2-34AE-4A04-A803-0A210F4640B7} = {1128D4A2-34AE-4A04-A803-0A210F4640B7}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "phdi_test_block_tree_node", "phdi_test_block_tree_node\phdi_test_block_tree_node.vcproj", "{F1BE673C-568B-47C3-BE38-8B5564455885}"
+	ProjectSection(ProjectDependencies) = postProject
+		{590C1718-49FC-4F82-8797-6928B911FAB7} = {590C1718-49FC-4F82-8797-6928B911FAB7}
+		{1128D4A2-34AE-4A04-A803-0A210F4640B7} = {1128D4A2-34AE-4A04-A803-0A210F4640B7}
+	EndProjectSection
+EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "phdi_test_error", "phdi_test_error\phdi_test_error.vcproj", "{0E3D3AB3-62DA-40C2-8C3C-8CB24614FB89}"
 	ProjectSection(ProjectDependencies) = postProject
 		{590C1718-49FC-4F82-8797-6928B911FAB7} = {590C1718-49FC-4F82-8797-6928B911FAB7}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "phdi_test_disk_parameters", "phdi_test_disk_parameters\phdi_test_disk_parameters.vcproj", "{1AC21EB6-2302-40BE-9876-D4A5D4CCCDAF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{590C1718-49FC-4F82-8797-6928B911FAB7} = {590C1718-49FC-4F82-8797-6928B911FAB7}
+		{1128D4A2-34AE-4A04-A803-0A210F4640B7} = {1128D4A2-34AE-4A04-A803-0A210F4640B7}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "phdi_test_extent_descriptor", "phdi_test_extent_descriptor\phdi_test_extent_descriptor.vcproj", "{34C38914-56E3-462B-AE49-D41E91A60865}"
@@ -246,10 +270,26 @@ Global
 		{F7442660-9417-437B-BF51-A26284761E77}.Release|Win32.Build.0 = Release|Win32
 		{F7442660-9417-437B-BF51-A26284761E77}.VSDebug|Win32.ActiveCfg = VSDebug|Win32
 		{F7442660-9417-437B-BF51-A26284761E77}.VSDebug|Win32.Build.0 = VSDebug|Win32
+		{76A34D69-E8BD-4F3D-9882-891CE6CFA400}.Release|Win32.ActiveCfg = Release|Win32
+		{76A34D69-E8BD-4F3D-9882-891CE6CFA400}.Release|Win32.Build.0 = Release|Win32
+		{76A34D69-E8BD-4F3D-9882-891CE6CFA400}.VSDebug|Win32.ActiveCfg = VSDebug|Win32
+		{76A34D69-E8BD-4F3D-9882-891CE6CFA400}.VSDebug|Win32.Build.0 = VSDebug|Win32
+		{25968E1B-1810-4D80-82EB-09DABF4CF629}.Release|Win32.ActiveCfg = Release|Win32
+		{25968E1B-1810-4D80-82EB-09DABF4CF629}.Release|Win32.Build.0 = Release|Win32
+		{25968E1B-1810-4D80-82EB-09DABF4CF629}.VSDebug|Win32.ActiveCfg = VSDebug|Win32
+		{25968E1B-1810-4D80-82EB-09DABF4CF629}.VSDebug|Win32.Build.0 = VSDebug|Win32
+		{F1BE673C-568B-47C3-BE38-8B5564455885}.Release|Win32.ActiveCfg = Release|Win32
+		{F1BE673C-568B-47C3-BE38-8B5564455885}.Release|Win32.Build.0 = Release|Win32
+		{F1BE673C-568B-47C3-BE38-8B5564455885}.VSDebug|Win32.ActiveCfg = VSDebug|Win32
+		{F1BE673C-568B-47C3-BE38-8B5564455885}.VSDebug|Win32.Build.0 = VSDebug|Win32
 		{0E3D3AB3-62DA-40C2-8C3C-8CB24614FB89}.Release|Win32.ActiveCfg = Release|Win32
 		{0E3D3AB3-62DA-40C2-8C3C-8CB24614FB89}.Release|Win32.Build.0 = Release|Win32
 		{0E3D3AB3-62DA-40C2-8C3C-8CB24614FB89}.VSDebug|Win32.ActiveCfg = VSDebug|Win32
 		{0E3D3AB3-62DA-40C2-8C3C-8CB24614FB89}.VSDebug|Win32.Build.0 = VSDebug|Win32
+		{1AC21EB6-2302-40BE-9876-D4A5D4CCCDAF}.Release|Win32.ActiveCfg = Release|Win32
+		{1AC21EB6-2302-40BE-9876-D4A5D4CCCDAF}.Release|Win32.Build.0 = Release|Win32
+		{1AC21EB6-2302-40BE-9876-D4A5D4CCCDAF}.VSDebug|Win32.ActiveCfg = VSDebug|Win32
+		{1AC21EB6-2302-40BE-9876-D4A5D4CCCDAF}.VSDebug|Win32.Build.0 = VSDebug|Win32
 		{34C38914-56E3-462B-AE49-D41E91A60865}.Release|Win32.ActiveCfg = Release|Win32
 		{34C38914-56E3-462B-AE49-D41E91A60865}.Release|Win32.Build.0 = Release|Win32
 		{34C38914-56E3-462B-AE49-D41E91A60865}.VSDebug|Win32.ActiveCfg = VSDebug|Win32

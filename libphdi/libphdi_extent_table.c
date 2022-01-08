@@ -1538,8 +1538,8 @@ int libphdi_extent_table_initialize_extents(
 	{
 		libcerror_error_set(
 		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_UNSUPPORTED_VALUE,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
 		 "%s: unsupported disk type.",
 		 function );
 
@@ -1702,7 +1702,7 @@ int libphdi_extent_table_set_extent_storage_media_size_by_index(
 }
 
 /* Retrieves an extent file at a specific offset from the extent table
- * Returns 1 if successful, 0 if not or -1 on error
+ * Returns 1 if successful or -1 on error
  */
 int libphdi_extent_table_get_extent_file_at_offset(
      libphdi_extent_table_t *extent_table,
@@ -1714,7 +1714,6 @@ int libphdi_extent_table_get_extent_file_at_offset(
      libcerror_error_t **error )
 {
 	static char *function = "libphdi_extent_table_get_extent_file_at_offset";
-	int result            = 0;
 
 	if( extent_table == NULL )
 	{
@@ -1727,18 +1726,16 @@ int libphdi_extent_table_get_extent_file_at_offset(
 
 		return( -1 );
 	}
-	result = libfdata_list_get_element_value_at_offset(
-	          extent_table->extent_files_list,
-	          (intptr_t *) file_io_pool,
-	          (libfdata_cache_t *) extent_table->extent_files_cache,
-	          offset,
-	          extent_index,
-	          extent_file_data_offset,
-	          (intptr_t **) extent_file,
-	          0,
-	          error );
-
-	if( result == -1 )
+	if( libfdata_list_get_element_value_at_offset(
+	     extent_table->extent_files_list,
+	     (intptr_t *) file_io_pool,
+	     (libfdata_cache_t *) extent_table->extent_files_cache,
+	     offset,
+	     extent_index,
+	     extent_file_data_offset,
+	     (intptr_t **) extent_file,
+	     0,
+	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
@@ -1751,7 +1748,7 @@ int libphdi_extent_table_get_extent_file_at_offset(
 
 		return( -1 );
 	}
-	return( result );
+	return( 1 );
 }
 
 /* Sets an extent in the extent table based on the extent values

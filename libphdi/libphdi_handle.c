@@ -26,6 +26,7 @@
 #include <system_string.h>
 #include <wide_string.h>
 
+#include "libphdi_block_descriptor.h"
 #include "libphdi_debug.h"
 #include "libphdi_definitions.h"
 #include "libphdi_disk_descriptor_xml_file.h"
@@ -45,6 +46,7 @@
 #include "libphdi_libcthreads.h"
 #include "libphdi_libfcache.h"
 #include "libphdi_libfdata.h"
+#include "libphdi_storage_image.h"
 
 /* Creates a handle
  * Make sure the value handle is referencing, is set to NULL
@@ -1864,7 +1866,39 @@ int libphdi_handle_close(
 		internal_handle->file_io_handle_created_in_library = 0;
 	}
 	internal_handle->file_io_handle = NULL;
-	internal_handle->current_offset = 0;
+
+	if( internal_handle->extent_data_file_io_pool_created_in_library != 0 )
+	{
+		if( libbfio_pool_close_all(
+		     internal_handle->extent_data_file_io_pool,
+		     error ) != 0 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_IO,
+			 LIBCERROR_IO_ERROR_CLOSE_FAILED,
+			 "%s: unable to close all files in extent data file IO pool.",
+			 function );
+
+			result = -1;
+		}
+		if( libbfio_pool_free(
+		     &( internal_handle->extent_data_file_io_pool ),
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 "%s: unable to free extent data file IO pool.",
+			 function );
+
+			result = -1;
+		}
+		internal_handle->extent_data_file_io_pool_created_in_library = 0;
+	}
+	internal_handle->extent_data_file_io_pool = NULL;
+	internal_handle->current_offset           = 0;
 
 	if( libphdi_io_handle_clear(
 	     internal_handle->io_handle,
@@ -2147,6 +2181,7 @@ int libphdi_internal_handle_open_read_extent_data_files(
      libcerror_error_t **error )
 {
 	libphdi_extent_values_t *extent_values = NULL;
+	libphdi_storage_image_t *storage_image = NULL;
 	static char *function                  = "libphdi_internal_handle_open_read_extent_data_files";
 	size64_t extent_file_size              = 0;
 	int extent_index                       = 0;
@@ -2272,9 +2307,6 @@ int libphdi_internal_handle_open_read_extent_data_files(
 
 			goto on_error;
 		}
-		if( extent_index == 0 )
-		{
-		}
 		if( libbfio_pool_get_size(
 		     file_io_pool,
 		     extent_index,
@@ -2311,6 +2343,77 @@ int libphdi_internal_handle_open_read_extent_data_files(
 
 			goto on_error;
 		}
+		if( extent_values->type == LIBPHDI_EXTENT_TYPE_COMPRESSED )
+		{
+			if( libphdi_storage_image_initialize(
+			     &storage_image,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+				 "%s: unable to create storage image: %d.",
+				 function,
+				 extent_index );
+
+				goto on_error;
+			}
+#if defined( HAVE_DEBUG_OUTPUT )
+			if( libcnotify_verbose != 0 )
+			{
+				libcnotify_printf(
+				 "Reading storage image: %d file header:\n",
+				 extent_index );
+			}
+#endif
+			if( libphdi_storage_image_read_file_header(
+			     storage_image,
+			     file_io_pool,
+			     extent_index,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_IO,
+				 LIBCERROR_IO_ERROR_READ_FAILED,
+				 "%s: unable to read storage image: %d header.",
+				 function,
+				 extent_index );
+
+				goto on_error;
+			}
+			if( libphdi_storage_image_read_block_allocation_table(
+			     storage_image,
+			     file_io_pool,
+			     extent_index,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_IO,
+				 LIBCERROR_IO_ERROR_READ_FAILED,
+				 "%s: unable to read storage image: %d block allocation table.",
+				 function,
+				 extent_index );
+
+				goto on_error;
+			}
+			if( libphdi_storage_image_free(
+			     &storage_image,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+				 "%s: unable to free storage image: %d.",
+				 function,
+				 extent_index );
+
+				goto on_error;
+			}
+		}
 		if( internal_handle->io_handle->abort == 1 )
 		{
 			goto on_error;
@@ -2319,6 +2422,12 @@ int libphdi_internal_handle_open_read_extent_data_files(
 	return( 1 );
 
 on_error:
+	if( storage_image != NULL )
+	{
+		libphdi_storage_image_free(
+		 &storage_image,
+		 NULL );
+	}
 	return( -1 );
 }
 
@@ -2333,10 +2442,16 @@ ssize_t libphdi_internal_handle_read_buffer_from_file_io_pool(
          size_t buffer_size,
          libcerror_error_t **error )
 {
-	static char *function = "libphdi_internal_handle_read_buffer_from_file_io_pool";
-	size_t buffer_offset  = 0;
-	size_t read_size      = 0;
-	ssize_t read_count    = 0;
+	libphdi_block_descriptor_t *block_descriptor = NULL;
+	libphdi_storage_image_t *storage_image       = NULL;
+	static char *function                        = "libphdi_internal_handle_read_buffer_from_file_io_pool";
+	size64_t block_size                          = 0;
+	size_t buffer_offset                         = 0;
+	size_t read_size                             = 0;
+	ssize_t read_count                           = 0;
+	off64_t storage_image_data_offset            = 0;
+	int extent_number                            = 0;
+	int result                                   = 0;
 
 	if( internal_handle == NULL )
 	{
@@ -2393,6 +2508,8 @@ ssize_t libphdi_internal_handle_read_buffer_from_file_io_pool(
 
 		return( -1 );
 	}
+	internal_handle->io_handle->abort = 0;
+
 	if( (size64_t) internal_handle->current_offset >= internal_handle->disk_parameters->media_size )
 	{
 		return( 0 );
@@ -2403,7 +2520,7 @@ ssize_t libphdi_internal_handle_read_buffer_from_file_io_pool(
 		if( libcnotify_verbose != 0 )
 		{
 			libcnotify_printf(
-			 "%s: requested offset\t\t\t: %" PRIi64 " (0x%08" PRIx64 ")\n",
+			 "%s: requested offset\t: %" PRIi64 " (0x%08" PRIx64 ")\n",
 			 function,
 			 internal_handle->current_offset,
 			 internal_handle->current_offset );
@@ -2450,14 +2567,130 @@ ssize_t libphdi_internal_handle_read_buffer_from_file_io_pool(
 			if( libcnotify_verbose != 0 )
 			{
 				libcnotify_printf(
-				 "%s: requested offset\t\t\t: %" PRIi64 " (0x%08" PRIx64 ")\n",
+				 "%s: requested offset\t: %" PRIi64 " (0x%08" PRIx64 ")\n",
 				 function,
 				 internal_handle->current_offset,
 				 internal_handle->current_offset );
 			}
 #endif
-/* TODO implement */
-			return( -1 );
+			if( libphdi_extent_table_get_extent_file_at_offset(
+			     internal_handle->extent_table,
+			     internal_handle->current_offset,
+			     file_io_pool,
+			     &extent_number,
+			     &storage_image_data_offset,
+			     &storage_image,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+				 "%s: unable to retrieve extent file at offset: %" PRIi64 " (0x%08" PRIx64 ") from extent table.",
+				 function,
+				 internal_handle->current_offset,
+				 internal_handle->current_offset );
+
+				return( -1 );
+			}
+			if( libphdi_storage_image_get_block_size(
+			     storage_image,
+			     &block_size,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+				 "%s: unable to retrieve block size from storage image.",
+				 function );
+
+				return( -1 );
+			}
+			result = libphdi_storage_image_get_block_descriptor_at_offset(
+			          storage_image,
+			          storage_image_data_offset,
+			          &block_descriptor,
+			          error );
+
+			if( result == -1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+				 "%s: unable to retrieve block descriptor at offset: %" PRIi64 " (0x%08" PRIx64 ") from storage image.",
+				 function,
+				 storage_image_data_offset,
+				 storage_image_data_offset );
+
+				return( -1 );
+			}
+			read_size = (size_t) block_size;
+
+			if( read_size > ( buffer_size - buffer_offset ) )
+			{
+				read_size = buffer_size - buffer_offset;
+			}
+			if( ( (size64_t) read_size > internal_handle->disk_parameters->media_size )
+			 || ( (size64_t) internal_handle->current_offset > ( internal_handle->disk_parameters->media_size - read_size ) ) )
+			{
+				read_size = (size_t) ( internal_handle->disk_parameters->media_size - internal_handle->current_offset );
+			}
+			if( block_descriptor == NULL )
+			{
+				if( memory_set(
+				     &( ( (uint8_t *) buffer )[ buffer_offset ] ),
+				     0,
+				     read_size ) == NULL )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_MEMORY,
+					 LIBCERROR_MEMORY_ERROR_SET_FAILED,
+					 "%s: unable to fill buffer with sparse block.",
+					 function );
+
+					return( -1 );
+				}
+			}
+			else
+			{
+				read_count = libbfio_pool_read_buffer_at_offset(
+				              file_io_pool,
+				              block_descriptor->file_io_pool_entry,
+				              buffer,
+				              read_size,
+				              block_descriptor->offset + storage_image_data_offset,
+				              error );
+
+				if( read_count == -1 )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_IO,
+					 LIBCERROR_IO_ERROR_READ_FAILED,
+					 "%s: unable to read data from file IO pool entry: %d at offset: %" PRIi64 " (0x%08" PRIx64 ").",
+					 function,
+					 block_descriptor->file_io_pool_entry,
+					 block_descriptor->offset + storage_image_data_offset,
+					 block_descriptor->offset + storage_image_data_offset );
+
+					return( -1 );
+				}
+			}
+			buffer_offset += read_size;
+
+			internal_handle->current_offset += (off64_t) read_size;
+
+			if( (size64_t) internal_handle->current_offset >= internal_handle->disk_parameters->media_size )
+			{
+				break;
+			}
+			if( internal_handle->io_handle->abort != 0 )
+			{
+				break;
+			}
 		}
 	}
 	return( (ssize_t) buffer_offset );
@@ -2489,13 +2722,13 @@ ssize_t libphdi_handle_read_buffer(
 	}
 	internal_handle = (libphdi_internal_handle_t *) handle;
 
-	if( internal_handle->file_io_handle == NULL )
+	if( internal_handle->extent_data_file_io_pool == NULL )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid handle - missing file IO handle.",
+		 "%s: invalid handle - missing extent data file IO pool.",
 		 function );
 
 		return( -1 );
@@ -2578,13 +2811,13 @@ ssize_t libphdi_handle_read_buffer_at_offset(
 	}
 	internal_handle = (libphdi_internal_handle_t *) handle;
 
-	if( internal_handle->file_io_handle == NULL )
+	if( internal_handle->extent_data_file_io_pool == NULL )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid handle - missing file IO handle.",
+		 "%s: invalid handle - missing extent data file IO pool.",
 		 function );
 
 		return( -1 );
@@ -2617,25 +2850,28 @@ ssize_t libphdi_handle_read_buffer_at_offset(
 		 "%s: unable to seek offset.",
 		 function );
 
-		goto on_error;
+		read_count = -1;
 	}
-	read_count = libphdi_internal_handle_read_buffer_from_file_io_pool(
-		      internal_handle,
-	              internal_handle->extent_data_file_io_pool,
-		      buffer,
-		      buffer_size,
-		      error );
-
-	if( read_count == -1 )
+	else
 	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_IO,
-		 LIBCERROR_IO_ERROR_READ_FAILED,
-		 "%s: unable to read buffer.",
-		 function );
+		read_count = libphdi_internal_handle_read_buffer_from_file_io_pool(
+			      internal_handle,
+		              internal_handle->extent_data_file_io_pool,
+			      buffer,
+			      buffer_size,
+			      error );
 
-		goto on_error;
+		if( read_count == -1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_IO,
+			 LIBCERROR_IO_ERROR_READ_FAILED,
+			 "%s: unable to read buffer.",
+			 function );
+
+			read_count = -1;
+		}
 	}
 #if defined( HAVE_LIBPHDI_MULTI_THREAD_SUPPORT )
 	if( libcthreads_read_write_lock_release_for_write(
@@ -2653,14 +2889,6 @@ ssize_t libphdi_handle_read_buffer_at_offset(
 	}
 #endif
 	return( read_count );
-
-on_error:
-#if defined( HAVE_LIBPHDI_MULTI_THREAD_SUPPORT )
-	libcthreads_read_write_lock_release_for_write(
-	 internal_handle->read_write_lock,
-	 NULL );
-#endif
-	return( -1 );
 }
 
 /* Seeks a certain offset of the (media) data
@@ -2759,13 +2987,13 @@ off64_t libphdi_handle_seek_offset(
 	}
 	internal_handle = (libphdi_internal_handle_t *) handle;
 
-	if( internal_handle->file_io_handle == NULL )
+	if( internal_handle->extent_data_file_io_pool == NULL )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid handle - missing file IO handle.",
+		 "%s: invalid handle - missing extent data file IO pool.",
 		 function );
 
 		return( -1 );

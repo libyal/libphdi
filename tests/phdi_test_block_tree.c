@@ -1,5 +1,5 @@
 /*
- * Library disk_parameters type test program
+ * Library block_tree functions testing program
  *
  * Copyright (C) 2015-2021, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -33,30 +33,34 @@
 #include "phdi_test_memory.h"
 #include "phdi_test_unused.h"
 
-#include "../libphdi/libphdi_disk_parameters.h"
+#include "../libphdi/libphdi_block_descriptor.h"
+#include "../libphdi/libphdi_block_tree.h"
+#include "../libphdi/libphdi_definitions.h"
 
 #if defined( __GNUC__ ) && !defined( LIBPHDI_DLL_IMPORT )
 
-/* Tests the libphdi_disk_parameters_initialize function
+/* Tests the libphdi_block_tree_initialize function
  * Returns 1 if successful or 0 if not
  */
-int phdi_test_disk_parameters_initialize(
+int phdi_test_block_tree_initialize(
      void )
 {
-	libcerror_error_t *error                   = NULL;
-	libphdi_disk_parameters_t *disk_parameters = NULL;
-	int result                                 = 0;
+	libcerror_error_t *error         = NULL;
+	libphdi_block_tree_t *block_tree = NULL;
+	int result                       = 0;
 
 #if defined( HAVE_PHDI_TEST_MEMORY )
-	int number_of_malloc_fail_tests            = 1;
-	int number_of_memset_fail_tests            = 1;
-	int test_number                            = 0;
+	int number_of_malloc_fail_tests  = 1;
+	int number_of_memset_fail_tests  = 1;
+	int test_number                  = 0;
 #endif
 
-	/* Test regular cases
+	/* Test block_tree initialization
 	 */
-	result = libphdi_disk_parameters_initialize(
-	          &disk_parameters,
+	result = libphdi_block_tree_initialize(
+	          &block_tree,
+	          0x800000000UL,
+	          0x4000,
 	          &error );
 
 	PHDI_TEST_ASSERT_EQUAL_INT(
@@ -65,15 +69,16 @@ int phdi_test_disk_parameters_initialize(
 	 1 );
 
 	PHDI_TEST_ASSERT_IS_NOT_NULL(
-	 "disk_parameters",
-	 disk_parameters );
+	 "block_tree",
+	 block_tree );
 
 	PHDI_TEST_ASSERT_IS_NULL(
 	 "error",
 	 error );
 
-	result = libphdi_disk_parameters_free(
-	          &disk_parameters,
+	result = libphdi_block_tree_free(
+	          &block_tree,
+	          NULL,
 	          &error );
 
 	PHDI_TEST_ASSERT_EQUAL_INT(
@@ -82,8 +87,8 @@ int phdi_test_disk_parameters_initialize(
 	 1 );
 
 	PHDI_TEST_ASSERT_IS_NULL(
-	 "disk_parameters",
-	 disk_parameters );
+	 "block_tree",
+	 block_tree );
 
 	PHDI_TEST_ASSERT_IS_NULL(
 	 "error",
@@ -91,8 +96,10 @@ int phdi_test_disk_parameters_initialize(
 
 	/* Test error cases
 	 */
-	result = libphdi_disk_parameters_initialize(
+	result = libphdi_block_tree_initialize(
 	          NULL,
+	          0x800000000UL,
+	          0x4000,
 	          &error );
 
 	PHDI_TEST_ASSERT_EQUAL_INT(
@@ -107,13 +114,15 @@ int phdi_test_disk_parameters_initialize(
 	libcerror_error_free(
 	 &error );
 
-	disk_parameters = (libphdi_disk_parameters_t *) 0x12345678UL;
+	block_tree = (libphdi_block_tree_t *) 0x12345678UL;
 
-	result = libphdi_disk_parameters_initialize(
-	          &disk_parameters,
+	result = libphdi_block_tree_initialize(
+	          &block_tree,
+	          0x800000000UL,
+	          0x4000,
 	          &error );
 
-	disk_parameters = NULL;
+	block_tree = NULL;
 
 	PHDI_TEST_ASSERT_EQUAL_INT(
 	 "result",
@@ -133,22 +142,25 @@ int phdi_test_disk_parameters_initialize(
 	     test_number < number_of_malloc_fail_tests;
 	     test_number++ )
 	{
-		/* Test libphdi_disk_parameters_initialize with malloc failing
+		/* Test libphdi_block_tree_initialize with malloc failing
 		 */
 		phdi_test_malloc_attempts_before_fail = test_number;
 
-		result = libphdi_disk_parameters_initialize(
-		          &disk_parameters,
+		result = libphdi_block_tree_initialize(
+		          &block_tree,
+		          0x800000000UL,
+		          0x4000,
 		          &error );
 
 		if( phdi_test_malloc_attempts_before_fail != -1 )
 		{
 			phdi_test_malloc_attempts_before_fail = -1;
 
-			if( disk_parameters != NULL )
+			if( block_tree != NULL )
 			{
-				libphdi_disk_parameters_free(
-				 &disk_parameters,
+				libphdi_block_tree_free(
+				 &block_tree,
+				 NULL,
 				 NULL );
 			}
 		}
@@ -160,8 +172,8 @@ int phdi_test_disk_parameters_initialize(
 			 -1 );
 
 			PHDI_TEST_ASSERT_IS_NULL(
-			 "disk_parameters",
-			 disk_parameters );
+			 "block_tree",
+			 block_tree );
 
 			PHDI_TEST_ASSERT_IS_NOT_NULL(
 			 "error",
@@ -175,22 +187,25 @@ int phdi_test_disk_parameters_initialize(
 	     test_number < number_of_memset_fail_tests;
 	     test_number++ )
 	{
-		/* Test libphdi_disk_parameters_initialize with memset failing
+		/* Test libphdi_block_tree_initialize with memset failing
 		 */
 		phdi_test_memset_attempts_before_fail = test_number;
 
-		result = libphdi_disk_parameters_initialize(
-		          &disk_parameters,
+		result = libphdi_block_tree_initialize(
+		          &block_tree,
+		          0x800000000UL,
+		          0x4000,
 		          &error );
 
 		if( phdi_test_memset_attempts_before_fail != -1 )
 		{
 			phdi_test_memset_attempts_before_fail = -1;
 
-			if( disk_parameters != NULL )
+			if( block_tree != NULL )
 			{
-				libphdi_disk_parameters_free(
-				 &disk_parameters,
+				libphdi_block_tree_free(
+				 &block_tree,
+				 NULL,
 				 NULL );
 			}
 		}
@@ -202,8 +217,8 @@ int phdi_test_disk_parameters_initialize(
 			 -1 );
 
 			PHDI_TEST_ASSERT_IS_NULL(
-			 "disk_parameters",
-			 disk_parameters );
+			 "block_tree",
+			 block_tree );
 
 			PHDI_TEST_ASSERT_IS_NOT_NULL(
 			 "error",
@@ -223,19 +238,20 @@ on_error:
 		libcerror_error_free(
 		 &error );
 	}
-	if( disk_parameters != NULL )
+	if( block_tree != NULL )
 	{
-		libphdi_disk_parameters_free(
-		 &disk_parameters,
+		libphdi_block_tree_free(
+		 &block_tree,
+		 NULL,
 		 NULL );
 	}
 	return( 0 );
 }
 
-/* Tests the libphdi_disk_parameters_free function
+/* Tests the libphdi_block_tree_free function
  * Returns 1 if successful or 0 if not
  */
-int phdi_test_disk_parameters_free(
+int phdi_test_block_tree_free(
      void )
 {
 	libcerror_error_t *error = NULL;
@@ -243,7 +259,8 @@ int phdi_test_disk_parameters_free(
 
 	/* Test error cases
 	 */
-	result = libphdi_disk_parameters_free(
+	result = libphdi_block_tree_free(
+	          NULL,
 	          NULL,
 	          &error );
 
@@ -290,12 +307,16 @@ int main(
 #if defined( __GNUC__ ) && !defined( LIBPHDI_DLL_IMPORT )
 
 	PHDI_TEST_RUN(
-	 "libphdi_disk_parameters_initialize",
-	 phdi_test_disk_parameters_initialize );
+	 "libphdi_block_tree_initialize",
+	 phdi_test_block_tree_initialize );
 
 	PHDI_TEST_RUN(
-	 "libphdi_disk_parameters_free",
-	 phdi_test_disk_parameters_free );
+	 "libphdi_block_tree_free",
+	 phdi_test_block_tree_free );
+
+	/* TODO add tests for libphdi_block_tree_get_block_descriptor_by_offset */
+
+	/* TODO add tests for libphdi_block_tree_insert_block_descriptor_by_offset */
 
 #endif /* defined( __GNUC__ ) && !defined( LIBPHDI_DLL_IMPORT ) */
 

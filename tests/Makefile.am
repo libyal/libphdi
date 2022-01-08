@@ -40,7 +40,11 @@ EXTRA_DIST = \
 	$(check_SCRIPTS)
 
 check_PROGRAMS = \
+	phdi_test_block_descriptor \
+	phdi_test_block_tree \
+	phdi_test_block_tree_node \
 	phdi_test_error \
+	phdi_test_disk_parameters \
 	phdi_test_extent_descriptor \
 	phdi_test_extent_table \
 	phdi_test_extent_values \
@@ -50,6 +54,54 @@ check_PROGRAMS = \
 	phdi_test_support \
 	phdi_test_system_string \
 	phdi_test_xml_tag
+
+phdi_test_block_descriptor_SOURCES = \
+	phdi_test_block_descriptor.c \
+	phdi_test_libcerror.h \
+	phdi_test_libphdi.h \
+	phdi_test_macros.h \
+	phdi_test_memory.c phdi_test_memory.h \
+	phdi_test_unused.h
+
+phdi_test_block_descriptor_LDADD = \
+	../libphdi/libphdi.la \
+	@LIBCERROR_LIBADD@
+
+phdi_test_block_tree_SOURCES = \
+	phdi_test_block_tree.c \
+	phdi_test_libcerror.h \
+	phdi_test_libphdi.h \
+	phdi_test_macros.h \
+	phdi_test_memory.c phdi_test_memory.h \
+	phdi_test_unused.h
+
+phdi_test_block_tree_LDADD = \
+	../libphdi/libphdi.la \
+	@LIBCERROR_LIBADD@
+
+phdi_test_block_tree_node_SOURCES = \
+	phdi_test_block_tree_node.c \
+	phdi_test_libcerror.h \
+	phdi_test_libphdi.h \
+	phdi_test_macros.h \
+	phdi_test_memory.c phdi_test_memory.h \
+	phdi_test_unused.h
+
+phdi_test_block_tree_node_LDADD = \
+	../libphdi/libphdi.la \
+	@LIBCERROR_LIBADD@
+
+phdi_test_disk_parameters_SOURCES = \
+	phdi_test_disk_parameters.c \
+	phdi_test_libcerror.h \
+	phdi_test_libphdi.h \
+	phdi_test_macros.h \
+	phdi_test_memory.c phdi_test_memory.h \
+	phdi_test_unused.h
+
+phdi_test_disk_parameters_LDADD = \
+	../libphdi/libphdi.la \
+	@LIBCERROR_LIBADD@
 
 phdi_test_error_SOURCES = \
 	phdi_test_error.c \

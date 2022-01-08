@@ -1,5 +1,5 @@
 /*
- * Library disk_parameters type test program
+ * Library block_descriptor type test program
  *
  * Copyright (C) 2015-2021, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -33,30 +33,30 @@
 #include "phdi_test_memory.h"
 #include "phdi_test_unused.h"
 
-#include "../libphdi/libphdi_disk_parameters.h"
+#include "../libphdi/libphdi_block_descriptor.h"
 
 #if defined( __GNUC__ ) && !defined( LIBPHDI_DLL_IMPORT )
 
-/* Tests the libphdi_disk_parameters_initialize function
+/* Tests the libphdi_block_descriptor_initialize function
  * Returns 1 if successful or 0 if not
  */
-int phdi_test_disk_parameters_initialize(
+int phdi_test_block_descriptor_initialize(
      void )
 {
-	libcerror_error_t *error                   = NULL;
-	libphdi_disk_parameters_t *disk_parameters = NULL;
-	int result                                 = 0;
+	libcerror_error_t *error                     = NULL;
+	libphdi_block_descriptor_t *block_descriptor = NULL;
+	int result                                   = 0;
 
 #if defined( HAVE_PHDI_TEST_MEMORY )
-	int number_of_malloc_fail_tests            = 1;
-	int number_of_memset_fail_tests            = 1;
-	int test_number                            = 0;
+	int number_of_malloc_fail_tests              = 1;
+	int number_of_memset_fail_tests              = 1;
+	int test_number                              = 0;
 #endif
 
 	/* Test regular cases
 	 */
-	result = libphdi_disk_parameters_initialize(
-	          &disk_parameters,
+	result = libphdi_block_descriptor_initialize(
+	          &block_descriptor,
 	          &error );
 
 	PHDI_TEST_ASSERT_EQUAL_INT(
@@ -65,15 +65,15 @@ int phdi_test_disk_parameters_initialize(
 	 1 );
 
 	PHDI_TEST_ASSERT_IS_NOT_NULL(
-	 "disk_parameters",
-	 disk_parameters );
+	 "block_descriptor",
+	 block_descriptor );
 
 	PHDI_TEST_ASSERT_IS_NULL(
 	 "error",
 	 error );
 
-	result = libphdi_disk_parameters_free(
-	          &disk_parameters,
+	result = libphdi_block_descriptor_free(
+	          &block_descriptor,
 	          &error );
 
 	PHDI_TEST_ASSERT_EQUAL_INT(
@@ -82,8 +82,8 @@ int phdi_test_disk_parameters_initialize(
 	 1 );
 
 	PHDI_TEST_ASSERT_IS_NULL(
-	 "disk_parameters",
-	 disk_parameters );
+	 "block_descriptor",
+	 block_descriptor );
 
 	PHDI_TEST_ASSERT_IS_NULL(
 	 "error",
@@ -91,7 +91,7 @@ int phdi_test_disk_parameters_initialize(
 
 	/* Test error cases
 	 */
-	result = libphdi_disk_parameters_initialize(
+	result = libphdi_block_descriptor_initialize(
 	          NULL,
 	          &error );
 
@@ -107,13 +107,13 @@ int phdi_test_disk_parameters_initialize(
 	libcerror_error_free(
 	 &error );
 
-	disk_parameters = (libphdi_disk_parameters_t *) 0x12345678UL;
+	block_descriptor = (libphdi_block_descriptor_t *) 0x12345678UL;
 
-	result = libphdi_disk_parameters_initialize(
-	          &disk_parameters,
+	result = libphdi_block_descriptor_initialize(
+	          &block_descriptor,
 	          &error );
 
-	disk_parameters = NULL;
+	block_descriptor = NULL;
 
 	PHDI_TEST_ASSERT_EQUAL_INT(
 	 "result",
@@ -133,22 +133,22 @@ int phdi_test_disk_parameters_initialize(
 	     test_number < number_of_malloc_fail_tests;
 	     test_number++ )
 	{
-		/* Test libphdi_disk_parameters_initialize with malloc failing
+		/* Test libphdi_block_descriptor_initialize with malloc failing
 		 */
 		phdi_test_malloc_attempts_before_fail = test_number;
 
-		result = libphdi_disk_parameters_initialize(
-		          &disk_parameters,
+		result = libphdi_block_descriptor_initialize(
+		          &block_descriptor,
 		          &error );
 
 		if( phdi_test_malloc_attempts_before_fail != -1 )
 		{
 			phdi_test_malloc_attempts_before_fail = -1;
 
-			if( disk_parameters != NULL )
+			if( block_descriptor != NULL )
 			{
-				libphdi_disk_parameters_free(
-				 &disk_parameters,
+				libphdi_block_descriptor_free(
+				 &block_descriptor,
 				 NULL );
 			}
 		}
@@ -160,8 +160,8 @@ int phdi_test_disk_parameters_initialize(
 			 -1 );
 
 			PHDI_TEST_ASSERT_IS_NULL(
-			 "disk_parameters",
-			 disk_parameters );
+			 "block_descriptor",
+			 block_descriptor );
 
 			PHDI_TEST_ASSERT_IS_NOT_NULL(
 			 "error",
@@ -175,22 +175,22 @@ int phdi_test_disk_parameters_initialize(
 	     test_number < number_of_memset_fail_tests;
 	     test_number++ )
 	{
-		/* Test libphdi_disk_parameters_initialize with memset failing
+		/* Test libphdi_block_descriptor_initialize with memset failing
 		 */
 		phdi_test_memset_attempts_before_fail = test_number;
 
-		result = libphdi_disk_parameters_initialize(
-		          &disk_parameters,
+		result = libphdi_block_descriptor_initialize(
+		          &block_descriptor,
 		          &error );
 
 		if( phdi_test_memset_attempts_before_fail != -1 )
 		{
 			phdi_test_memset_attempts_before_fail = -1;
 
-			if( disk_parameters != NULL )
+			if( block_descriptor != NULL )
 			{
-				libphdi_disk_parameters_free(
-				 &disk_parameters,
+				libphdi_block_descriptor_free(
+				 &block_descriptor,
 				 NULL );
 			}
 		}
@@ -202,8 +202,8 @@ int phdi_test_disk_parameters_initialize(
 			 -1 );
 
 			PHDI_TEST_ASSERT_IS_NULL(
-			 "disk_parameters",
-			 disk_parameters );
+			 "block_descriptor",
+			 block_descriptor );
 
 			PHDI_TEST_ASSERT_IS_NOT_NULL(
 			 "error",
@@ -223,19 +223,19 @@ on_error:
 		libcerror_error_free(
 		 &error );
 	}
-	if( disk_parameters != NULL )
+	if( block_descriptor != NULL )
 	{
-		libphdi_disk_parameters_free(
-		 &disk_parameters,
+		libphdi_block_descriptor_free(
+		 &block_descriptor,
 		 NULL );
 	}
 	return( 0 );
 }
 
-/* Tests the libphdi_disk_parameters_free function
+/* Tests the libphdi_block_descriptor_free function
  * Returns 1 if successful or 0 if not
  */
-int phdi_test_disk_parameters_free(
+int phdi_test_block_descriptor_free(
      void )
 {
 	libcerror_error_t *error = NULL;
@@ -243,7 +243,7 @@ int phdi_test_disk_parameters_free(
 
 	/* Test error cases
 	 */
-	result = libphdi_disk_parameters_free(
+	result = libphdi_block_descriptor_free(
 	          NULL,
 	          &error );
 
@@ -290,12 +290,12 @@ int main(
 #if defined( __GNUC__ ) && !defined( LIBPHDI_DLL_IMPORT )
 
 	PHDI_TEST_RUN(
-	 "libphdi_disk_parameters_initialize",
-	 phdi_test_disk_parameters_initialize );
+	 "libphdi_block_descriptor_initialize",
+	 phdi_test_block_descriptor_initialize );
 
 	PHDI_TEST_RUN(
-	 "libphdi_disk_parameters_free",
-	 phdi_test_disk_parameters_free );
+	 "libphdi_block_descriptor_free",
+	 phdi_test_block_descriptor_free );
 
 #endif /* defined( __GNUC__ ) && !defined( LIBPHDI_DLL_IMPORT ) */
 

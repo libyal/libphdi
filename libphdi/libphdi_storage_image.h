@@ -25,6 +25,8 @@
 #include <common.h>
 #include <types.h>
 
+#include "libphdi_block_descriptor.h"
+#include "libphdi_block_tree.h"
 #include "libphdi_libcerror.h"
 #include "libphdi_sparse_image_header.h"
 
@@ -39,6 +41,10 @@ struct libphdi_storage_image
 	/* The sparse image header
 	 */
 	libphdi_sparse_image_header_t *sparse_image_header;
+
+	/* The block tree
+	 */
+	libphdi_block_tree_t *block_tree;
 };
 
 int libphdi_storage_image_initialize(
@@ -49,10 +55,27 @@ int libphdi_storage_image_free(
      libphdi_storage_image_t **storage_image,
      libcerror_error_t **error );
 
-int libphdi_storage_image_open_read(
+int libphdi_storage_image_read_file_header(
      libphdi_storage_image_t *storage_image,
      libbfio_pool_t *file_io_pool,
      int file_io_pool_entry,
+     libcerror_error_t **error );
+
+int libphdi_storage_image_read_block_allocation_table(
+     libphdi_storage_image_t *storage_image,
+     libbfio_pool_t *file_io_pool,
+     int file_io_pool_entry,
+     libcerror_error_t **error );
+
+int libphdi_storage_image_get_block_size(
+     libphdi_storage_image_t *storage_image,
+     size64_t *block_size,
+     libcerror_error_t **error );
+
+int libphdi_storage_image_get_block_descriptor_at_offset(
+     libphdi_storage_image_t *storage_image,
+     off64_t offset,
+     libphdi_block_descriptor_t **block_descriptor,
      libcerror_error_t **error );
 
 int libphdi_storage_image_read_element_data(

@@ -7,7 +7,7 @@ EXIT_SUCCESS=0;
 EXIT_FAILURE=1;
 EXIT_IGNORE=77;
 
-LIBRARY_TESTS="error extent_descriptor extent_table extent_values io_handle notify system_string xml_tag";
+LIBRARY_TESTS="block_descriptor block_tree block_tree_node disk_parameters error extent_descriptor extent_table extent_values io_handle notify system_string xml_tag";
 LIBRARY_TESTS_WITH_INPUT="handle support";
 OPTION_SETS="";
 

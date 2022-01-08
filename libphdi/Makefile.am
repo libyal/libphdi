@@ -29,6 +29,9 @@ lib_LTLIBRARIES = libphdi.la
 
 libphdi_la_SOURCES = \
 	libphdi.c \
+	libphdi_block_descriptor.c libphdi_block_descriptor.h \
+	libphdi_block_tree.c libphdi_block_tree.h \
+	libphdi_block_tree_node.c libphdi_block_tree_node.h \
 	libphdi_codepage.h \
 	libphdi_debug.c libphdi_debug.h \
 	libphdi_definitions.h \

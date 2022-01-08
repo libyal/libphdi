@@ -39,9 +39,9 @@ struct phdi_sparse_image_header
 	uint8_t signature[ 16 ];
 
 	/* The format version
-	 * Consists of 2 bytes
+	 * Consists of 4 bytes
 	 */
-	uint8_t format_version[ 2 ];
+	uint8_t format_version[ 4 ];
 
 	/* The number of heads
 	 * Consists of 4 bytes
@@ -64,9 +64,9 @@ struct phdi_sparse_image_header
 	uint8_t number_of_allocation_table_entries[ 4 ];
 
 	/* The number of sectors
-	 * Consists of 4 bytes
+	 * Consists of 8 bytes
 	 */
-	uint8_t number_of_sectors[ 4 ];
+	uint8_t number_of_sectors[ 8 ];
 
 	/* Unknown (in use?)
 	 * Consists of 4 bytes

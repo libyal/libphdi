@@ -133,6 +133,9 @@ stamp-h[1-9]
 /phditools/phdimount
 /tests/*.exe
 /tests/input
+/tests/phdi_test_block_descriptor
+/tests/phdi_test_block_tree
+/tests/phdi_test_block_tree_node
 /tests/phdi_test_disk_descriptor_xml_file
 /tests/phdi_test_disk_parameters
 /tests/phdi_test_error
