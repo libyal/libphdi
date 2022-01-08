@@ -29,6 +29,8 @@
 
 #include "pyphdi.h"
 #include "pyphdi_error.h"
+#include "pyphdi_extent_descriptor.h"
+#include "pyphdi_extent_descriptors.h"
 #include "pyphdi_file_object_io_handle.h"
 #include "pyphdi_handle.h"
 #include "pyphdi_libbfio.h"
@@ -592,6 +594,40 @@ PyMODINIT_FUNC initpyphdi(
 	PyEval_InitThreads();
 #endif
 	gil_state = PyGILState_Ensure();
+
+	/* Setup the extent_descriptor type object
+	 */
+	pyphdi_extent_descriptor_type_object.tp_new = PyType_GenericNew;
+
+	if( PyType_Ready(
+	     &pyphdi_extent_descriptor_type_object ) < 0 )
+	{
+		goto on_error;
+	}
+	Py_IncRef(
+	 (PyObject *) &pyphdi_extent_descriptor_type_object );
+
+	PyModule_AddObject(
+	 module,
+	 "extent_descriptor",
+	 (PyObject *) &pyphdi_extent_descriptor_type_object );
+
+	/* Setup the extent_descriptors type object
+	 */
+	pyphdi_extent_descriptors_type_object.tp_new = PyType_GenericNew;
+
+	if( PyType_Ready(
+	     &pyphdi_extent_descriptors_type_object ) < 0 )
+	{
+		goto on_error;
+	}
+	Py_IncRef(
+	 (PyObject *) &pyphdi_extent_descriptors_type_object );
+
+	PyModule_AddObject(
+	 module,
+	 "extent_descriptors",
+	 (PyObject *) &pyphdi_extent_descriptors_type_object );
 
 	/* Setup the handle type object
 	 */

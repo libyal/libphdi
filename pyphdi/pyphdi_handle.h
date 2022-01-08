@@ -48,6 +48,10 @@ struct pyphdi_handle
 	/* The libbfio file IO handle
 	 */
 	libbfio_handle_t *file_io_handle;
+
+	/* The file IO pool
+	 */
+	libbfio_pool_t *file_io_pool;
 };
 
 extern PyMethodDef pyphdi_handle_object_methods[];
@@ -69,6 +73,15 @@ PyObject *pyphdi_handle_open(
            PyObject *keywords );
 
 PyObject *pyphdi_handle_open_file_object(
+           pyphdi_handle_t *pyphdi_handle,
+           PyObject *arguments,
+           PyObject *keywords );
+
+PyObject *pyphdi_handle_open_extent_data_files(
+           pyphdi_handle_t *pyphdi_handle,
+           PyObject *arguments );
+
+PyObject *pyphdi_handle_open_extent_data_files_as_file_objects(
            pyphdi_handle_t *pyphdi_handle,
            PyObject *arguments,
            PyObject *keywords );
@@ -97,6 +110,23 @@ PyObject *pyphdi_handle_get_offset(
            PyObject *arguments );
 
 PyObject *pyphdi_handle_get_media_size(
+           pyphdi_handle_t *pyphdi_handle,
+           PyObject *arguments );
+
+PyObject *pyphdi_handle_get_number_of_extents(
+           pyphdi_handle_t *pyphdi_handle,
+           PyObject *arguments );
+
+PyObject *pyphdi_handle_get_extent_descriptor_by_index(
+           PyObject *pyphdi_handle,
+           int extent_index );
+
+PyObject *pyphdi_handle_get_extent_descriptor(
+           pyphdi_handle_t *pyphdi_handle,
+           PyObject *arguments,
+           PyObject *keywords );
+
+PyObject *pyphdi_handle_get_extent_descriptors(
            pyphdi_handle_t *pyphdi_handle,
            PyObject *arguments );
 

@@ -27,7 +27,10 @@
 #endif
 
 #include "pyphdi_error.h"
+#include "pyphdi_extent_descriptor.h"
+#include "pyphdi_extent_descriptors.h"
 #include "pyphdi_file_object_io_handle.h"
+#include "pyphdi_file_objects_io_pool.h"
 #include "pyphdi_handle.h"
 #include "pyphdi_integer.h"
 #include "pyphdi_libbfio.h"
@@ -43,6 +46,12 @@ int libphdi_handle_open_file_io_handle(
      libphdi_handle_t *handle,
      libbfio_handle_t *file_io_handle,
      int access_flags,
+     libphdi_error_t **error );
+
+LIBPHDI_EXTERN \
+int libphdi_handle_open_extent_data_files_file_io_pool(
+     libphdi_handle_t *handle,
+     libbfio_pool_t *file_io_pool,
      libphdi_error_t **error );
 
 #endif /* !defined( LIBPHDI_HAVE_BFIO ) */
@@ -69,6 +78,20 @@ PyMethodDef pyphdi_handle_object_methods[] = {
 	  "open_file_object(file_object, mode='r') -> None\n"
 	  "\n"
 	  "Opens a handle using a file-like object." },
+
+	{ "open_extent_data_files",
+	  (PyCFunction) pyphdi_handle_open_extent_data_files,
+	  METH_NOARGS,
+	  "open_extent_data_files() -> None\n"
+	  "\n"
+	  "Opens the extent data files." },
+
+	{ "open_extent_data_files_as_file_objects",
+	  (PyCFunction) pyphdi_handle_open_extent_data_files_as_file_objects,
+	  METH_VARARGS | METH_KEYWORDS,
+	  "open_extent_data_files_as_file_objects(file_objects) -> None\n"
+	  "\n"
+	  "Opens extent data files using a list of file-like objects." },
 
 	{ "close",
 	  (PyCFunction) pyphdi_handle_close,
@@ -133,6 +156,22 @@ PyMethodDef pyphdi_handle_object_methods[] = {
 	  "\n"
 	  "Retrieves the size of the data." },
 
+	/* Functions to access the extent descriptors */
+
+	{ "get_number_of_extents",
+	  (PyCFunction) pyphdi_handle_get_number_of_extents,
+	  METH_NOARGS,
+	  "get_number_of_extents() -> Integer\n"
+	  "\n"
+	  "Retrieves the number of extents" },
+
+	{ "get_extent_descriptor",
+	  (PyCFunction) pyphdi_handle_get_extent_descriptor,
+	  METH_VARARGS | METH_KEYWORDS,
+	  "get_extent_descriptor(extent_index) -> Object or None\n"
+	  "\n"
+	  "Retrieves a specific extent descriptor" },
+
 	/* Sentinel */
 	{ NULL, NULL, 0, NULL }
 };
@@ -143,6 +182,18 @@ PyGetSetDef pyphdi_handle_object_get_set_definitions[] = {
 	  (getter) pyphdi_handle_get_media_size,
 	  (setter) 0,
 	  "The media size.",
+	  NULL },
+
+	{ "number_of_extents",
+	  (getter) pyphdi_handle_get_number_of_extents,
+	  (setter) 0,
+	  "The number of extents",
+	  NULL },
+
+	{ "extent_descriptors",
+	  (getter) pyphdi_handle_get_extent_descriptors,
+	  (setter) 0,
+	  "The extent descriptors",
 	  NULL },
 
 	/* Sentinel */
@@ -264,6 +315,7 @@ int pyphdi_handle_init(
 	}
 	pyphdi_handle->handle         = NULL;
 	pyphdi_handle->file_io_handle = NULL;
+	pyphdi_handle->file_io_pool   = NULL;
 
 	if( libphdi_handle_initialize(
 	     &( pyphdi_handle->handle ),
@@ -323,7 +375,8 @@ void pyphdi_handle_free(
 
 		return;
 	}
-	if( pyphdi_handle->file_io_handle != NULL )
+	if( ( pyphdi_handle->file_io_handle != NULL )
+	 || ( pyphdi_handle->file_io_pool != NULL ) )
 	{
 		if( pyphdi_handle_close(
 		     pyphdi_handle,
@@ -752,6 +805,139 @@ on_error:
 	return( NULL );
 }
 
+/* Opens the extent data files
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pyphdi_handle_open_extent_data_files(
+           pyphdi_handle_t *pyphdi_handle,
+           PyObject *arguments PYPHDI_ATTRIBUTE_UNUSED )
+{
+	libcerror_error_t *error = NULL;
+	static char *function    = "pyphdi_handle_open_extent_data_files";
+	int result               = 0;
+
+	if( pyphdi_handle == NULL )
+	{
+		PyErr_Format(
+		 PyExc_ValueError,
+		 "%s: invalid handle.",
+		 function );
+
+		return( NULL );
+	}
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libphdi_handle_open_extent_data_files(
+	          pyphdi_handle->handle,
+	          &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result != 1 )
+	{
+		pyphdi_error_raise(
+		 error,
+		 PyExc_IOError,
+		 "%s: unable to open extent data files.",
+		 function );
+
+		libcerror_error_free(
+		 &error );
+
+		return( NULL );
+	}
+	Py_IncRef(
+	 Py_None );
+
+	return( Py_None );
+}
+
+/* Opens extent data files using a list of file-like objects
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pyphdi_handle_open_extent_data_files_as_file_objects(
+           pyphdi_handle_t *pyphdi_handle,
+           PyObject *arguments,
+           PyObject *keywords )
+{
+	PyObject *file_objects      = NULL;
+	libcerror_error_t *error    = NULL;
+	static char *keyword_list[] = { "file_object", NULL };
+	static char *function       = "pyphdi_handle_open_extent_data_files_as_file_objects";
+	int result                  = 0;
+
+	if( pyphdi_handle == NULL )
+	{
+		PyErr_Format(
+		 PyExc_ValueError,
+		 "%s: invalid file.",
+		 function );
+
+		return( NULL );
+	}
+	if( PyArg_ParseTupleAndKeywords(
+	     arguments,
+	     keywords,
+	     "O",
+	     keyword_list,
+	     &file_objects ) == 0 )
+	{
+		return( NULL );
+	}
+	if( pyphdi_file_objects_pool_initialize(
+	     &( pyphdi_handle->file_io_pool ),
+	     file_objects,
+	     LIBBFIO_OPEN_READ,
+	     &error ) != 1 )
+	{
+		pyphdi_error_raise(
+		 error,
+		 PyExc_MemoryError,
+		 "%s: unable to initialize file IO pool.",
+		 function );
+
+		libcerror_error_free(
+		 &error );
+
+		goto on_error;
+	}
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libphdi_handle_open_extent_data_files_file_io_pool(
+	          pyphdi_handle->handle,
+	          pyphdi_handle->file_io_pool,
+	          &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result != 1 )
+	{
+		pyphdi_error_raise(
+		 error,
+		 PyExc_IOError,
+		 "%s: unable to open extent data files.",
+		 function );
+
+		libcerror_error_free(
+		 &error );
+
+		goto on_error;
+	}
+	Py_IncRef(
+	 Py_None );
+
+	return( Py_None );
+
+on_error:
+	if( pyphdi_handle->file_io_pool != NULL )
+	{
+		libbfio_pool_free(
+		 &( pyphdi_handle->file_io_pool ),
+		 NULL );
+	}
+	return( NULL );
+}
+
 /* Closes a handle
  * Returns a Python object if successful or NULL on error
  */
@@ -811,6 +997,30 @@ PyObject *pyphdi_handle_close(
 			 error,
 			 PyExc_IOError,
 			 "%s: unable to free libbfio file IO handle.",
+			 function );
+
+			libcerror_error_free(
+			 &error );
+
+			return( NULL );
+		}
+	}
+	if( pyphdi_handle->file_io_pool != NULL )
+	{
+		Py_BEGIN_ALLOW_THREADS
+
+		result = libbfio_pool_free(
+		          &( pyphdi_handle->file_io_pool ),
+		          &error );
+
+		Py_END_ALLOW_THREADS
+
+		if( result != 1 )
+		{
+			pyphdi_error_raise(
+			 error,
+			 PyExc_IOError,
+			 "%s: unable to free libbfio file IO pool.",
 			 function );
 
 			libcerror_error_free(
@@ -927,7 +1137,7 @@ PyObject *pyphdi_handle_read_buffer(
 
 		result = libphdi_handle_get_media_size(
 		          pyphdi_handle->handle,
-		          &read_size,
+		          (size64_t *) &read_size,
 		          &error );
 
 		Py_END_ALLOW_THREADS
@@ -1425,5 +1635,223 @@ PyObject *pyphdi_handle_get_media_size(
 	                  (uint64_t) media_size );
 
 	return( integer_object );
+}
+
+/* Retrieves the number of extents
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pyphdi_handle_get_number_of_extents(
+           pyphdi_handle_t *pyphdi_handle,
+           PyObject *arguments PYPHDI_ATTRIBUTE_UNUSED )
+{
+	libcerror_error_t *error = NULL;
+	PyObject *integer_object = NULL;
+	static char *function    = "pyphdi_handle_get_number_of_extents";
+	int number_of_extents    = 0;
+	int result               = 0;
+
+	PYPHDI_UNREFERENCED_PARAMETER( arguments )
+
+	if( pyphdi_handle == NULL )
+	{
+		PyErr_Format(
+		 PyExc_TypeError,
+		 "%s: invalid handle.",
+		 function );
+
+		return( NULL );
+	}
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libphdi_handle_get_number_of_extents(
+	          pyphdi_handle->handle,
+	          &number_of_extents,
+	          &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result != 1 )
+	{
+		pyphdi_error_raise(
+		 error,
+		 PyExc_IOError,
+		 "%s: unable to retrieve number of extents.",
+		 function );
+
+		libcerror_error_free(
+		 &error );
+
+		return( NULL );
+	}
+#if PY_MAJOR_VERSION >= 3
+	integer_object = PyLong_FromLong(
+	                  (long) number_of_extents );
+#else
+	integer_object = PyInt_FromLong(
+	                  (long) number_of_extents );
+#endif
+	return( integer_object );
+}
+
+/* Retrieves a specific extent descriptor by index
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pyphdi_handle_get_extent_descriptor_by_index(
+           PyObject *pyphdi_handle,
+           int extent_index )
+{
+	libcerror_error_t *error                       = NULL;
+	libphdi_extent_descriptor_t *extent_descriptor = NULL;
+	PyObject *extent_descriptor_object             = NULL;
+	static char *function                          = "pyphdi_handle_get_extent_descriptor_by_index";
+	int result                                     = 0;
+
+	if( pyphdi_handle == NULL )
+	{
+		PyErr_Format(
+		 PyExc_TypeError,
+		 "%s: invalid handle.",
+		 function );
+
+		return( NULL );
+	}
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libphdi_handle_get_extent_descriptor(
+	          ( ( pyphdi_handle_t *) pyphdi_handle )->handle,
+	          extent_index,
+	          &extent_descriptor,
+	          &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result != 1 )
+	{
+		pyphdi_error_raise(
+		 error,
+		 PyExc_IOError,
+		 "%s: unable to retrieve extent: %d descriptor.",
+		 function,
+		 extent_index );
+
+		libcerror_error_free(
+		 &error );
+
+		goto on_error;
+	}
+	extent_descriptor_object = pyphdi_extent_descriptor_new(
+	                            extent_descriptor,
+	                            pyphdi_handle );
+
+	if( extent_descriptor_object == NULL )
+	{
+		PyErr_Format(
+		 PyExc_MemoryError,
+		 "%s: unable to create extent descriptor object.",
+		 function );
+
+		goto on_error;
+	}
+	return( extent_descriptor_object );
+
+on_error:
+	if( extent_descriptor != NULL )
+	{
+		libphdi_extent_descriptor_free(
+		 &extent_descriptor,
+		 NULL );
+	}
+	return( NULL );
+}
+
+/* Retrieves a specific extent descriptor
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pyphdi_handle_get_extent_descriptor(
+           pyphdi_handle_t *pyphdi_handle,
+           PyObject *arguments,
+           PyObject *keywords )
+{
+	PyObject *extent_descriptor_object = NULL;
+	static char *keyword_list[]        = { "extent_index", NULL };
+	int extent_index                   = 0;
+
+	if( PyArg_ParseTupleAndKeywords(
+	     arguments,
+	     keywords,
+	     "i",
+	     keyword_list,
+	     &extent_index ) == 0 )
+	{
+		return( NULL );
+	}
+	extent_descriptor_object = pyphdi_handle_get_extent_descriptor_by_index(
+	                            (PyObject *) pyphdi_handle,
+	                            extent_index );
+
+	return( extent_descriptor_object );
+}
+
+/* Retrieves an extent descriptors sequence and iterator object for the extent descriptors
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pyphdi_handle_get_extent_descriptors(
+           pyphdi_handle_t *pyphdi_handle,
+           PyObject *arguments PYPHDI_ATTRIBUTE_UNUSED )
+{
+	libcerror_error_t *error            = NULL;
+	PyObject *extent_descriptors_object = NULL;
+	static char *function               = "pyphdi_handle_get_extent_descriptors";
+	int number_of_extent_descriptors    = 0;
+	int result                          = 0;
+
+	PYPHDI_UNREFERENCED_PARAMETER( arguments )
+
+	if( pyphdi_handle == NULL )
+	{
+		PyErr_Format(
+		 PyExc_TypeError,
+		 "%s: invalid handle.",
+		 function );
+
+		return( NULL );
+	}
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libphdi_handle_get_number_of_extents(
+	          pyphdi_handle->handle,
+	          &number_of_extent_descriptors,
+	          &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result != 1 )
+	{
+		pyphdi_error_raise(
+		 error,
+		 PyExc_IOError,
+		 "%s: unable to retrieve number of extents.",
+		 function );
+
+		libcerror_error_free(
+		 &error );
+
+		return( NULL );
+	}
+	extent_descriptors_object = pyphdi_extent_descriptors_new(
+	                             (PyObject *) pyphdi_handle,
+	                             &pyphdi_handle_get_extent_descriptor_by_index,
+	                             number_of_extent_descriptors );
+
+	if( extent_descriptors_object == NULL )
+	{
+		PyErr_Format(
+		 PyExc_MemoryError,
+		 "%s: unable to create extent descriptors object.",
+		 function );
+
+		return( NULL );
+	}
+	return( extent_descriptors_object );
 }
 

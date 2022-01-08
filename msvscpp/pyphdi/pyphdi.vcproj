@@ -178,7 +178,19 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\pyphdi\pyphdi_extent_descriptor.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\pyphdi\pyphdi_extent_descriptors.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\pyphdi\pyphdi_file_object_io_handle.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\pyphdi\pyphdi_file_objects_io_pool.c"
 				>
 			</File>
 			<File
@@ -204,7 +216,19 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\pyphdi\pyphdi_extent_descriptor.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\pyphdi\pyphdi_extent_descriptors.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\pyphdi\pyphdi_file_object_io_handle.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\pyphdi\pyphdi_file_objects_io_pool.h"
 				>
 			</File>
 			<File

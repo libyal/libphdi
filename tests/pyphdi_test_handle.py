@@ -136,6 +136,7 @@ class HandleTypeTests(unittest.TestCase):
     phdi_handle = pyphdi.handle()
 
     phdi_handle.open(test_source)
+    phdi_handle.open_extent_data_files()
 
     media_size = phdi_handle.get_media_size()
 
@@ -215,10 +216,20 @@ class HandleTypeTests(unittest.TestCase):
     if not os.path.isfile(test_source):
       raise unittest.SkipTest("source not a regular file")
 
-    phdi_handle = pyphdi.handle()
-
     with open(test_source, "rb") as file_object:
+      phdi_handle = pyphdi.handle()
+
       phdi_handle.open_file_object(file_object)
+
+      extent_data_file_objects = []
+      for extent_descriptor in phdi_handle.extent_descriptors:
+        extend_data_file_path = os.path.join(
+          os.path.dirname(test_source), extent_descriptor.filename)
+        extend_data_file_object = open(extend_data_file_path, "rb")
+        extent_data_file_objects.append(extend_data_file_object)
+
+      phdi_handle.open_extent_data_files_as_file_objects(
+          extent_data_file_objects)
 
       media_size = phdi_handle.get_media_size()
 
@@ -230,6 +241,9 @@ class HandleTypeTests(unittest.TestCase):
 
       phdi_handle.close()
 
+      for extend_data_file_object in extent_data_file_objects:
+        extend_data_file_object.close()
+
   def test_read_buffer_at_offset(self):
     """Tests the read_buffer_at_offset function."""
     test_source = unittest.source
@@ -239,6 +253,7 @@ class HandleTypeTests(unittest.TestCase):
     phdi_handle = pyphdi.handle()
 
     phdi_handle.open(test_source)
+    phdi_handle.open_extent_data_files()
 
     media_size = phdi_handle.get_media_size()
 
@@ -307,6 +322,7 @@ class HandleTypeTests(unittest.TestCase):
     phdi_handle = pyphdi.handle()
 
     phdi_handle.open(test_source)
+    phdi_handle.open_extent_data_files()
 
     media_size = phdi_handle.get_media_size()
 
@@ -367,6 +383,7 @@ class HandleTypeTests(unittest.TestCase):
     phdi_handle = pyphdi.handle()
 
     phdi_handle.open(test_source)
+    phdi_handle.open_extent_data_files()
 
     offset = phdi_handle.get_offset()
     self.assertIsNotNone(offset)
@@ -387,6 +404,23 @@ class HandleTypeTests(unittest.TestCase):
     self.assertIsNotNone(media_size)
 
     self.assertIsNotNone(phdi_handle.media_size)
+
+    phdi_handle.close()
+
+  def test_get_number_of_extents(self):
+    """Tests the get_number_of_extents function and number_of_extents property."""
+    test_source = unittest.source
+    if not test_source:
+      raise unittest.SkipTest("missing source")
+
+    phdi_handle = pyphdi.handle()
+
+    phdi_handle.open(test_source)
+
+    number_of_extents = phdi_handle.get_number_of_extents()
+    self.assertIsNotNone(number_of_extents)
+
+    self.assertIsNotNone(phdi_handle.number_of_extents)
 
     phdi_handle.close()
 
