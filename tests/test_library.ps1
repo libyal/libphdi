@@ -6,7 +6,7 @@ $ExitSuccess = 0
 $ExitFailure = 1
 $ExitIgnore = 77
 
-$LibraryTests = "error extent_descriptor extent_values io_handle notify xml_tag"
+$LibraryTests = "error extent_descriptor extent_table extent_values io_handle notify system_string xml_tag"
 $LibraryTestsWithInput = "handle support"
 $OptionSets = ""
 

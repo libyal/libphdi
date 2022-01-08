@@ -27,6 +27,7 @@
 
 #include "libphdi_disk_parameters.h"
 #include "libphdi_extern.h"
+#include "libphdi_extent_table.h"
 #include "libphdi_io_handle.h"
 #include "libphdi_libbfio.h"
 #include "libphdi_libcdata.h"
@@ -34,7 +35,6 @@
 #include "libphdi_libcthreads.h"
 #include "libphdi_libfcache.h"
 #include "libphdi_libfdata.h"
-#include "libphdi_storage_table.h"
 
 #if defined( __cplusplus )
 extern "C" {
@@ -48,13 +48,21 @@ struct libphdi_internal_handle
 	 */
 	off64_t current_offset;
 
+	/* The disk type
+	 */
+	int disk_type;
+
 	/* The IO handle
 	 */
 	libphdi_io_handle_t *io_handle;
 
-	/* The storage table
+	/* The extent values array
 	 */
-	libphdi_storage_table_t *storage_table;
+	libcdata_array_t *extent_values_array;
+
+	/* The extent table
+	 */
+	libphdi_extent_table_t *extent_table;
 
 	/* The file IO handle
 	 */
@@ -72,10 +80,6 @@ struct libphdi_internal_handle
 	 */
 	libphdi_disk_parameters_t *disk_parameters;
 
-	/* The extent values array
-	 */
-	libcdata_array_t *extent_values_array;
-
 	/* The data block vector
 	 */
 	libfdata_vector_t *data_block_vector;
@@ -83,6 +87,18 @@ struct libphdi_internal_handle
 	/* The data block cache
 	 */
 	libfcache_cache_t *data_block_cache;
+
+	/* The extent data file IO pool
+	 */
+	libbfio_pool_t *extent_data_file_io_pool;
+
+	/* Value to indicate if the file IO pool was created inside the library
+	 */
+	uint8_t extent_data_file_io_pool_created_in_library;
+
+	/* The access flags
+	 */
+	int access_flags;
 
 	/* The maximum number of open handles in the file IO pool
 	 */
@@ -136,6 +152,35 @@ int libphdi_handle_open_file_io_handle(
      libcerror_error_t **error );
 
 LIBPHDI_EXTERN \
+int libphdi_handle_open_extent_data_files(
+     libphdi_handle_t *handle,
+     libcerror_error_t **error );
+
+LIBPHDI_EXTERN \
+int libphdi_handle_open_extent_data_files_file_io_pool(
+     libphdi_handle_t *handle,
+     libbfio_pool_t *file_io_pool,
+     libcerror_error_t **error );
+
+int libphdi_handle_open_extent_data_file(
+     libphdi_internal_handle_t *internal_handle,
+     libbfio_pool_t *file_io_pool,
+     int extent_index,
+     const char *filename,
+     libcerror_error_t **error );
+
+#if defined( HAVE_WIDE_CHARACTER_TYPE )
+
+int libphdi_handle_open_extent_data_file_wide(
+     libphdi_internal_handle_t *internal_handle,
+     libbfio_pool_t *file_io_pool,
+     int extent_index,
+     const wchar_t *filename,
+     libcerror_error_t **error );
+
+#endif /* defined( HAVE_WIDE_CHARACTER_TYPE ) */
+
+LIBPHDI_EXTERN \
 int libphdi_handle_close(
      libphdi_handle_t *handle,
      libcerror_error_t **error );
@@ -145,9 +190,14 @@ int libphdi_internal_handle_open_read(
      libbfio_handle_t *file_io_handle,
      libcerror_error_t **error );
 
-ssize_t libphdi_internal_handle_read_buffer_from_file_io_handle(
+int libphdi_internal_handle_open_read_extent_data_files(
+     libphdi_internal_handle_t *internal_handle,
+     libbfio_pool_t *file_io_pool,
+     libcerror_error_t **error );
+
+ssize_t libphdi_internal_handle_read_buffer_from_file_io_pool(
          libphdi_internal_handle_t *internal_handle,
-         libbfio_handle_t *file_io_handle,
+         libbfio_pool_t *file_io_pool,
          void *buffer,
          size_t buffer_size,
          libcerror_error_t **error );
@@ -191,6 +241,24 @@ int libphdi_handle_set_maximum_number_of_open_handles(
      libphdi_handle_t *handle,
      int maximum_number_of_open_handles,
      libcerror_error_t **error );
+
+LIBPHDI_EXTERN \
+int libphdi_handle_set_extent_data_files_path(
+     libphdi_handle_t *handle,
+     const char *path,
+     size_t path_length,
+     libcerror_error_t **error );
+
+#if defined( HAVE_WIDE_CHARACTER_TYPE )
+
+LIBPHDI_EXTERN \
+int libphdi_handle_set_extent_data_files_path_wide(
+     libphdi_handle_t *handle,
+     const wchar_t *path,
+     size_t path_length,
+     libcerror_error_t **error );
+
+#endif /* defined( HAVE_WIDE_CHARACTER_TYPE ) */
 
 LIBPHDI_EXTERN \
 int libphdi_handle_get_media_size(

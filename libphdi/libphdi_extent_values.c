@@ -143,7 +143,7 @@ int libphdi_extent_values_free(
 int libphdi_extent_values_set(
      libphdi_extent_values_t *extent_values,
      const uint8_t *filename,
-     size_t filename_size,
+     size_t filename_length,
      int type,
      off64_t start_offset,
      off64_t end_offset,
@@ -158,40 +158,6 @@ int libphdi_extent_values_set(
 		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid extent values.",
-		 function );
-
-		return( -1 );
-	}
-	if( extent_values->filename != NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
-		 "%s: invalid extent values - filename value already set.",
-		 function );
-
-		return( -1 );
-	}
-	if( filename == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid filename.",
-		 function );
-
-		return( -1 );
-	}
-	if( ( filename_size == 0 )
-	 || ( filename_size > (size_t) MEMORY_MAXIMUM_ALLOCATION_SIZE ) )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
-		 "%s: invalid filename size value out of bounds.",
 		 function );
 
 		return( -1 );
@@ -231,8 +197,88 @@ int libphdi_extent_values_set(
 
 		return( -1 );
 	}
+	if( libphdi_extent_values_set_filename(
+	     extent_values,
+	     filename,
+	     filename_length,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set filename.",
+		 function );
+
+		return( -1 );
+	}
+	extent_values->type   = type;
+	extent_values->offset = start_offset;
+	extent_values->size   = end_offset - start_offset;
+
+	return( 1 );
+}
+
+/* Sets the filename
+ * Returns 1 if successful or -1 on error
+ */
+int libphdi_extent_values_set_filename(
+     libphdi_extent_values_t *extent_values,
+     const uint8_t *filename,
+     size_t filename_length,
+     libcerror_error_t **error )
+{
+	static char *function = "libphdi_extent_values_set_filename";
+
+	if( extent_values == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid extent values.",
+		 function );
+
+		return( -1 );
+	}
+	if( extent_values->filename != NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
+		 "%s: invalid extent values - filename value already set.",
+		 function );
+
+		return( -1 );
+	}
+	if( filename == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid filename.",
+		 function );
+
+		return( -1 );
+	}
+	if( ( filename_length == 0 )
+	 || ( filename_length > ( (size_t) MEMORY_MAXIMUM_ALLOCATION_SIZE - 1 ) ) )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid filename size value out of bounds.",
+		 function );
+
+		return( -1 );
+	}
+	extent_values->filename_size = filename_length + 1;
+
 	extent_values->filename = (uint8_t *) memory_allocate(
-	                                       sizeof( uint8_t ) * filename_size );
+	                                       sizeof( uint8_t ) * extent_values->filename_size );
 
 	if( extent_values->filename == NULL )
 	{
@@ -245,25 +291,21 @@ int libphdi_extent_values_set(
 
 		goto on_error;
 	}
-	extent_values->filename_size = filename_size;
-
 	if( memory_copy(
 	     extent_values->filename,
 	     filename,
-	     filename_size ) == NULL )
+	     filename_length ) == NULL )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_MEMORY,
 		 LIBCERROR_MEMORY_ERROR_COPY_FAILED,
-		 "%s: unable to copy name.",
+		 "%s: unable to copy filename.",
 		 function );
 
 		goto on_error;
 	}
-	extent_values->type   = type;
-	extent_values->offset = start_offset;
-	extent_values->size   = end_offset - start_offset;
+	extent_values->filename[ filename_length ] = 0;
 
 	return( 1 );
 

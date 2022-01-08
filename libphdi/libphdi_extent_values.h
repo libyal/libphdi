@@ -67,10 +67,16 @@ int libphdi_extent_values_free(
 int libphdi_extent_values_set(
      libphdi_extent_values_t *extent_values,
      const uint8_t *filename,
-     size_t filename_size,
+     size_t filename_length,
      int type,
      off64_t start_offset,
      off64_t end_offset,
+     libcerror_error_t **error );
+
+int libphdi_extent_values_set_filename(
+     libphdi_extent_values_t *extent_values,
+     const uint8_t *filename,
+     size_t filename_length,
      libcerror_error_t **error );
 
 int libphdi_extent_values_get_type(

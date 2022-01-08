@@ -67,6 +67,7 @@ enum LIBPHDI_ACCESS_FLAGS
  */
 enum LIBPHDI_DISK_TYPES
 {
+	LIBPHDI_DISK_TYPE_UNKNOWN				= 0,
 	LIBPHDI_DISK_TYPE_EXPANDING				= 1,
 	LIBPHDI_DISK_TYPE_FIXED					= 2
 };
@@ -82,8 +83,7 @@ enum LIBPHDI_EXTENT_TYPE
 
 #endif /* !defined( HAVE_LOCAL_LIBPHDI ) */
 
-/* The maximum number of cache entries defintions
- */
+#define LIBPHDI_MAXIMUM_CACHE_ENTRIES_EXTENT_FILES		4
 #define LIBPHDI_MAXIMUM_CACHE_ENTRIES_DATA_BLOCKS		1024
 
 #endif /* !defined( _LIBPHDI_INTERNAL_DEFINITIONS_H ) */

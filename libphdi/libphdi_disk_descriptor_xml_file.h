@@ -48,6 +48,10 @@ struct libphdi_disk_descriptor_xml_file
 	 */
 	libphdi_xml_tag_t *disk_parameters_tag;
 
+	/* The disk type
+	 */
+	int disk_type;
+
 	/* The storage data XML tag
 	 */
 	libphdi_xml_tag_t *storage_data_tag;
@@ -79,6 +83,11 @@ int libphdi_disk_descriptor_xml_file_read_file_io_handle(
 int libphdi_disk_descriptor_xml_file_get_disk_parameters(
      libphdi_disk_descriptor_xml_file_t *disk_descriptor_xml_file,
      libphdi_disk_parameters_t *disk_parameters,
+     libcerror_error_t **error );
+
+int libphdi_disk_descriptor_xml_file_get_disk_type(
+     libphdi_disk_descriptor_xml_file_t *disk_descriptor_xml_file,
+     int *disk_type,
      libcerror_error_t **error );
 
 int libphdi_disk_descriptor_xml_file_get_storage_data(

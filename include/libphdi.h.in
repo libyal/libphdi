@@ -264,6 +264,30 @@ int libphdi_handle_open_file_io_handle(
 
 #endif /* defined( LIBPHDI_HAVE_BFIO ) */
 
+/* Opens the extent data files
+ * If the extent data filenames were not set explicitly this function assumes the extent data files
+ * are in the same location as the descriptor file
+ * Returns 1 if successful or -1 on error
+ */
+LIBPHDI_EXTERN \
+int libphdi_handle_open_extent_data_files(
+     libphdi_handle_t *handle,
+     libphdi_error_t **error );
+
+#if defined( LIBPHDI_HAVE_BFIO )
+
+/* Opens the extent data files using a Basic File IO (bfio) pool
+ * This function assumes the extent data files are in same order as defined by the descriptor file
+ * Returns 1 if successful or -1 on error
+ */
+LIBPHDI_EXTERN \
+int libphdi_handle_open_extent_data_files_file_io_pool(
+     libphdi_handle_t *handle,
+     libbfio_pool_t *file_io_pool,
+     libphdi_error_t **error );
+
+#endif /* defined( LIBPHDI_HAVE_BFIO ) */
+
 /* Closes a handle
  * Returns 0 if successful or -1 on error
  */
@@ -311,6 +335,39 @@ int libphdi_handle_get_offset(
      libphdi_handle_t *handle,
      off64_t *offset,
      libphdi_error_t **error );
+
+/* Sets the maximum number of (concurrent) open file handles
+ * Returns 1 if successful or -1 on error
+ */
+LIBPHDI_EXTERN \
+int libphdi_handle_set_maximum_number_of_open_handles(
+     libphdi_handle_t *handle,
+     int maximum_number_of_open_handles,
+     libphdi_error_t **error );
+
+/* Sets the path to the extend data files
+ * Returns 1 if successful or -1 on error
+ */
+LIBPHDI_EXTERN \
+int libphdi_handle_set_extent_data_files_path(
+     libphdi_handle_t *handle,
+     const char *path,
+     size_t path_length,
+     libphdi_error_t **error );
+
+#if defined( HAVE_WIDE_CHARACTER_TYPE )
+
+/* Sets the path to the extend data files
+ * Returns 1 if successful or -1 on error
+ */
+LIBPHDI_EXTERN \
+int libphdi_handle_set_extent_data_files_path_wide(
+     libphdi_handle_t *handle,
+     const wchar_t *path,
+     size_t path_length,
+     libphdi_error_t **error );
+
+#endif /* defined( HAVE_WIDE_CHARACTER_TYPE ) */
 
 /* Retrieves the media size
  * Returns the 1 if succesful or -1 on error

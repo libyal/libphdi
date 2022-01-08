@@ -80,10 +80,12 @@ int libphdi_handle_open_file_io_handle(
  */
 int phdi_test_handle_open_source(
      libphdi_handle_t **handle,
+     const system_character_t *source,
      libbfio_handle_t *file_io_handle,
      libcerror_error_t **error )
 {
 	static char *function = "phdi_test_handle_open_source";
+	size_t string_length  = 0;
 	int result            = 0;
 
 	if( handle == NULL )
@@ -134,6 +136,54 @@ int phdi_test_handle_open_source(
 		 LIBCERROR_ERROR_DOMAIN_IO,
 		 LIBCERROR_IO_ERROR_OPEN_FAILED,
 		 "%s: unable to open handle.",
+		 function );
+
+		goto on_error;
+	}
+	string_length = system_string_length(
+	                 source );
+
+	while( string_length > 0 )
+	{
+		if( source[ string_length - 1 ] == '/' )
+		{
+			break;
+		}
+		string_length--;
+	}
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
+	result = libphdi_handle_set_extent_data_files_path(
+	          *handle,
+	          source,
+	          string_length,
+	          error );
+#else
+	result = libphdi_handle_set_extent_data_files_path(
+	          *handle,
+	          source,
+	          string_length,
+	          error );
+#endif
+	if( result != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set extent data files path.",
+		 function );
+
+		goto on_error;
+	}
+	if( libphdi_handle_open_extent_data_files(
+	     *handle,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_OPEN_FAILED,
+		 "%s: unable to open extent data files.",
 		 function );
 
 		goto on_error;
@@ -1243,341 +1293,6 @@ on_error:
 	}
 	return( 0 );
 }
-
-#if defined( __GNUC__ ) && !defined( LIBPHDI_DLL_IMPORT )
-
-/* Tests the libphdi_internal_handle_read_buffer_from_file_io_handle function
- * Returns 1 if successful or 0 if not
- */
-int phdi_test_internal_handle_read_buffer_from_file_io_handle(
-     libphdi_handle_t *handle )
-{
-	uint8_t buffer[ PHDI_TEST_HANDLE_READ_BUFFER_SIZE ];
-
-	libcerror_error_t *error      = NULL;
-	time_t timestamp              = 0;
-	size64_t media_size           = 0;
-	size64_t remaining_media_size = 0;
-	size_t read_size              = 0;
-	ssize_t read_count            = 0;
-	off64_t offset                = 0;
-	off64_t read_offset           = 0;
-	int number_of_tests           = 1024;
-	int random_number             = 0;
-	int result                    = 0;
-	int test_number               = 0;
-
-	/* Determine size
-	 */
-	result = libphdi_handle_get_media_size(
-	          handle,
-	          &media_size,
-	          &error );
-
-	PHDI_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 1 );
-
-	PHDI_TEST_ASSERT_IS_NULL(
-	 "error",
-	 error );
-
-	/* Reset offset to 0
-	 */
-	offset = libphdi_handle_seek_offset(
-	          handle,
-	          0,
-	          SEEK_SET,
-	          &error );
-
-	PHDI_TEST_ASSERT_EQUAL_INT64(
-	 "offset",
-	 offset,
-	 (int64_t) 0 );
-
-	PHDI_TEST_ASSERT_IS_NULL(
-	 "error",
-	 error );
-
-	/* Test regular cases
-	 */
-	read_size = PHDI_TEST_HANDLE_READ_BUFFER_SIZE;
-
-	if( media_size < PHDI_TEST_HANDLE_READ_BUFFER_SIZE )
-	{
-		read_size = (size_t) media_size;
-	}
-	read_count = libphdi_internal_handle_read_buffer_from_file_io_handle(
-	              (libphdi_internal_handle_t *) handle,
-	              ( (libphdi_internal_handle_t *) handle )->file_io_handle,
-	              buffer,
-	              PHDI_TEST_HANDLE_READ_BUFFER_SIZE,
-	              &error );
-
-	PHDI_TEST_ASSERT_EQUAL_SSIZE(
-	 "read_count",
-	 read_count,
-	 (ssize_t) read_size );
-
-	PHDI_TEST_ASSERT_IS_NULL(
-	 "error",
-	 error );
-
-	if( media_size > 8 )
-	{
-		/* Set offset to media_size - 8
-		 */
-		offset = libphdi_handle_seek_offset(
-		          handle,
-		          -8,
-		          SEEK_END,
-		          &error );
-
-		PHDI_TEST_ASSERT_EQUAL_INT64(
-		 "offset",
-		 offset,
-		 (int64_t) media_size - 8 );
-
-		PHDI_TEST_ASSERT_IS_NULL(
-		 "error",
-		 error );
-
-		/* Read buffer on media_size boundary
-		 */
-		read_count = libphdi_internal_handle_read_buffer_from_file_io_handle(
-		              (libphdi_internal_handle_t *) handle,
-		              ( (libphdi_internal_handle_t *) handle )->file_io_handle,
-		              buffer,
-		              PHDI_TEST_HANDLE_READ_BUFFER_SIZE,
-		              &error );
-
-		PHDI_TEST_ASSERT_EQUAL_SSIZE(
-		 "read_count",
-		 read_count,
-		 (ssize_t) 8 );
-
-		PHDI_TEST_ASSERT_IS_NULL(
-		 "error",
-		 error );
-
-		/* Read buffer beyond media_size boundary
-		 */
-		read_count = libphdi_internal_handle_read_buffer_from_file_io_handle(
-		              (libphdi_internal_handle_t *) handle,
-		              ( (libphdi_internal_handle_t *) handle )->file_io_handle,
-		              buffer,
-		              PHDI_TEST_HANDLE_READ_BUFFER_SIZE,
-		              &error );
-
-		PHDI_TEST_ASSERT_EQUAL_SSIZE(
-		 "read_count",
-		 read_count,
-		 (ssize_t) 0 );
-
-		PHDI_TEST_ASSERT_IS_NULL(
-		 "error",
-		 error );
-	}
-	/* Stress test read buffer
-	 */
-	timestamp = time(
-	             NULL );
-
-	srand(
-	 (unsigned int) timestamp );
-
-	offset = libphdi_handle_seek_offset(
-	          handle,
-	          0,
-	          SEEK_SET,
-	          &error );
-
-	PHDI_TEST_ASSERT_EQUAL_INT64(
-	 "offset",
-	 offset,
-	 (int64_t) 0 );
-
-	PHDI_TEST_ASSERT_IS_NULL(
-	 "error",
-	 error );
-
-	remaining_media_size = media_size;
-
-	for( test_number = 0;
-	     test_number < number_of_tests;
-	     test_number++ )
-	{
-		random_number = rand();
-
-		PHDI_TEST_ASSERT_GREATER_THAN_INT(
-		 "random_number",
-		 random_number,
-		 -1 );
-
-		read_size = (size_t) random_number % PHDI_TEST_HANDLE_READ_BUFFER_SIZE;
-
-#if defined( PHDI_TEST_HANDLE_VERBOSE )
-		fprintf(
-		 stdout,
-		 "libphdi_handle_read_buffer: at offset: %" PRIi64 " (0x%08" PRIx64 ") of size: %" PRIzd "\n",
-		 read_offset,
-		 read_offset,
-		 read_size );
-#endif
-		read_count = libphdi_internal_handle_read_buffer_from_file_io_handle(
-		              (libphdi_internal_handle_t *) handle,
-		              ( (libphdi_internal_handle_t *) handle )->file_io_handle,
-		              buffer,
-		              read_size,
-		              &error );
-
-		if( read_size > remaining_media_size )
-		{
-			read_size = (size_t) remaining_media_size;
-		}
-		PHDI_TEST_ASSERT_EQUAL_SSIZE(
-		 "read_count",
-		 read_count,
-		 (ssize_t) read_size );
-
-		PHDI_TEST_ASSERT_IS_NULL(
-		 "error",
-		 error );
-
-		read_offset += read_count;
-
-		result = libphdi_handle_get_offset(
-		          handle,
-		          &offset,
-		          &error );
-
-		PHDI_TEST_ASSERT_EQUAL_INT(
-		 "result",
-		 result,
-		 1 );
-
-		PHDI_TEST_ASSERT_EQUAL_INT64(
-		 "offset",
-		 offset,
-		 read_offset );
-
-		PHDI_TEST_ASSERT_IS_NULL(
-		 "error",
-		 error );
-
-		remaining_media_size -= read_count;
-
-		if( remaining_media_size == 0 )
-		{
-			offset = libphdi_handle_seek_offset(
-			          handle,
-			          0,
-			          SEEK_SET,
-			          &error );
-
-			PHDI_TEST_ASSERT_EQUAL_INT64(
-			 "offset",
-			 offset,
-			 (int64_t) 0 );
-
-			PHDI_TEST_ASSERT_IS_NULL(
-			 "error",
-			 error );
-
-			read_offset = 0;
-
-			remaining_media_size = media_size;
-		}
-	}
-	/* Reset offset to 0
-	 */
-	offset = libphdi_handle_seek_offset(
-	          handle,
-	          0,
-	          SEEK_SET,
-	          &error );
-
-	PHDI_TEST_ASSERT_EQUAL_INT64(
-	 "offset",
-	 offset,
-	 (int64_t) 0 );
-
-	PHDI_TEST_ASSERT_IS_NULL(
-	 "error",
-	 error );
-
-	/* Test error cases
-	 */
-	read_count = libphdi_internal_handle_read_buffer_from_file_io_handle(
-	              NULL,
-	              ( (libphdi_internal_handle_t *) handle )->file_io_handle,
-	              buffer,
-	              PHDI_TEST_HANDLE_READ_BUFFER_SIZE,
-	              &error );
-
-	PHDI_TEST_ASSERT_EQUAL_SSIZE(
-	 "read_count",
-	 read_count,
-	 (ssize_t) -1 );
-
-	PHDI_TEST_ASSERT_IS_NOT_NULL(
-	 "error",
-	 error );
-
-	libcerror_error_free(
-	 &error );
-
-	read_count = libphdi_internal_handle_read_buffer_from_file_io_handle(
-	              (libphdi_internal_handle_t *) handle,
-	              ( (libphdi_internal_handle_t *) handle )->file_io_handle,
-	              NULL,
-	              PHDI_TEST_HANDLE_READ_BUFFER_SIZE,
-	              &error );
-
-	PHDI_TEST_ASSERT_EQUAL_SSIZE(
-	 "read_count",
-	 read_count,
-	 (ssize_t) -1 );
-
-	PHDI_TEST_ASSERT_IS_NOT_NULL(
-	 "error",
-	 error );
-
-	libcerror_error_free(
-	 &error );
-
-	read_count = libphdi_internal_handle_read_buffer_from_file_io_handle(
-	              (libphdi_internal_handle_t *) handle,
-	              ( (libphdi_internal_handle_t *) handle )->file_io_handle,
-	              buffer,
-	              (size_t) SSIZE_MAX + 1,
-	              &error );
-
-	PHDI_TEST_ASSERT_EQUAL_SSIZE(
-	 "read_count",
-	 read_count,
-	 (ssize_t) -1 );
-
-	PHDI_TEST_ASSERT_IS_NOT_NULL(
-	 "error",
-	 error );
-
-	libcerror_error_free(
-	 &error );
-
-	return( 1 );
-
-on_error:
-	if( error != NULL )
-	{
-		libcerror_error_free(
-		 &error );
-	}
-	return( 0 );
-}
-
-#endif /* defined( __GNUC__ ) && !defined( LIBPHDI_DLL_IMPORT ) */
 
 /* Tests the libphdi_handle_read_buffer function
  * Returns 1 if successful or 0 if not
@@ -2817,6 +2532,7 @@ int main(
 		 */
 		result = phdi_test_handle_open_source(
 		          &handle,
+		          source,
 		          file_io_handle,
 		          &error );
 
@@ -2842,10 +2558,7 @@ int main(
 
 		/* TODO: add tests for libphdi_internal_handle_open_read */
 
-		PHDI_TEST_RUN_WITH_ARGS(
-		 "libphdi_internal_handle_read_buffer_from_file_io_handle",
-		 phdi_test_internal_handle_read_buffer_from_file_io_handle,
-		 handle );
+		/* TODO: add tests for libphdi_internal_handle_read_buffer_from_file_io_pool */
 
 #endif /* defined( __GNUC__ ) && !defined( LIBPHDI_DLL_IMPORT ) */
 

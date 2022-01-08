@@ -1,4 +1,4 @@
-.Dd January  7, 2022
+.Dd January  8, 2022
 .Dt libphdi 3
 .Os libphdi
 .Sh NAME
@@ -63,6 +63,8 @@ Handle functions
 .Ft int
 .Fn libphdi_handle_open "libphdi_handle_t *handle" "const char *filename" "int access_flags" "libphdi_error_t **error"
 .Ft int
+.Fn libphdi_handle_open_extent_data_files "libphdi_handle_t *handle" "libphdi_error_t **error"
+.Ft int
 .Fn libphdi_handle_close "libphdi_handle_t *handle" "libphdi_error_t **error"
 .Ft ssize_t
 .Fn libphdi_handle_read_buffer "libphdi_handle_t *handle" "void *buffer" "size_t buffer_size" "libphdi_error_t **error"
@@ -72,6 +74,10 @@ Handle functions
 .Fn libphdi_handle_seek_offset "libphdi_handle_t *handle" "off64_t offset" "int whence" "libphdi_error_t **error"
 .Ft int
 .Fn libphdi_handle_get_offset "libphdi_handle_t *handle" "off64_t *offset" "libphdi_error_t **error"
+.Ft int
+.Fn libphdi_handle_set_maximum_number_of_open_handles "libphdi_handle_t *handle" "int maximum_number_of_open_handles" "libphdi_error_t **error"
+.Ft int
+.Fn libphdi_handle_set_extent_data_files_path "libphdi_handle_t *handle" "const char *path" "size_t path_length" "libphdi_error_t **error"
 .Ft int
 .Fn libphdi_handle_get_media_size "libphdi_handle_t *handle" "size64_t *media_size" "libphdi_error_t **error"
 .Ft int
@@ -90,10 +96,14 @@ Handle functions
 Available when compiled with wide character string support:
 .Ft int
 .Fn libphdi_handle_open_wide "libphdi_handle_t *handle" "const wchar_t *filename" "int access_flags" "libphdi_error_t **error"
+.Ft int
+.Fn libphdi_handle_set_extent_data_files_path_wide "libphdi_handle_t *handle" "const wchar_t *path" "size_t path_length" "libphdi_error_t **error"
 .Pp
 Available when compiled with libbfio support:
 .Ft int
 .Fn libphdi_handle_open_file_io_handle "libphdi_handle_t *handle" "libbfio_handle_t *file_io_handle" "int access_flags" "libphdi_error_t **error"
+.Ft int
+.Fn libphdi_handle_open_extent_data_files_file_io_pool "libphdi_handle_t *handle" "libbfio_pool_t *file_io_pool" "libphdi_error_t **error"
 .Pp
 Extent descriptor functions
 .Ft int

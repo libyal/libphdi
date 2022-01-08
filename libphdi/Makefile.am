@@ -36,6 +36,7 @@ libphdi_la_SOURCES = \
 	libphdi_disk_parameters.c libphdi_disk_parameters.h \
 	libphdi_error.c libphdi_error.h \
 	libphdi_extent_descriptor.c libphdi_extent_descriptor.h \
+	libphdi_extent_table.c libphdi_extent_table.h \
 	libphdi_extent_values.c libphdi_extent_values.h \
 	libphdi_extern.h \
 	libphdi_handle.c libphdi_handle.h \
@@ -56,9 +57,9 @@ libphdi_la_SOURCES = \
 	libphdi_libuna.h \
 	libphdi_notify.c libphdi_notify.h \
 	libphdi_storage_image.c libphdi_storage_image.h \
-	libphdi_storage_table.c libphdi_storage_table.h \
 	libphdi_sparse_image_header.c libphdi_sparse_image_header.h \
 	libphdi_support.c libphdi_support.h \
+	libphdi_system_string.c libphdi_system_string.h \
 	libphdi_types.h \
 	libphdi_unused.h \
 	libphdi_xml_attribute.c libphdi_xml_attribute.h \

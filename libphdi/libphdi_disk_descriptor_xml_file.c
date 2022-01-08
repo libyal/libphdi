@@ -1136,6 +1136,43 @@ int libphdi_disk_descriptor_xml_file_get_disk_parameters(
 	return( 1 );
 }
 
+/* Retrieves the disk type
+ * Returns 1 if successful or -1 on error
+ */
+int libphdi_disk_descriptor_xml_file_get_disk_type(
+     libphdi_disk_descriptor_xml_file_t *disk_descriptor_xml_file,
+     int *disk_type,
+     libcerror_error_t **error )
+{
+	static char *function = "libphdi_disk_descriptor_xml_file_get_disk_type";
+
+	if( disk_descriptor_xml_file == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid disk descriptor XML file.",
+		 function );
+
+		return( -1 );
+	}
+	if( disk_type == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid disk type.",
+		 function );
+
+		return( -1 );
+	}
+	*disk_type = disk_descriptor_xml_file->disk_type;
+
+	return( 1 );
+}
+
 /* Retrieves the storage data
  * Returns 1 if successful or -1 on error
  */
@@ -1649,6 +1686,17 @@ int libphdi_disk_descriptor_xml_file_get_storage_data(
 		            image_type_tag->value_size ) == 0 ) )
 		{
 			extent_type = LIBPHDI_EXTENT_TYPE_COMPRESSED;
+		}
+		if( disk_descriptor_xml_file->disk_type == 0 )
+		{
+			if( extent_type == LIBPHDI_EXTENT_TYPE_COMPRESSED )
+			{
+				disk_descriptor_xml_file->disk_type = LIBPHDI_DISK_TYPE_EXPANDING;
+			}
+			else if( extent_type == LIBPHDI_EXTENT_TYPE_PLAIN )
+			{
+				disk_descriptor_xml_file->disk_type = LIBPHDI_DISK_TYPE_FIXED;
+			}
 		}
 		if( libphdi_extent_values_initialize(
 		     &extent_values,

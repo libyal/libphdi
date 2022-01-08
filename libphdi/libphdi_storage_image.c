@@ -346,3 +346,85 @@ on_error:
 	return( -1 );
 }
 
+/* Reads segment data into a buffer
+ * Callback function for the segments stream
+ * Returns the number of bytes read or -1 on error
+ */
+ssize_t libphdi_storage_image_read_segment_data(
+         intptr_t *data_handle LIBPHDI_ATTRIBUTE_UNUSED,
+         libbfio_pool_t *file_io_pool,
+         int segment_index LIBPHDI_ATTRIBUTE_UNUSED,
+         int segment_file_index,
+         uint8_t *segment_data,
+         size_t segment_data_size,
+         uint32_t segment_flags LIBPHDI_ATTRIBUTE_UNUSED,
+         uint8_t read_flags LIBPHDI_ATTRIBUTE_UNUSED,
+         libcerror_error_t **error )
+{
+	static char *function = "libphdi_storage_image_read_segment_data";
+	ssize_t read_count    = 0;
+
+	LIBPHDI_UNREFERENCED_PARAMETER( data_handle )
+	LIBPHDI_UNREFERENCED_PARAMETER( segment_index )
+	LIBPHDI_UNREFERENCED_PARAMETER( segment_flags )
+	LIBPHDI_UNREFERENCED_PARAMETER( read_flags )
+
+	read_count = libbfio_pool_read_buffer(
+	              file_io_pool,
+	              segment_file_index,
+	              segment_data,
+	              segment_data_size,
+	              error );
+
+	if( read_count == -1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_READ_FAILED,
+		 "%s: unable to read segment data.",
+		 function );
+
+		return( -1 );
+	}
+	return( read_count );
+}
+
+/* Seeks a certain segment offset
+ * Callback function for the segments stream
+ * Returns the offset or -1 on error
+ */
+off64_t libphdi_storage_image_seek_segment_offset(
+         intptr_t *data_handle LIBPHDI_ATTRIBUTE_UNUSED,
+         libbfio_pool_t *file_io_pool,
+         int segment_index LIBPHDI_ATTRIBUTE_UNUSED,
+         int segment_file_index,
+         off64_t segment_offset,
+         libcerror_error_t **error )
+{
+	static char *function = "libphdi_storage_image_seek_segment_offset";
+
+	LIBPHDI_UNREFERENCED_PARAMETER( data_handle )
+	LIBPHDI_UNREFERENCED_PARAMETER( segment_index )
+
+	segment_offset = libbfio_pool_seek_offset(
+	                  file_io_pool,
+	                  segment_file_index,
+	                  segment_offset,
+	                  SEEK_SET,
+	                  error );
+
+	if( segment_offset == -1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_READ_FAILED,
+		 "%s: unable to seek segment offset.",
+		 function );
+
+		return( -1 );
+	}
+	return( segment_offset );
+}
+

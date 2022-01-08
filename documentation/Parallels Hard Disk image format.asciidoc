@@ -31,7 +31,7 @@ for the libphdi project.
 == License
 
 ....
-Copyright (C) 2015-2020, Joachim Metz <joachim.metz@gmail.com>.
+Copyright (C) 2015-2022, Joachim Metz <joachim.metz@gmail.com>.
 Permission is granted to copy, distribute and/or modify this document under the
 terms of the GNU Free Documentation License, Version 1.3 or any later version
 published by the Free Software Foundation; with no Invariant Sections, no
@@ -48,6 +48,7 @@ in the section entitled "GNU Free Documentation License".
 | 0.0.1 | J.B. Metz | December 2015 | Initial version.
 | 0.0.2 | J.B. Metz | November 2016 | Additional information about format.
 | 0.0.3 | J.B. Metz | July 2020 | Additional information about format.
+| 0.0.4 | J.B. Metz | January 2022 | Additional information about format.
 |===
 
 :numbered:
@@ -217,7 +218,7 @@ Contains "{00000000-0000-0000-0000-000000000000}" if not set
 
 == RAW storage data image file
 
-The RAW storage data image file contains the actual disk data.
+The RAW (or plain) storage data image file contains the actual disk data.
 
 === Sparse storage data image file
 
