@@ -46,6 +46,7 @@ check_PROGRAMS = \
 	phdi_test_block_tree \
 	phdi_test_block_tree_node \
 	phdi_test_error \
+	phdi_test_disk_descriptor_xml_file \
 	phdi_test_disk_parameters \
 	phdi_test_extent_descriptor \
 	phdi_test_extent_table \
@@ -90,6 +91,29 @@ phdi_test_block_tree_node_SOURCES = \
 	phdi_test_unused.h
 
 phdi_test_block_tree_node_LDADD = \
+	../libphdi/libphdi.la \
+	@LIBCERROR_LIBADD@
+
+phdi_test_disk_descriptor_xml_file_SOURCES = \
+	phdi_test_disk_descriptor_xml_file.c \
+	phdi_test_functions.c phdi_test_functions.h \
+	phdi_test_libbfio.h \
+	phdi_test_libcdata.h \
+	phdi_test_libcerror.h \
+	phdi_test_libphdi.h \
+	phdi_test_macros.h \
+	phdi_test_memory.c phdi_test_memory.h \
+	phdi_test_unused.h
+
+phdi_test_disk_descriptor_xml_file_LDADD = \
+	@LIBBFIO_LIBADD@ \
+	@LIBCPATH_LIBADD@ \
+	@LIBCFILE_LIBADD@ \
+	@LIBUNA_LIBADD@ \
+	@LIBCSPLIT_LIBADD@ \
+	@LIBCNOTIFY_LIBADD@ \
+	@LIBCLOCALE_LIBADD@ \
+	@LIBCDATA_LIBADD@ \
 	../libphdi/libphdi.la \
 	@LIBCERROR_LIBADD@
 

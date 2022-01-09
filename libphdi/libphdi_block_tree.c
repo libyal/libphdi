@@ -188,11 +188,13 @@ int libphdi_block_tree_get_block_descriptor_by_offset(
      libphdi_block_tree_t *block_tree,
      off64_t offset,
      libphdi_block_descriptor_t **block_descriptor,
+     off64_t *block_offset,
      libcerror_error_t **error )
 {
 	libphdi_block_descriptor_t *safe_block_descriptor = NULL;
 	libphdi_block_tree_node_t *block_tree_node        = NULL;
 	static char *function                             = "libphdi_block_tree_get_block_descriptor_by_offset";
+	off64_t safe_block_offset                         = 0;
 
 	if( block_tree == NULL )
 	{
@@ -212,6 +214,17 @@ int libphdi_block_tree_get_block_descriptor_by_offset(
 		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid block descriptor.",
+		 function );
+
+		return( -1 );
+	}
+	if( block_offset == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid block offset.",
 		 function );
 
 		return( -1 );
@@ -246,6 +259,7 @@ int libphdi_block_tree_get_block_descriptor_by_offset(
 	     block_tree_node,
 	     offset,
 	     &safe_block_descriptor,
+	     &safe_block_offset,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
@@ -264,6 +278,7 @@ int libphdi_block_tree_get_block_descriptor_by_offset(
 		return( 0 );
 	}
 	*block_descriptor = safe_block_descriptor;
+	*block_offset     = safe_block_offset;
 
 	return( 1 );
 }
@@ -285,6 +300,7 @@ int libphdi_block_tree_insert_block_descriptor_by_offset(
 	libphdi_block_tree_node_t *safe_block_tree_node   = NULL;
 	libphdi_block_tree_node_t *sub_block_tree_node    = NULL;
 	static char *function                             = "libphdi_block_tree_insert_block_descriptor_by_offset";
+	off64_t block_offset                              = 0;
 	off64_t sub_node_index                            = 0;
 	off64_t sub_node_offset                           = 0;
 
@@ -404,6 +420,7 @@ int libphdi_block_tree_insert_block_descriptor_by_offset(
 	     safe_block_tree_node,
 	     offset,
 	     &safe_block_descriptor,
+	     &block_offset,
 	     error ) != 1 )
 	{
 		libcerror_error_set(

@@ -92,6 +92,7 @@ int libphdi_block_tree_node_get_leaf_value_at_offset(
      libphdi_block_tree_node_t *block_tree_node,
      off64_t offset,
      libphdi_block_descriptor_t **block_descriptor,
+     off64_t *block_offset,
      libcerror_error_t **error );
 
 int libphdi_block_tree_node_set_leaf_value_at_offset(

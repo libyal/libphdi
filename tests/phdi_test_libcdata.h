@@ -1,5 +1,5 @@
 /*
- * Block descriptor functions
+ * The libcdata header wrapper
  *
  * Copyright (C) 2015-2022, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -19,42 +19,36 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#if !defined( _LIBPHDI_BLOCK_DESCRIPTOR_H )
-#define _LIBPHDI_BLOCK_DESCRIPTOR_H
+#if !defined( _PHDI_TEST_LIBCDATA_H )
+#define _PHDI_TEST_LIBCDATA_H
 
 #include <common.h>
-#include <types.h>
 
-#include "libphdi_libcerror.h"
+/* Define HAVE_LOCAL_LIBCDATA for local use of libcdata
+ */
+#if defined( HAVE_LOCAL_LIBCDATA )
 
-#if defined( __cplusplus )
-extern "C" {
+#include <libcdata_array.h>
+#include <libcdata_btree.h>
+#include <libcdata_definitions.h>
+#include <libcdata_list.h>
+#include <libcdata_list_element.h>
+#include <libcdata_range_list.h>
+#include <libcdata_tree_node.h>
+#include <libcdata_types.h>
+
+#else
+
+/* If libtool DLL support is enabled set LIBCDATA_DLL_IMPORT
+ * before including libcdata.h
+ */
+#if defined( _WIN32 ) && defined( DLL_IMPORT )
+#define LIBCDATA_DLL_IMPORT
 #endif
 
-typedef struct libphdi_block_descriptor libphdi_block_descriptor_t;
+#include <libcdata.h>
 
-struct libphdi_block_descriptor
-{
-	/* The file IO pool entry
-	 */
-	int file_io_pool_entry;
+#endif /* defined( HAVE_LOCAL_LIBCDATA ) */
 
-	/* The file offset
-	 */
-	off64_t file_offset;
-};
-
-int libphdi_block_descriptor_initialize(
-     libphdi_block_descriptor_t **block_descriptor,
-     libcerror_error_t **error );
-
-int libphdi_block_descriptor_free(
-     libphdi_block_descriptor_t **block_descriptor,
-     libcerror_error_t **error );
-
-#if defined( __cplusplus )
-}
-#endif
-
-#endif /* !defined( _LIBPHDI_BLOCK_DESCRIPTOR_H ) */
+#endif /* !defined( _PHDI_TEST_LIBCDATA_H ) */
 

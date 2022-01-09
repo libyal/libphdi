@@ -76,6 +76,7 @@ int libphdi_storage_image_get_block_descriptor_at_offset(
      libphdi_storage_image_t *storage_image,
      off64_t offset,
      libphdi_block_descriptor_t **block_descriptor,
+     off64_t *block_offset,
      libcerror_error_t **error );
 
 int libphdi_storage_image_read_element_data(

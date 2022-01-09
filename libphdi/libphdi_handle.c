@@ -2465,6 +2465,7 @@ ssize_t libphdi_internal_handle_read_buffer_from_file_io_pool(
 	size_t buffer_offset                         = 0;
 	size_t read_size                             = 0;
 	ssize_t read_count                           = 0;
+	off64_t block_offset                         = 0;
 	off64_t storage_image_data_offset            = 0;
 	int extent_number                            = 0;
 	int result                                   = 0;
@@ -2627,6 +2628,7 @@ ssize_t libphdi_internal_handle_read_buffer_from_file_io_pool(
 			          storage_image,
 			          storage_image_data_offset,
 			          &block_descriptor,
+			          &block_offset,
 			          error );
 
 			if( result == -1 )
@@ -2672,16 +2674,14 @@ ssize_t libphdi_internal_handle_read_buffer_from_file_io_pool(
 			}
 			else
 			{
-				storage_image_data_offset -= block_descriptor->offset;
-
 #if defined( HAVE_DEBUG_OUTPUT )
 				if( libcnotify_verbose != 0 )
 				{
 					libcnotify_printf(
 					 "%s: reading from offset: %" PRIi64 " (0x%08" PRIx64 ")\n",
 					 function,
-					 block_descriptor->file_offset + storage_image_data_offset,
-					 block_descriptor->file_offset + storage_image_data_offset );
+					 block_descriptor->file_offset + block_offset,
+					 block_descriptor->file_offset + block_offset );
 				}
 #endif
 				read_count = libbfio_pool_read_buffer_at_offset(
@@ -2689,7 +2689,7 @@ ssize_t libphdi_internal_handle_read_buffer_from_file_io_pool(
 				              block_descriptor->file_io_pool_entry,
 				              buffer,
 				              read_size,
-				              block_descriptor->file_offset + storage_image_data_offset,
+				              block_descriptor->file_offset + block_offset,
 				              error );
 
 				if( read_count == -1 )
@@ -2701,8 +2701,8 @@ ssize_t libphdi_internal_handle_read_buffer_from_file_io_pool(
 					 "%s: unable to read data from file IO pool entry: %d at offset: %" PRIi64 " (0x%08" PRIx64 ").",
 					 function,
 					 block_descriptor->file_io_pool_entry,
-					 block_descriptor->file_offset + storage_image_data_offset,
-					 block_descriptor->file_offset + storage_image_data_offset );
+					 block_descriptor->file_offset + block_offset,
+					 block_descriptor->file_offset + block_offset );
 
 					return( -1 );
 				}

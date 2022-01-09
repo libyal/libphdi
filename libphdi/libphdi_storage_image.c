@@ -478,7 +478,6 @@ int libphdi_storage_image_read_block_allocation_table(
 
 				goto on_error;
 			}
-			new_block_descriptor->offset             = logical_offset;
 			new_block_descriptor->file_io_pool_entry = file_io_pool_entry;
 			new_block_descriptor->file_offset        = file_offset;
 
@@ -580,6 +579,7 @@ int libphdi_storage_image_get_block_descriptor_at_offset(
      libphdi_storage_image_t *storage_image,
      off64_t offset,
      libphdi_block_descriptor_t **block_descriptor,
+     off64_t *block_offset,
      libcerror_error_t **error )
 {
 	static char *function = "libphdi_storage_image_get_block_descriptor_at_offset";
@@ -600,6 +600,7 @@ int libphdi_storage_image_get_block_descriptor_at_offset(
 	          storage_image->block_tree,
 	          offset,
 	          block_descriptor,
+	          block_offset,
 	          error );
 
 	if( result == -1 )
