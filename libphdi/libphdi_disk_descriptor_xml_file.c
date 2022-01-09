@@ -1658,7 +1658,8 @@ int libphdi_disk_descriptor_xml_file_get_storage_data(
 
 			goto on_error;
 		}
-		if( image_type_tag->value == NULL )
+		if( ( image_type_tag->value == NULL )
+		 || ( image_file_tag->value_size == 0 ) )
 		{
 			libcerror_error_set(
 			 error,
@@ -1714,7 +1715,7 @@ int libphdi_disk_descriptor_xml_file_get_storage_data(
 		if( libphdi_extent_values_set(
 		     extent_values,
 		     image_file_tag->value,
-		     image_file_tag->value_size,
+		     image_file_tag->value_size - 1,
 		     extent_type,
 		     start_offset,
 		     end_offset,

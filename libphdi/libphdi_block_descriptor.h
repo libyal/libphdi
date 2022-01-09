@@ -1,7 +1,7 @@
 /*
  * Block descriptor functions
  *
- * Copyright (C) 2015-2021, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2015-2022, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -35,13 +35,17 @@ typedef struct libphdi_block_descriptor libphdi_block_descriptor_t;
 
 struct libphdi_block_descriptor
 {
+	/* The (logical) offset
+	 */
+	off64_t offset;
+
 	/* The file IO pool entry
 	 */
 	int file_io_pool_entry;
 
-	/* The (block) offset
+	/* The file offset
 	 */
-	off64_t offset;
+	off64_t file_offset;
 };
 
 int libphdi_block_descriptor_initialize(

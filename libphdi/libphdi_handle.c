@@ -932,7 +932,7 @@ int libphdi_handle_open_wide(
 
 		disk_descriptor_xml_path = NULL;
 	}
-	return( 1 );
+	return( result );
 
 on_error:
 	if( file_io_handle != NULL )
@@ -1474,8 +1474,24 @@ int libphdi_handle_open_extent_data_files_file_io_pool(
 		return( -1 );
 	}
 #endif
-	internal_handle->extent_data_file_io_pool = file_io_pool;
+	if( libphdi_internal_handle_open_read_extent_data_files(
+	     internal_handle,
+	     file_io_pool,
+	     error ) != 1 )
+	{
+                libcerror_error_set(
+                 error,
+                 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+                 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+                 "%s: unable to read extent data files.",
+                 function );
 
+                result = -1;
+	}
+	else
+	{
+		internal_handle->extent_data_file_io_pool = file_io_pool;
+	}
 #if defined( HAVE_LIBPHDI_MULTI_THREAD_SUPPORT )
 	if( libcthreads_read_write_lock_release_for_write(
 	     internal_handle->read_write_lock,
@@ -2520,7 +2536,7 @@ ssize_t libphdi_internal_handle_read_buffer_from_file_io_pool(
 		if( libcnotify_verbose != 0 )
 		{
 			libcnotify_printf(
-			 "%s: requested offset\t: %" PRIi64 " (0x%08" PRIx64 ")\n",
+			 "%s: requested offset: %" PRIi64 " (0x%08" PRIx64 ")\n",
 			 function,
 			 internal_handle->current_offset,
 			 internal_handle->current_offset );
@@ -2567,7 +2583,7 @@ ssize_t libphdi_internal_handle_read_buffer_from_file_io_pool(
 			if( libcnotify_verbose != 0 )
 			{
 				libcnotify_printf(
-				 "%s: requested offset\t: %" PRIi64 " (0x%08" PRIx64 ")\n",
+				 "%s: requested offset: %" PRIi64 " (0x%08" PRIx64 ")\n",
 				 function,
 				 internal_handle->current_offset,
 				 internal_handle->current_offset );
@@ -2628,14 +2644,14 @@ ssize_t libphdi_internal_handle_read_buffer_from_file_io_pool(
 			}
 			read_size = (size_t) block_size;
 
-			if( read_size > ( buffer_size - buffer_offset ) )
-			{
-				read_size = buffer_size - buffer_offset;
-			}
 			if( ( (size64_t) read_size > internal_handle->disk_parameters->media_size )
 			 || ( (size64_t) internal_handle->current_offset > ( internal_handle->disk_parameters->media_size - read_size ) ) )
 			{
 				read_size = (size_t) ( internal_handle->disk_parameters->media_size - internal_handle->current_offset );
+			}
+			if( read_size > ( buffer_size - buffer_offset ) )
+			{
+				read_size = buffer_size - buffer_offset;
 			}
 			if( block_descriptor == NULL )
 			{
@@ -2656,12 +2672,24 @@ ssize_t libphdi_internal_handle_read_buffer_from_file_io_pool(
 			}
 			else
 			{
+				storage_image_data_offset -= block_descriptor->offset;
+
+#if defined( HAVE_DEBUG_OUTPUT )
+				if( libcnotify_verbose != 0 )
+				{
+					libcnotify_printf(
+					 "%s: reading from offset: %" PRIi64 " (0x%08" PRIx64 ")\n",
+					 function,
+					 block_descriptor->file_offset + storage_image_data_offset,
+					 block_descriptor->file_offset + storage_image_data_offset );
+				}
+#endif
 				read_count = libbfio_pool_read_buffer_at_offset(
 				              file_io_pool,
 				              block_descriptor->file_io_pool_entry,
 				              buffer,
 				              read_size,
-				              block_descriptor->offset + storage_image_data_offset,
+				              block_descriptor->file_offset + storage_image_data_offset,
 				              error );
 
 				if( read_count == -1 )
@@ -2673,8 +2701,8 @@ ssize_t libphdi_internal_handle_read_buffer_from_file_io_pool(
 					 "%s: unable to read data from file IO pool entry: %d at offset: %" PRIi64 " (0x%08" PRIx64 ").",
 					 function,
 					 block_descriptor->file_io_pool_entry,
-					 block_descriptor->offset + storage_image_data_offset,
-					 block_descriptor->offset + storage_image_data_offset );
+					 block_descriptor->file_offset + storage_image_data_offset,
+					 block_descriptor->file_offset + storage_image_data_offset );
 
 					return( -1 );
 				}

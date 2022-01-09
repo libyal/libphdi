@@ -244,8 +244,8 @@ The sparse storage data image file is 64 bytes of size and consists of:
 | 28 | 4 | | Block size (or number of tracks) in number of sectors
 | 32 | 4 | | Number of entries in the block allocation table
 | 36 | 8 | | Number of sectors
-| 44 | 4 | | [yellow-background]*Unknown (In use?)* +
-Seen: "\x00\x00\x00\x00", "pd22"
+| 44 | 4 | | [yellow-background]*Unknown (Creator?)* +
+Seen: "\x00\x00\x00\x00", "pd17", "pd22"
 | 48 | 4 | | Image data start sector number +
 Contains the sector number of the start of the image data relatative from the start of the sparse storage data image file
 | 52 | 12 | | [yellow-background]*Unknown (padding)*

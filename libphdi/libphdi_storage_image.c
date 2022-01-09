@@ -304,8 +304,8 @@ int libphdi_storage_image_read_block_allocation_table(
 	size_t block_allocation_table_data_size               = 0;
 	size_t data_offset                                    = 0;
 	ssize_t read_count                                    = 0;
-	off64_t image_data_offset                             = 0;
-	off64_t image_offset                                  = 0;
+	off64_t file_offset                                   = 0;
+	off64_t logical_offset                                = 0;
 	uint32_t block_allocation_table_entry                 = 0;
 	int leaf_value_index                                  = 0;
 
@@ -433,7 +433,7 @@ int libphdi_storage_image_read_block_allocation_table(
 
 		if( block_allocation_table_entry != 0 )
 		{
-			image_data_offset = block_allocation_table_entry * 512;
+			file_offset = block_allocation_table_entry * 512;
 
 #if defined( HAVE_DEBUG_OUTPUT )
 			if( libcnotify_verbose != 0 )
@@ -449,16 +449,16 @@ int libphdi_storage_image_read_block_allocation_table(
 				 block_allocation_table_entry );
 
 				libcnotify_printf(
-				 "%s: image offset\t: %" PRIi64 " (0x%08" PRIx64 ")\n",
+				 "%s: entry offset\t: %" PRIi64 " (0x%08" PRIx64 ")\n",
 				 function,
-				 image_offset,
-				 image_offset );
+				 logical_offset,
+				 logical_offset );
 
 				libcnotify_printf(
-				 "%s: data offset\t: %" PRIi64 " (0x%08" PRIx64 ")\n",
+				 "%s: file offset\t: %" PRIi64 " (0x%08" PRIx64 ")\n",
 				 function,
-				 (off64_t) image_data_offset,
-				 (off64_t) image_data_offset );
+				 (off64_t) file_offset,
+				 (off64_t) file_offset );
 
 				libcnotify_printf(
 				 "\n" );
@@ -478,12 +478,13 @@ int libphdi_storage_image_read_block_allocation_table(
 
 				goto on_error;
 			}
+			new_block_descriptor->offset             = logical_offset;
 			new_block_descriptor->file_io_pool_entry = file_io_pool_entry;
-			new_block_descriptor->offset             = image_data_offset;
+			new_block_descriptor->file_offset        = file_offset;
 
 			if( libphdi_block_tree_insert_block_descriptor_by_offset(
 			     storage_image->block_tree,
-			     image_offset,
+			     logical_offset,
 			     new_block_descriptor,
 			     &leaf_value_index,
 			     &leaf_block_tree_node,
@@ -501,7 +502,7 @@ int libphdi_storage_image_read_block_allocation_table(
 			}
 			new_block_descriptor = NULL;
 		}
-		image_offset += (off64_t) block_size;
+		logical_offset += (off64_t) block_size;
 
 #if defined( HAVE_DEBUG_OUTPUT )
 		entry_index++;
@@ -627,8 +628,8 @@ int libphdi_storage_image_read_element_data(
      libfdata_list_element_t *element,
      libfdata_cache_t *storage_image_cache,
      int file_io_pool_entry,
-     off64_t storage_image_offset,
-     size64_t storage_image_size,
+     off64_t storage_image_offset LIBPHDI_ATTRIBUTE_UNUSED,
+     size64_t storage_image_size LIBPHDI_ATTRIBUTE_UNUSED,
      uint32_t element_flags LIBPHDI_ATTRIBUTE_UNUSED,
      uint8_t read_flags LIBPHDI_ATTRIBUTE_UNUSED,
      libcerror_error_t **error )
@@ -637,6 +638,8 @@ int libphdi_storage_image_read_element_data(
 	static char *function                  = "libphdi_storage_image_read_element_data";
 
 	LIBPHDI_UNREFERENCED_PARAMETER( data_handle )
+	LIBPHDI_UNREFERENCED_PARAMETER( storage_image_offset )
+	LIBPHDI_UNREFERENCED_PARAMETER( storage_image_size )
 	LIBPHDI_UNREFERENCED_PARAMETER( element_flags )
 	LIBPHDI_UNREFERENCED_PARAMETER( read_flags )
 
