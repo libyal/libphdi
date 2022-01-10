@@ -69,8 +69,19 @@ A Parallels Hard Disk Image is a directory that contains the following files:
 |===
 | Characteristics | Description
 | Byte order | little-endian
-| Date and time values |
 | Character strings | UTF-8 by default, encoding is defined in the disk descriptor XML file.
+|===
+
+=== Disk types
+
+The Parallels Hard Disk Image (PHDI) format support multiple disk types:
+
+[cols="1,5",options="header"]
+|===
+| Identifier | Description
+| Expanding | Disk that consists of a single (dynamic size) sparse storage data image file
+| Plain | Disk that consists of a single single (fixed size) RAW storage data image file
+| Split | Disk that consists of a one or more split storage data image files, either expanding or plain, holding upto 2G of data
 |===
 
 == Descriptor file
@@ -122,6 +133,7 @@ the "Parallels_disk_image" XML element tha consists of the following values:
             </Image>
             ...
         </Storage>
+        ...
     </StorageData>
     <Snapshots>
         <Shot>
@@ -141,9 +153,39 @@ contains the following values.
 [cols="1,5",options="header"]
 |===
 | Identifier | Description
+| Cylinders | Number of cylinders
 | Disk_size | Number of sectors +
 Contains the size of the disk in 512 byte sectors
+| Encryption | "Encryption" XML sub element
+| Heads | Number of heads
+| Miscellaneous | "Miscellaneous" XML sub element
+| Name | Name of the disk
+| LogicSectorSize | Logical sector size
+| Padding | [yellow-background]*Unknown*
+| PhysicalSectorSize | Physical sector size
+| Sectors | Number of sectors
+| UID | [yellow-background]*Unknown identifier*
 |===
+
+==== Encryption
+
+....
+<Encryption>
+    <Engine>{00000000-0000-0000-0000-000000000000}</Engine>
+    <Data></Data>
+</Encryption>
+....
+
+==== Miscellaneous
+
+....
+<Miscellaneous>
+    <CompatLevel>level2</CompatLevel>
+    <Bootable>1</Bootable>
+    <ChangeState>0</ChangeState>
+    <SuspendState>0</SuspendState>
+</Miscellaneous>
+....
 
 === Storage data
 
@@ -152,7 +194,7 @@ The "StorageData" XML element contains the following values.
 [cols="1,5",options="header"]
 |===
 | Identifier | Description
-| Storage |
+| Storage | One or more "Storage" XML sub elements
 |===
 
 ==== Storage
@@ -167,7 +209,7 @@ Contains the sector number within the disk in 512 byte sectors
 | End | End of the segment stored in the storage data image file +
 Contains the sector number within the disk in 512 byte sectors
 | Blocksize | Block size in number of sectors
-| Image |
+| Image | One or more "Image" XML sub elements
 |===
 
 ===== Image
@@ -177,7 +219,7 @@ The "Image" XML element contains the following values.
 [cols="1,5",options="header"]
 |===
 | Identifier | Description
-| GUID | Identifier of storage data image file
+| GUID | Identifier of disk (used by snapshots)
 | Type | Type of the storage data image file +
 See section: <<storage_data_image_file_types,Storage data image file types>>
 | File | Name of the storage data image file
@@ -190,7 +232,7 @@ The "Snapshots" XML element contains the following values.
 [cols="1,5",options="header"]
 |===
 | Identifier | Description
-| Shot |
+| Shot | One or more "Shot" XML sub elements
 |===
 
 ==== Shot
@@ -200,8 +242,8 @@ The "Shot" XML element contains the following values.
 [cols="1,5",options="header"]
 |===
 | Identifier | Description
-| GUID | Identifier of the storage data image file
-| ParentGUID | [yellow-background]*Unknown (Identifier of the parent)* +
+| GUID | Identifier of disk
+| ParentGUID | Identifier of parent disk +
 Contains "{00000000-0000-0000-0000-000000000000}" if not set
 |===
 
@@ -252,6 +294,8 @@ Contains the sector number of the start of the image data relatative from the st
 |===
 
 A sector is considered 512 bytes.
+
+TODO: determine if "WithouFreSpacExt" is used for 2T extended storage data image files
 
 ==== Block allocation table
 
