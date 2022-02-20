@@ -26,12 +26,14 @@
 
 #include "libphdi_disk_descriptor_xml_file.h"
 #include "libphdi_definitions.h"
+#include "libphdi_extent_values.h"
 #include "libphdi_libbfio.h"
 #include "libphdi_libcdata.h"
 #include "libphdi_libcerror.h"
 #include "libphdi_libcnotify.h"
 #include "libphdi_libfvalue.h"
-#include "libphdi_extent_values.h"
+#include "libphdi_snapshot_values.h"
+#include "libphdi_uuid_string.h"
 #include "libphdi_xml_parser.h"
 
 extern \
@@ -1178,26 +1180,36 @@ int libphdi_disk_descriptor_xml_file_get_disk_type(
  */
 int libphdi_disk_descriptor_xml_file_get_storage_data(
      libphdi_disk_descriptor_xml_file_t *disk_descriptor_xml_file,
+     libcdata_array_t *snapshot_values_array,
      libcdata_array_t *extent_values_array,
      libcerror_error_t **error )
 {
-	libphdi_extent_values_t *extent_values = NULL;
-	libphdi_xml_tag_t *element_tag         = NULL;
-	libphdi_xml_tag_t *image_file_tag      = NULL;
-	libphdi_xml_tag_t *image_tag           = NULL;
-	libphdi_xml_tag_t *image_type_tag      = NULL;
-	libphdi_xml_tag_t *storage_tag         = NULL;
-	static char *function                  = "libphdi_disk_descriptor_xml_file_get_storage_data";
-	off64_t end_offset                     = 0;
-	off64_t start_offset                   = 0;
-	uint64_t value_64bit                   = 0;
-	int entry_index                       = 0;
-	int element_index                      = 0;
-	int extent_type                       = 0;
-	int number_of_elements                 = 0;
-	int number_of_storage_elements         = 0;
-	int result                             = 0;
-	int storage_element_index              = 0;
+	uint8_t image_identifier[ 16 ];
+
+	libphdi_extent_values_t *extent_values     = NULL;
+	libphdi_snapshot_values_t *snapshot_values = NULL;
+	libphdi_xml_tag_t *element_tag             = NULL;
+	libphdi_xml_tag_t *image_element_tag       = NULL;
+	libphdi_xml_tag_t *image_file_tag          = NULL;
+	libphdi_xml_tag_t *image_tag               = NULL;
+	libphdi_xml_tag_t *image_type_tag          = NULL;
+	libphdi_xml_tag_t *storage_tag             = NULL;
+	static char *function                      = "libphdi_disk_descriptor_xml_file_get_storage_data";
+	off64_t end_offset                         = 0;
+	off64_t start_offset                       = 0;
+	uint64_t value_64bit                       = 0;
+	int element_index                          = 0;
+	int entry_index                            = 0;
+	int extent_type                            = 0;
+	int image_element_index                    = 0;
+	int is_current_snapshot                    = 0;
+	int number_of_elements                     = 0;
+	int number_of_image_elements               = 0;
+	int number_of_snapshots                    = 0;
+	int number_of_storage_elements             = 0;
+	int result                                 = 0;
+	int snapshot_values_index                  = 0;
+	int storage_element_index                  = 0;
 
 	if( disk_descriptor_xml_file == NULL )
 	{
@@ -1209,6 +1221,20 @@ int libphdi_disk_descriptor_xml_file_get_storage_data(
 		 function );
 
 		return( -1 );
+	}
+	if( libcdata_array_get_number_of_entries(
+	     snapshot_values_array,
+	     &number_of_snapshots,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve snapshots.",
+		 function );
+
+		goto on_error;
 	}
 	if( libcdata_array_empty(
 	     extent_values_array,
@@ -1234,6 +1260,18 @@ int libphdi_disk_descriptor_xml_file_get_storage_data(
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
 		 "%s: unable to retrieve number of storage elements.",
+		 function );
+
+		goto on_error;
+	}
+	if( ( number_of_snapshots > 1 )
+	 && ( number_of_storage_elements > 1 ) )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_UNSUPPORTED_VALUE,
+		 "%s: split storage with snapshots currently not supported.",
 		 function );
 
 		goto on_error;
@@ -1303,11 +1341,12 @@ int libphdi_disk_descriptor_xml_file_get_storage_data(
 
 			goto on_error;
 		}
-		image_tag      = NULL;
-		image_file_tag = NULL;
-		image_type_tag = NULL;
-		start_offset   = -1;
-		end_offset     = -1;
+		image_tag             = NULL;
+		image_file_tag        = NULL;
+		image_type_tag        = NULL;
+		start_offset          = -1;
+		end_offset            = -1;
+		snapshot_values_index = 0;
 
 		for( element_index = 0;
 		     element_index < number_of_elements;
@@ -1457,19 +1496,272 @@ int libphdi_disk_descriptor_xml_file_get_storage_data(
 			}
 			else if( result != 0 )
 			{
-				if( image_tag != NULL )
+				if( memory_set(
+				     image_identifier,
+				     0,
+				     16 ) == NULL )
 				{
 					libcerror_error_set(
 					 error,
-					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-					 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
-					 "%s: invalid image tag value already set.",
+					 LIBCERROR_ERROR_DOMAIN_MEMORY,
+					 LIBCERROR_MEMORY_ERROR_SET_FAILED,
+					 "%s: unable to clear image identifier.",
 					 function );
 
 					goto on_error;
 				}
-				image_tag = element_tag;
+				snapshot_values     = NULL;
+				is_current_snapshot = 0;
 
+				if( number_of_snapshots == 0 )
+				{
+					is_current_snapshot = 1;
+				}
+				else
+				{
+					if( libcdata_array_get_entry_by_index(
+					     snapshot_values_array,
+					     snapshot_values_index,
+					     (intptr_t **) &snapshot_values,
+					     error ) != 1 )
+					{
+						libcerror_error_set(
+						 error,
+						 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+						 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+						 "%s: unable to retrieve snapshot values: %d from array.",
+						 function,
+						 snapshot_values_index );
+
+						goto on_error;
+					}
+					if( snapshot_values == NULL )
+					{
+						libcerror_error_set(
+						 error,
+						 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+						 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+						 "%s: missing snapshot values: %d.",
+						 function,
+						 snapshot_values_index );
+
+						goto on_error;
+					}
+					snapshot_values_index++;
+
+					if( memory_compare(
+					     snapshot_values->parent_identifier,
+					     image_identifier,
+					     16 ) == 0 )
+					{
+						is_current_snapshot = 1;
+					}
+				}
+				if( is_current_snapshot != 0 )
+				{
+					if( image_tag != NULL )
+					{
+						libcerror_error_set(
+						 error,
+						 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+						 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
+						 "%s: invalid image tag value already set.",
+						 function );
+
+						goto on_error;
+					}
+					image_tag = element_tag;
+				}
+				if( libphdi_xml_tag_get_number_of_elements(
+				     element_tag,
+				     &number_of_image_elements,
+				     error ) != 1 )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+					 "%s: unable to retrieve number of elements of image tag: %d of storage tag: %d.",
+					 function,
+					 element_index,
+					 storage_element_index );
+
+					goto on_error;
+				}
+				for( image_element_index = 0;
+				     image_element_index < number_of_image_elements;
+				     image_element_index++ )
+				{
+					if( libphdi_xml_tag_get_element(
+					     element_tag,
+					     image_element_index,
+					     &image_element_tag,
+					     error ) != 1 )
+					{
+						libcerror_error_set(
+						 error,
+						 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+						 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+						 "%s: unable to retrieve element: %d of image tag: %d of storage tag: %d.",
+						 function,
+						 image_element_index,
+						 element_index,
+						 storage_element_index );
+
+						goto on_error;
+					}
+					result = libphdi_xml_tag_compare_name(
+						  image_element_tag,
+						  (uint8_t *) "GUID",
+						  4,
+						  error );
+
+					if( result == -1 )
+					{
+						libcerror_error_set(
+						 error,
+						 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+						 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+						 "%s: unable to compare name of element: %d of image tag: %d of storage tag: %d.",
+						 function,
+						 image_element_index,
+						 element_index,
+						 storage_element_index );
+
+						goto on_error;
+					}
+					else if( result != 0 )
+					{
+						if( libphdi_uuid_string_copy_to_byte_stream(
+						     image_element_tag->value,
+						     image_element_tag->value_size - 1,
+						     image_identifier,
+						     16,
+						     error ) != 1 )
+						{
+							libcerror_error_set(
+							 error,
+							 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+							 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+							 "%s: unable to copy UUID string to image identifier.",
+							 function );
+
+							goto on_error;
+						}
+						continue;
+					}
+					result = libphdi_xml_tag_compare_name(
+						  image_element_tag,
+						  (uint8_t *) "File",
+						  4,
+						  error );
+
+					if( result == -1 )
+					{
+						libcerror_error_set(
+						 error,
+						 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+						 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+						 "%s: unable to compare name of element: %d of image tag: %d of storage tag: %d.",
+						 function,
+						 image_element_index,
+						 element_index,
+						 storage_element_index );
+
+						goto on_error;
+					}
+					else if( result != 0 )
+					{
+						if( snapshot_values != NULL )
+						{
+							if( memory_compare(
+							     snapshot_values->identifier,
+							     image_identifier,
+							     16 ) != 0 )
+							{
+								libcerror_error_set(
+								 error,
+								 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+								 LIBCERROR_RUNTIME_ERROR_UNSUPPORTED_VALUE,
+								 "%s: mismatch between image and snapshot identifier.",
+								 function );
+
+								goto on_error;
+							}
+							if( libphdi_snapshot_values_set_filename(
+							     snapshot_values,
+							     image_element_tag->value,
+							     image_element_tag->value_size - 1,
+							     error ) != 1 )
+							{
+								libcerror_error_set(
+								 error,
+								 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+								 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+								 "%s: unable to set snapshot filename.",
+								 function );
+
+								goto on_error;
+							}
+						}
+						if( is_current_snapshot != 0 )
+						{
+							if( image_file_tag != NULL )
+							{
+								libcerror_error_set(
+								 error,
+								 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+								 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
+								 "%s: invalid image file tag value already set.",
+								 function );
+
+								goto on_error;
+							}
+							image_file_tag = image_element_tag;
+						}
+						continue;
+					}
+					result = libphdi_xml_tag_compare_name(
+						  image_element_tag,
+						  (uint8_t *) "Type",
+						  4,
+						  error );
+
+					if( result == -1 )
+					{
+						libcerror_error_set(
+						 error,
+						 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+						 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+						 "%s: unable to compare name of element: %d of image tag: %d of storage tag: %d.",
+						 function,
+						 image_element_index,
+						 element_index,
+						 storage_element_index );
+
+						goto on_error;
+					}
+					else if( result != 0 )
+					{
+						if( is_current_snapshot != 0 )
+						{
+							if( image_type_tag != NULL )
+							{
+								libcerror_error_set(
+								 error,
+								 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+								 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
+								 "%s: invalid image type tag value already set.",
+								 function );
+
+								goto on_error;
+							}
+							image_type_tag = image_element_tag;
+						}
+						continue;
+					}
+/* TODO print unsupported tags */
+				}
 				continue;
 			}
 			result = libphdi_xml_tag_compare_name(
@@ -1523,116 +1815,6 @@ int libphdi_disk_descriptor_xml_file_get_storage_data(
 					goto on_error;
 				}
 				start_offset = (off64_t) value_64bit * 512;
-			}
-/* TODO print unsupported tags */
-		}
-		if( libphdi_xml_tag_get_number_of_elements(
-		     image_tag,
-		     &number_of_elements,
-		     error ) != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve number of elements of image tag of storage tag: %d.",
-			 function,
-			 storage_element_index );
-
-			goto on_error;
-		}
-		for( element_index = 0;
-		     element_index < number_of_elements;
-		     element_index++ )
-		{
-			if( libphdi_xml_tag_get_element(
-			     image_tag,
-			     element_index,
-			     &element_tag,
-			     error ) != 1 )
-			{
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-				 "%s: unable to retrieve element: %d of image tag of storage tag: %d.",
-				 function,
-				 element_index,
-				 storage_element_index );
-
-				goto on_error;
-			}
-			result = libphdi_xml_tag_compare_name(
-				  element_tag,
-				  (uint8_t *) "File",
-				  4,
-				  error );
-
-			if( result == -1 )
-			{
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-				 "%s: unable to compare name of element: %d of image tag of storage tag: %d.",
-				 function,
-				 element_index,
-				 storage_element_index );
-
-				goto on_error;
-			}
-			else if( result != 0 )
-			{
-				if( image_file_tag != NULL )
-				{
-					libcerror_error_set(
-					 error,
-					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-					 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
-					 "%s: invalid image file tag value already set.",
-					 function );
-
-					goto on_error;
-				}
-				image_file_tag = element_tag;
-
-				continue;
-			}
-			result = libphdi_xml_tag_compare_name(
-				  element_tag,
-				  (uint8_t *) "Type",
-				  4,
-				  error );
-
-			if( result == -1 )
-			{
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-				 "%s: unable to compare name of element: %d of image tag of storage tag: %d.",
-				 function,
-				 element_index,
-				 storage_element_index );
-
-				goto on_error;
-			}
-			else if( result != 0 )
-			{
-				if( image_type_tag != NULL )
-				{
-					libcerror_error_set(
-					 error,
-					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-					 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
-					 "%s: invalid image type tag value already set.",
-					 function );
-
-					goto on_error;
-				}
-				image_type_tag = element_tag;
-
-				continue;
 			}
 /* TODO print unsupported tags */
 		}
@@ -1769,16 +1951,19 @@ on_error:
  */
 int libphdi_disk_descriptor_xml_file_get_snapshots(
      libphdi_disk_descriptor_xml_file_t *disk_descriptor_xml_file,
+     libcdata_array_t *snapshot_values_array,
      libcerror_error_t **error )
 {
-	libphdi_xml_tag_t *element_tag  = NULL;
-	libphdi_xml_tag_t *snapshot_tag = NULL;
-	static char *function           = "libphdi_disk_descriptor_xml_file_get_snapshots";
-	int element_index               = 0;
-	int number_of_elements          = 0;
-	int number_of_snapshot_elements = 0;
-	int result                      = 0;
-	int snapshot_element_index      = 0;
+	libphdi_snapshot_values_t *snapshot_values = NULL;
+	libphdi_xml_tag_t *element_tag             = NULL;
+	libphdi_xml_tag_t *snapshot_tag            = NULL;
+	static char *function                      = "libphdi_disk_descriptor_xml_file_get_snapshots";
+	int element_index                          = 0;
+	int entry_index                            = 0;
+	int number_of_elements                     = 0;
+	int number_of_snapshot_elements            = 0;
+	int result                                 = 0;
+	int snapshot_element_index                 = 0;
 
 	if( disk_descriptor_xml_file == NULL )
 	{
@@ -1790,6 +1975,20 @@ int libphdi_disk_descriptor_xml_file_get_snapshots(
 		 function );
 
 		return( -1 );
+	}
+	if( libcdata_array_empty(
+	     snapshot_values_array,
+	     (int (*)(intptr_t **, libcerror_error_t **)) &libphdi_snapshot_values_free,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+		 "%s: unable to empty snapshot values array.",
+		 function );
+
+		goto on_error;
 	}
 	if( libphdi_xml_tag_get_number_of_elements(
 	     disk_descriptor_xml_file->snapshots_tag,
@@ -1803,7 +2002,7 @@ int libphdi_disk_descriptor_xml_file_get_snapshots(
 		 "%s: unable to retrieve number of snapshot elements.",
 		 function );
 
-		return( -1 );
+		goto on_error;
 	}
 	for( snapshot_element_index = 0;
 	     snapshot_element_index < number_of_snapshot_elements;
@@ -1823,10 +2022,10 @@ int libphdi_disk_descriptor_xml_file_get_snapshots(
 			 function,
 			 snapshot_element_index );
 
-			return( -1 );
+			goto on_error;
 		}
 		result = libphdi_xml_tag_compare_name(
-			  element_tag,
+			  snapshot_tag,
 			  (uint8_t *) "Shot",
 			  4,
 			  error );
@@ -1841,7 +2040,7 @@ int libphdi_disk_descriptor_xml_file_get_snapshots(
 			 function,
 			 snapshot_element_index );
 
-			return( -1 );
+			goto on_error;
 		}
 		else if( result == 0 )
 		{
@@ -1853,7 +2052,20 @@ int libphdi_disk_descriptor_xml_file_get_snapshots(
 			 function,
 			 snapshot_element_index );
 
-			return( -1 );
+			goto on_error;
+		}
+		if( libphdi_snapshot_values_initialize(
+		     &snapshot_values,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 "%s: unable to create snapshot values.",
+			 function );
+
+			goto on_error;
 		}
 		if( libphdi_xml_tag_get_number_of_elements(
 		     snapshot_tag,
@@ -1868,7 +2080,7 @@ int libphdi_disk_descriptor_xml_file_get_snapshots(
 			 function,
 			 snapshot_element_index );
 
-			return( -1 );
+			goto on_error;
 		}
 		for( element_index = 0;
 		     element_index < number_of_elements;
@@ -1889,10 +2101,10 @@ int libphdi_disk_descriptor_xml_file_get_snapshots(
 				 element_index,
 				 snapshot_element_index );
 
-				return( -1 );
+				goto on_error;
 			}
 			result = libphdi_xml_tag_compare_name(
-				  snapshot_tag,
+				  element_tag,
 				  (uint8_t *) "GUID",
 				  4,
 				  error );
@@ -1908,15 +2120,29 @@ int libphdi_disk_descriptor_xml_file_get_snapshots(
 				 element_index,
 				 snapshot_element_index );
 
-				return( -1 );
+				goto on_error;
 			}
 			else if( result != 0 )
 			{
-/* TODO set GUID value */
+				if( libphdi_snapshot_values_set_identifier(
+				     snapshot_values,
+				     element_tag->value,
+				     element_tag->value_size - 1,
+				     error ) != 1 )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+					 "%s: unable to set snapshot identifier.",
+					 function );
+
+					goto on_error;
+				}
 				continue;
 			}
 			result = libphdi_xml_tag_compare_name(
-				  snapshot_tag,
+				  element_tag,
 				  (uint8_t *) "ParentGUID",
 				  10,
 				  error );
@@ -1932,17 +2158,61 @@ int libphdi_disk_descriptor_xml_file_get_snapshots(
 				 element_index,
 				 snapshot_element_index );
 
-				return( -1 );
+				goto on_error;
 			}
 			else if( result != 0 )
 			{
-/* TODO set ParentGUID value */
+				if( libphdi_snapshot_values_set_parent_identifier(
+				     snapshot_values,
+				     element_tag->value,
+				     element_tag->value_size - 1,
+				     error ) != 1 )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+					 "%s: unable to set snapshot parent identifier.",
+					 function );
+
+					goto on_error;
+				}
 				continue;
 			}
 /* TODO print unsupported tags */
 		}
+		if( libcdata_array_append_entry(
+		     snapshot_values_array,
+		     &entry_index,
+		     (intptr_t *) snapshot_values,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_APPEND_FAILED,
+			 "%s: unable to append snapshot values to array.",
+			 function );
+
+			goto on_error;
+		}
+		snapshot_values = NULL;
 	}
 	return( 1 );
+
+on_error:
+	if( snapshot_values != NULL )
+	{
+		libphdi_snapshot_values_free(
+		 &snapshot_values,
+		 NULL );
+	}
+	libcdata_array_empty(
+	 snapshot_values_array,
+	 (int (*)(intptr_t **, libcerror_error_t **)) &libphdi_snapshot_values_free,
+	 NULL );
+
+	return( -1 );
 }
 
 /* Sets the root tag

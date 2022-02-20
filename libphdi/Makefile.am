@@ -55,15 +55,17 @@ libphdi_la_SOURCES = \
 	libphdi_libcthreads.h \
 	libphdi_libfcache.h \
 	libphdi_libfdata.h \
-	libphdi_libdguid.h \
+	libphdi_libfguid.h \
 	libphdi_libfvalue.h \
 	libphdi_libuna.h \
 	libphdi_notify.c libphdi_notify.h \
-	libphdi_storage_image.c libphdi_storage_image.h \
+	libphdi_snapshot_values.c libphdi_snapshot_values.h \
 	libphdi_sparse_image_header.c libphdi_sparse_image_header.h \
+	libphdi_storage_image.c libphdi_storage_image.h \
 	libphdi_support.c libphdi_support.h \
 	libphdi_system_string.c libphdi_system_string.h \
 	libphdi_types.h \
+	libphdi_uuid_string.c libphdi_uuid_string.h \
 	libphdi_unused.h \
 	libphdi_xml_attribute.c libphdi_xml_attribute.h \
 	libphdi_xml_parser.y \

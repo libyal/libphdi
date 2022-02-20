@@ -230,6 +230,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\libphdi\libphdi_snapshot_values.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\libphdi\libphdi_sparse_image_header.c"
 				>
 			</File>
@@ -243,6 +247,10 @@
 			</File>
 			<File
 				RelativePath="..\..\libphdi\libphdi_system_string.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libphdi\libphdi_uuid_string.c"
 				>
 			</File>
 			<File
@@ -364,15 +372,15 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\libphdi\libphdi_libdguid.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\libphdi\libphdi_libfcache.h"
 				>
 			</File>
 			<File
 				RelativePath="..\..\libphdi\libphdi_libfdata.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libphdi\libphdi_libfguid.h"
 				>
 			</File>
 			<File
@@ -385,6 +393,10 @@
 			</File>
 			<File
 				RelativePath="..\..\libphdi\libphdi_notify.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libphdi\libphdi_snapshot_values.h"
 				>
 			</File>
 			<File
@@ -409,6 +421,10 @@
 			</File>
 			<File
 				RelativePath="..\..\libphdi\libphdi_unused.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libphdi\libphdi_uuid_string.h"
 				>
 			</File>
 			<File

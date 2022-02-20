@@ -56,6 +56,10 @@ struct libphdi_internal_handle
 	 */
 	libphdi_io_handle_t *io_handle;
 
+	/* The snapshot values array
+	 */
+	libcdata_array_t *snapshot_values_array;
+
 	/* The extent values array
 	 */
 	libcdata_array_t *extent_values_array;

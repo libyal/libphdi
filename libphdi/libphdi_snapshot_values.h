@@ -1,5 +1,5 @@
 /*
- * Extent values functions
+ * Snapshot values functions
  *
  * Copyright (C) 2015-2022, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#if !defined( _LIBPHDI_EXTENT_VALUES_H )
-#define _LIBPHDI_EXTENT_VALUES_H
+#if !defined( _LIBPHDI_SNAPSHOT_VALUES_H )
+#define _LIBPHDI_SNAPSHOT_VALUES_H
 
 #include <common.h>
 #include <types.h>
@@ -31,10 +31,18 @@
 extern "C" {
 #endif
 
-typedef struct libphdi_extent_values libphdi_extent_values_t;
+typedef struct libphdi_snapshot_values libphdi_snapshot_values_t;
 
-struct libphdi_extent_values
+struct libphdi_snapshot_values
 {
+	/* The identifier
+	 */
+	uint8_t identifier[ 16 ];
+
+	/* The parent identifier
+	 */
+	uint8_t parent_identifier[ 16 ];
+
 	/* The filename
 	 */
 	uint8_t *filename;
@@ -42,72 +50,52 @@ struct libphdi_extent_values
 	/* The filename size
 	 */
 	size_t filename_size;
-
-	/* The type
-	 */
-	int type;
-
-	/* The offset
-	 */
-	off64_t offset;
-
-	/* The size
-	 */
-	size64_t size;
 };
 
-int libphdi_extent_values_initialize(
-     libphdi_extent_values_t **extent_values,
+int libphdi_snapshot_values_initialize(
+     libphdi_snapshot_values_t **snapshot_values,
      libcerror_error_t **error );
 
-int libphdi_extent_values_free(
-     libphdi_extent_values_t **extent_values,
+int libphdi_snapshot_values_free(
+     libphdi_snapshot_values_t **snapshot_values,
      libcerror_error_t **error );
 
-int libphdi_extent_values_set(
-     libphdi_extent_values_t *extent_values,
-     const uint8_t *filename,
-     size_t filename_length,
-     int type,
-     off64_t start_offset,
-     off64_t end_offset,
-     libcerror_error_t **error );
-
-int libphdi_extent_values_set_filename(
-     libphdi_extent_values_t *extent_values,
+int libphdi_snapshot_values_set_identifier(
+     libphdi_snapshot_values_t *snapshot_values,
      const uint8_t *utf8_string,
      size_t utf8_string_length,
      libcerror_error_t **error );
 
-int libphdi_extent_values_get_type(
-     libphdi_extent_values_t *extent_values,
-     int *type,
+int libphdi_snapshot_values_set_parent_identifier(
+     libphdi_snapshot_values_t *snapshot_values,
+     const uint8_t *utf8_string,
+     size_t utf8_string_length,
      libcerror_error_t **error );
 
-int libphdi_extent_values_get_range(
-     libphdi_extent_values_t *extent_values,
-     off64_t *offset,
-     size64_t *size,
+int libphdi_snapshot_values_set_filename(
+     libphdi_snapshot_values_t *snapshot_values,
+     const uint8_t *utf8_string,
+     size_t utf8_string_length,
      libcerror_error_t **error );
 
-int libphdi_extent_values_get_utf8_filename_size(
-     libphdi_extent_values_t *extent_values,
+int libphdi_snapshot_values_get_utf8_filename_size(
+     libphdi_snapshot_values_t *snapshot_values,
      size_t *utf8_string_size,
      libcerror_error_t **error );
 
-int libphdi_extent_values_get_utf8_filename(
-     libphdi_extent_values_t *extent_values,
+int libphdi_snapshot_values_get_utf8_filename(
+     libphdi_snapshot_values_t *snapshot_values,
      uint8_t *utf8_string,
      size_t utf8_string_size,
      libcerror_error_t **error );
 
-int libphdi_extent_values_get_utf16_filename_size(
-     libphdi_extent_values_t *extent_values,
+int libphdi_snapshot_values_get_utf16_filename_size(
+     libphdi_snapshot_values_t *snapshot_values,
      size_t *utf16_string_size,
      libcerror_error_t **error );
 
-int libphdi_extent_values_get_utf16_filename(
-     libphdi_extent_values_t *extent_values,
+int libphdi_snapshot_values_get_utf16_filename(
+     libphdi_snapshot_values_t *snapshot_values,
      uint16_t *utf16_string,
      size_t utf16_string_size,
      libcerror_error_t **error );
@@ -116,5 +104,5 @@ int libphdi_extent_values_get_utf16_filename(
 }
 #endif
 
-#endif /* !defined( _LIBPHDI_EXTENT_VALUES_H ) */
+#endif /* !defined( _LIBPHDI_SNAPSHOT_VALUES_H ) */
 

@@ -446,8 +446,9 @@ int libphdi_block_tree_node_get_leaf_value_at_offset(
      off64_t *block_offset,
      libcerror_error_t **error )
 {
-	static char *function    = "libphdi_block_tree_node_get_leaf_value_at_offset";
-	off64_t leaf_value_index = 0;
+	static char *function     = "libphdi_block_tree_node_get_leaf_value_at_offset";
+	off64_t leaf_value_index  = 0;
+	off64_t safe_block_offset = 0;
 
 	if( block_tree_node == NULL )
 	{
@@ -494,7 +495,9 @@ int libphdi_block_tree_node_get_leaf_value_at_offset(
 
 		return( -1 );
 	}
-	leaf_value_index = ( offset - block_tree_node->start_offset ) / block_tree_node->sub_node_size;
+	safe_block_offset = offset - block_tree_node->start_offset;
+
+	leaf_value_index = safe_block_offset / block_tree_node->sub_node_size;
 
 	if( ( leaf_value_index < 0 )
 	 || ( leaf_value_index > (off64_t) INT_MAX ) )
@@ -524,7 +527,7 @@ int libphdi_block_tree_node_get_leaf_value_at_offset(
 
 		return( -1 );
 	}
-	*block_offset = offset - ( leaf_value_index * block_tree_node->sub_node_size );
+	*block_offset = safe_block_offset - ( leaf_value_index * block_tree_node->sub_node_size );
 
 	return( 1 );
 }

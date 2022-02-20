@@ -46,6 +46,7 @@
 #include "libphdi_libcthreads.h"
 #include "libphdi_libfcache.h"
 #include "libphdi_libfdata.h"
+#include "libphdi_snapshot_values.h"
 #include "libphdi_storage_image.h"
 
 /* Creates a handle
@@ -126,6 +127,20 @@ int libphdi_handle_initialize(
 		goto on_error;
 	}
 	if( libcdata_array_initialize(
+	     &( internal_handle->snapshot_values_array ),
+	     0,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create snapshot values array.",
+		 function );
+
+		goto on_error;
+	}
+	if( libcdata_array_initialize(
 	     &( internal_handle->extent_values_array ),
 	     0,
 	     error ) != 1 )
@@ -199,6 +214,13 @@ on_error:
 		{
 			libcdata_array_free(
 			 &( internal_handle->extent_values_array ),
+			 NULL,
+			 NULL );
+		}
+		if( internal_handle->snapshot_values_array != NULL )
+		{
+			libcdata_array_free(
+			 &( internal_handle->snapshot_values_array ),
 			 NULL,
 			 NULL );
 		}
@@ -297,6 +319,20 @@ int libphdi_handle_free(
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
 			 "%s: unable to free extent values array.",
+			 function );
+
+			result = -1;
+		}
+		if( libcdata_array_free(
+		     &( internal_handle->snapshot_values_array ),
+		     (int (*)(intptr_t **, libcerror_error_t **)) &libphdi_snapshot_values_free,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 "%s: unable to free snapshot values array.",
 			 function );
 
 			result = -1;
@@ -2115,8 +2151,23 @@ int libphdi_internal_handle_open_read(
 
 		goto on_error;
 	}
+	if( libphdi_disk_descriptor_xml_file_get_snapshots(
+	     disk_descriptor_xml_file,
+	     internal_handle->snapshot_values_array,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve snapshots from disk descriptor XML file.",
+		 function );
+
+		goto on_error;
+	}
 	if( libphdi_disk_descriptor_xml_file_get_storage_data(
 	     disk_descriptor_xml_file,
+	     internal_handle->snapshot_values_array,
 	     internal_handle->extent_values_array,
 	     error ) != 1 )
 	{
@@ -2129,8 +2180,6 @@ int libphdi_internal_handle_open_read(
 
 		goto on_error;
 	}
-/* TODO read snapshots */
-
 	if( libphdi_disk_descriptor_xml_file_get_disk_type(
 	     disk_descriptor_xml_file,
 	     &( internal_handle->disk_type ),

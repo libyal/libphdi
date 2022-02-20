@@ -1,6 +1,8 @@
 TODO:
 * replace block tree by flat lookup table
 * add snapshot/parent image support
+  * read image file name into snaphot values
+  * read from parent
 
 20151219
 * see `git log' for more recent change log
