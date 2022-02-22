@@ -21,13 +21,14 @@
 
 #include <common.h>
 #include <memory.h>
-#include <narrow_string.h>
 #include <types.h>
 
 #include "libphdi_libcerror.h"
-#include "libphdi_libuna.h"
 #include "libphdi_snapshot_values.h"
 #include "libphdi_uuid_string.h"
+
+const uint8_t libphdi_snapshot_values_empty_identifier[ 16 ] = {
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 /* Creates snapshot values
  * Make sure the value snapshot_values is referencing, is set to NULL
@@ -219,16 +220,17 @@ int libphdi_snapshot_values_set_parent_identifier(
 	return( 1 );
 }
 
-/* Sets the filename
+/* Retrieves the identifier
+ * The identifier is a big-endian GUID and is 16 bytes of size
  * Returns 1 if successful or -1 on error
  */
-int libphdi_snapshot_values_set_filename(
+int libphdi_snapshot_values_get_identifier(
      libphdi_snapshot_values_t *snapshot_values,
-     const uint8_t *utf8_string,
-     size_t utf8_string_length,
+     uint8_t *guid_data,
+     size_t guid_data_size,
      libcerror_error_t **error )
 {
-	static char *function = "libphdi_snapshot_values_set_filename";
+	static char *function = "libphdi_snapshot_values_get_identifier";
 
 	if( snapshot_values == NULL )
 	{
@@ -241,97 +243,57 @@ int libphdi_snapshot_values_set_filename(
 
 		return( -1 );
 	}
-	if( snapshot_values->filename != NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
-		 "%s: invalid snapshot values - filename value already set.",
-		 function );
-
-		return( -1 );
-	}
-	if( utf8_string == NULL )
+	if( guid_data == NULL )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid UTF-8 string.",
+		 "%s: invalid GUID data.",
 		 function );
 
 		return( -1 );
 	}
-	if( ( utf8_string_length == 0 )
-	 || ( utf8_string_length > ( (size_t) MEMORY_MAXIMUM_ALLOCATION_SIZE - 1 ) ) )
+	if( ( guid_data_size < 16 )
+	 || ( guid_data_size > SSIZE_MAX ) )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
-		 "%s: invalid UTF-8 string length value out of bounds.",
+		 "%s: invalid GUID data size value out of bounds.",
 		 function );
 
 		return( -1 );
-	}
-	snapshot_values->filename_size = utf8_string_length + 1;
-
-	snapshot_values->filename = (uint8_t *) memory_allocate(
-	                                         sizeof( uint8_t ) * snapshot_values->filename_size );
-
-	if( snapshot_values->filename == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_MEMORY,
-		 LIBCERROR_MEMORY_ERROR_INSUFFICIENT,
-		 "%s: unable to create filename.",
-		 function );
-
-		goto on_error;
 	}
 	if( memory_copy(
-	     snapshot_values->filename,
-	     utf8_string,
-	     utf8_string_length ) == NULL )
+	     guid_data,
+	     snapshot_values->identifier,
+	     16 ) == NULL )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_MEMORY,
 		 LIBCERROR_MEMORY_ERROR_COPY_FAILED,
-		 "%s: unable to copy filename.",
+		 "%s: unable to copy identifier.",
 		 function );
 
-		goto on_error;
+		return( -1 );
 	}
-	snapshot_values->filename[ utf8_string_length ] = 0;
-
 	return( 1 );
-
-on_error:
-	if( snapshot_values->filename != NULL )
-	{
-		memory_free(
-		 snapshot_values->filename );
-
-		snapshot_values->filename = NULL;
-	}
-	snapshot_values->filename_size = 0;
-
-	return( -1 );
 }
 
-/* Retrieves the size of the UTF-8 encoded filename
- * The returned size includes the end of string character
+/* Retrieves the parent identifier
+ * The identifier is a big-endian GUID and is 16 bytes of size
  * Returns 1 if successful, 0 if not available or -1 on error
  */
-int libphdi_snapshot_values_get_utf8_filename_size(
+int libphdi_snapshot_values_get_parent_identifier(
      libphdi_snapshot_values_t *snapshot_values,
-     size_t *utf8_string_size,
+     uint8_t *guid_data,
+     size_t guid_data_size,
      libcerror_error_t **error )
 {
-	static char *function = "libphdi_snapshot_values_get_utf8_filename_size";
+	static char *function = "libphdi_snapshot_values_get_parent_identifier";
 
 	if( snapshot_values == NULL )
 	{
@@ -344,186 +306,46 @@ int libphdi_snapshot_values_get_utf8_filename_size(
 
 		return( -1 );
 	}
-	if( snapshot_values->filename == NULL )
+	if( guid_data == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid GUID data.",
+		 function );
+
+		return( -1 );
+	}
+	if( ( guid_data_size < 16 )
+	 || ( guid_data_size > SSIZE_MAX ) )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid GUID data size value out of bounds.",
+		 function );
+
+		return( -1 );
+	}
+	if( memory_compare(
+	     snapshot_values->parent_identifier,
+	     libphdi_snapshot_values_empty_identifier,
+	     16 ) == 0 )
 	{
 		return( 0 );
 	}
-	if( utf8_string_size == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid UTF-8 string size.",
-		 function );
-
-		return( -1 );
-	}
-	*utf8_string_size = snapshot_values->filename_size;
-
-	return( 1 );
-}
-
-/* Retrieves the UTF-8 encoded filename
- * The size should include the end of string character
- * Returns 1 if successful, 0 if not available or -1 on error
- */
-int libphdi_snapshot_values_get_utf8_filename(
-     libphdi_snapshot_values_t *snapshot_values,
-     uint8_t *utf8_string,
-     size_t utf8_string_size,
-     libcerror_error_t **error )
-{
-	static char *function = "libphdi_snapshot_values_get_utf8_filename";
-
-	if( snapshot_values == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid snapshot values.",
-		 function );
-
-		return( -1 );
-	}
-	if( snapshot_values->filename == NULL )
-	{
-		return( 0 );
-	}
-	if( utf8_string == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid UTF-8 string.",
-		 function );
-
-		return( -1 );
-	}
-	if( utf8_string_size > (size_t) SSIZE_MAX )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
-		 "%s: invalid UTF-8 string size value exceeds maximum.",
-		 function );
-
-		return( -1 );
-	}
-	if( utf8_string_size < snapshot_values->filename_size )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_VALUE_TOO_SMALL,
-		 "%s: UTF-8 string is too small.",
-		 function );
-
-		return( -1 );
-	}
-	if( narrow_string_copy(
-	     utf8_string,
-	     snapshot_values->filename,
-	     snapshot_values->filename_size ) == NULL )
+	if( memory_copy(
+	     guid_data,
+	     snapshot_values->parent_identifier,
+	     16 ) == NULL )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_MEMORY,
 		 LIBCERROR_MEMORY_ERROR_COPY_FAILED,
-		 "%s: unable to copy UTF-8 string.",
-		 function );
-
-		return( -1 );
-	}
-	return( 1 );
-}
-
-/* Retrieves the size of the UTF-16 encoded filename
- * The returned size includes the end of string character
- * Returns 1 if successful, 0 if not available or -1 on error
- */
-int libphdi_snapshot_values_get_utf16_filename_size(
-     libphdi_snapshot_values_t *snapshot_values,
-     size_t *utf16_string_size,
-     libcerror_error_t **error )
-{
-	static char *function = "libphdi_snapshot_values_get_utf16_filename_size";
-
-	if( snapshot_values == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid snapshot values.",
-		 function );
-
-		return( -1 );
-	}
-	if( snapshot_values->filename == NULL )
-	{
-		return( 0 );
-	}
-	if( libuna_utf16_string_size_from_utf8(
-	     (uint8_t *) snapshot_values->filename,
-	     snapshot_values->filename_size,
-	     utf16_string_size,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve UTF-16 size size.",
-		 function );
-
-		return( -1 );
-	}
-	return( 1 );
-}
-
-/* Retrieves the UTF-16 encoded filename
- * The size should include the end of string character
- * Returns 1 if successful, 0 if not available or -1 on error
- */
-int libphdi_snapshot_values_get_utf16_filename(
-     libphdi_snapshot_values_t *snapshot_values,
-     uint16_t *utf16_string,
-     size_t utf16_string_size,
-     libcerror_error_t **error )
-{
-	static char *function = "libphdi_snapshot_values_get_utf16_filename";
-
-	if( snapshot_values == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid snapshot values.",
-		 function );
-
-		return( -1 );
-	}
-	if( snapshot_values->filename == NULL )
-	{
-		return( 0 );
-	}
-	if( libuna_utf16_string_copy_from_utf8(
-	     utf16_string,
-	     utf16_string_size,
-	     (uint8_t *) snapshot_values->filename,
-	     snapshot_values->filename_size,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
-		 "%s: unable to copy UTF-16 string.",
+		 "%s: unable to copy parent identifier.",
 		 function );
 
 		return( -1 );

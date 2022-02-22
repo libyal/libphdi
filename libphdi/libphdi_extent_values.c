@@ -26,6 +26,7 @@
 
 #include "libphdi_definitions.h"
 #include "libphdi_extent_values.h"
+#include "libphdi_image_values.h"
 #include "libphdi_libcerror.h"
 #include "libphdi_libuna.h"
 
@@ -62,7 +63,7 @@ int libphdi_extent_values_initialize(
 		return( -1 );
 	}
 	*extent_values = memory_allocate_structure(
-	                   libphdi_extent_values_t );
+	                  libphdi_extent_values_t );
 
 	if( *extent_values == NULL )
 	{
@@ -94,6 +95,20 @@ int libphdi_extent_values_initialize(
 
 		return( -1 );
 	}
+	if( libcdata_array_initialize(
+	     &( ( *extent_values )->image_values_array ),
+	     0,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create image values array.",
+		 function );
+
+		goto on_error;
+	}
 	( *extent_values )->offset = -1;
 
 	return( 1 );
@@ -117,6 +132,7 @@ int libphdi_extent_values_free(
      libcerror_error_t **error )
 {
 	static char *function = "libphdi_extent_values_free";
+	int result            = 1;
 
 	if( extent_values == NULL )
 	{
@@ -131,27 +147,38 @@ int libphdi_extent_values_free(
 	}
 	if( *extent_values != NULL )
 	{
+		if( libcdata_array_free(
+		     &( ( *extent_values )->image_values_array ),
+		     (int (*)(intptr_t **, libcerror_error_t **)) &libphdi_image_values_free,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 "%s: unable to free image values array.",
+			 function );
+
+			result = -1;
+		}
 		memory_free(
 		 *extent_values );
 
 		*extent_values = NULL;
 	}
-	return( 1 );
+	return( result );
 }
 
-/* Sets extent values
+/* Sets the extent range (offset and size)
  * Returns 1 if successful or -1 on error
  */
-int libphdi_extent_values_set(
+int libphdi_extent_values_set_range(
      libphdi_extent_values_t *extent_values,
-     const uint8_t *filename,
-     size_t filename_length,
-     int type,
      off64_t start_offset,
      off64_t end_offset,
      libcerror_error_t **error )
 {
-	static char *function = "libphdi_extent_values_set";
+	static char *function = "libphdi_extent_values_set_range";
 
 	if( extent_values == NULL )
 	{
@@ -161,19 +188,6 @@ int libphdi_extent_values_set(
 		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid extent values.",
 		 function );
-
-		return( -1 );
-	}
-	if( ( type != LIBPHDI_EXTENT_TYPE_COMPRESSED )
-	 && ( type != LIBPHDI_EXTENT_TYPE_PLAIN ) )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_UNSUPPORTED_VALUE,
-		 "%s: unsupported type: %d.",
-		 function,
-		 type );
 
 		return( -1 );
 	}
@@ -199,129 +213,10 @@ int libphdi_extent_values_set(
 
 		return( -1 );
 	}
-	if( libphdi_extent_values_set_filename(
-	     extent_values,
-	     filename,
-	     filename_length,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-		 "%s: unable to set filename.",
-		 function );
-
-		return( -1 );
-	}
-	extent_values->type   = type;
 	extent_values->offset = start_offset;
 	extent_values->size   = end_offset - start_offset;
 
 	return( 1 );
-}
-
-/* Sets the filename
- * Returns 1 if successful or -1 on error
- */
-int libphdi_extent_values_set_filename(
-     libphdi_extent_values_t *extent_values,
-     const uint8_t *utf8_string,
-     size_t utf8_string_length,
-     libcerror_error_t **error )
-{
-	static char *function = "libphdi_extent_values_set_filename";
-
-	if( extent_values == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid extent values.",
-		 function );
-
-		return( -1 );
-	}
-	if( extent_values->filename != NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
-		 "%s: invalid extent values - filename value already set.",
-		 function );
-
-		return( -1 );
-	}
-	if( utf8_string == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid UTF-8 string.",
-		 function );
-
-		return( -1 );
-	}
-	if( ( utf8_string_length == 0 )
-	 || ( utf8_string_length > ( (size_t) MEMORY_MAXIMUM_ALLOCATION_SIZE - 1 ) ) )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
-		 "%s: invalid UTF-8 string length value out of bounds.",
-		 function );
-
-		return( -1 );
-	}
-	extent_values->filename_size = utf8_string_length + 1;
-
-	extent_values->filename = (uint8_t *) memory_allocate(
-	                                       sizeof( uint8_t ) * extent_values->filename_size );
-
-	if( extent_values->filename == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_MEMORY,
-		 LIBCERROR_MEMORY_ERROR_INSUFFICIENT,
-		 "%s: unable to create filename.",
-		 function );
-
-		goto on_error;
-	}
-	if( memory_copy(
-	     extent_values->filename,
-	     utf8_string,
-	     utf8_string_length ) == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_MEMORY,
-		 LIBCERROR_MEMORY_ERROR_COPY_FAILED,
-		 "%s: unable to copy filename.",
-		 function );
-
-		goto on_error;
-	}
-	extent_values->filename[ utf8_string_length ] = 0;
-
-	return( 1 );
-
-on_error:
-	if( extent_values->filename != NULL )
-	{
-		memory_free(
-		 extent_values->filename );
-
-		extent_values->filename = NULL;
-	}
-	extent_values->filename_size = 0;
-
-	return( -1 );
 }
 
 /* Retrieves the extent type
@@ -332,7 +227,8 @@ int libphdi_extent_values_get_type(
      int *type,
      libcerror_error_t **error )
 {
-	static char *function = "libphdi_extent_values_get_type";
+	libphdi_image_values_t *image_values = NULL;
+	static char *function                = "libphdi_extent_values_get_type";
 
 	if( extent_values == NULL )
 	{
@@ -345,19 +241,35 @@ int libphdi_extent_values_get_type(
 
 		return( -1 );
 	}
-	if( type == NULL )
+	if( libcdata_array_get_entry_by_index(
+	     extent_values->image_values_array,
+	     0,
+	     (intptr_t **) &image_values,
+	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid type.",
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve image values: 0 from array.",
 		 function );
 
 		return( -1 );
 	}
-	*type = extent_values->type;
+	if( libphdi_image_values_get_type(
+	     image_values,
+	     type,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve type from image values: 0.",
+		 function );
 
+		return( -1 );
+	}
 	return( 1 );
 }
 
@@ -420,7 +332,9 @@ int libphdi_extent_values_get_utf8_filename_size(
      size_t *utf8_string_size,
      libcerror_error_t **error )
 {
-	static char *function = "libphdi_extent_values_get_utf8_filename_size";
+	libphdi_image_values_t *image_values = NULL;
+	static char *function                = "libphdi_extent_values_get_utf8_filename_size";
+	int result                           = 0;
 
 	if( extent_values == NULL )
 	{
@@ -433,24 +347,38 @@ int libphdi_extent_values_get_utf8_filename_size(
 
 		return( -1 );
 	}
-	if( extent_values->filename == NULL )
-	{
-		return( 0 );
-	}
-	if( utf8_string_size == NULL )
+	if( libcdata_array_get_entry_by_index(
+	     extent_values->image_values_array,
+	     0,
+	     (intptr_t **) &image_values,
+	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid UTF-8 string size.",
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve image values: 0 from array.",
 		 function );
 
 		return( -1 );
 	}
-	*utf8_string_size = extent_values->filename_size;
+	result = libphdi_image_values_get_utf8_filename_size(
+	          image_values,
+	          utf8_string_size,
+	          error );
 
-	return( 1 );
+	if( result == -1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve UTF-8 filename size from image values: 0.",
+		 function );
+
+		return( -1 );
+	}
+	return( result );
 }
 
 /* Retrieves the UTF-8 encoded filename
@@ -463,7 +391,9 @@ int libphdi_extent_values_get_utf8_filename(
      size_t utf8_string_size,
      libcerror_error_t **error )
 {
-	static char *function = "libphdi_extent_values_get_utf8_filename";
+	libphdi_image_values_t *image_values = NULL;
+	static char *function                = "libphdi_extent_values_get_utf8_filename";
+	int result                           = 0;
 
 	if( extent_values == NULL )
 	{
@@ -476,58 +406,39 @@ int libphdi_extent_values_get_utf8_filename(
 
 		return( -1 );
 	}
-	if( extent_values->filename == NULL )
-	{
-		return( 0 );
-	}
-	if( utf8_string == NULL )
+	if( libcdata_array_get_entry_by_index(
+	     extent_values->image_values_array,
+	     0,
+	     (intptr_t **) &image_values,
+	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid UTF-8 string.",
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve image values: 0 from array.",
 		 function );
 
 		return( -1 );
 	}
-	if( utf8_string_size > (size_t) SSIZE_MAX )
+	result = libphdi_image_values_get_utf8_filename(
+	          image_values,
+	          utf8_string,
+	          utf8_string_size,
+	          error );
+
+	if( result == -1 )
 	{
 		libcerror_error_set(
 		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
-		 "%s: invalid UTF-8 string size value exceeds maximum.",
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve UTF-8 filename from image values: 0.",
 		 function );
 
 		return( -1 );
 	}
-	if( utf8_string_size < extent_values->filename_size )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_VALUE_TOO_SMALL,
-		 "%s: UTF-8 string is too small.",
-		 function );
-
-		return( -1 );
-	}
-	if( narrow_string_copy(
-	     utf8_string,
-	     extent_values->filename,
-	     extent_values->filename_size ) == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_MEMORY,
-		 LIBCERROR_MEMORY_ERROR_COPY_FAILED,
-		 "%s: unable to copy UTF-8 string.",
-		 function );
-
-		return( -1 );
-	}
-	return( 1 );
+	return( result );
 }
 
 /* Retrieves the size of the UTF-16 encoded filename
@@ -539,7 +450,9 @@ int libphdi_extent_values_get_utf16_filename_size(
      size_t *utf16_string_size,
      libcerror_error_t **error )
 {
-	static char *function = "libphdi_extent_values_get_utf16_filename_size";
+	libphdi_image_values_t *image_values = NULL;
+	static char *function                = "libphdi_extent_values_get_utf16_filename_size";
+	int result                           = 0;
 
 	if( extent_values == NULL )
 	{
@@ -552,26 +465,38 @@ int libphdi_extent_values_get_utf16_filename_size(
 
 		return( -1 );
 	}
-	if( extent_values->filename == NULL )
-	{
-		return( 0 );
-	}
-	if( libuna_utf16_string_size_from_utf8(
-	     (uint8_t *) extent_values->filename,
-	     extent_values->filename_size,
-	     utf16_string_size,
+	if( libcdata_array_get_entry_by_index(
+	     extent_values->image_values_array,
+	     0,
+	     (intptr_t **) &image_values,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve UTF-16 size size.",
+		 "%s: unable to retrieve image values: 0 from array.",
 		 function );
 
 		return( -1 );
 	}
-	return( 1 );
+	result = libphdi_image_values_get_utf16_filename_size(
+	          image_values,
+	          utf16_string_size,
+	          error );
+
+	if( result == -1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve UTF-16 filename size from image values: 0.",
+		 function );
+
+		return( -1 );
+	}
+	return( result );
 }
 
 /* Retrieves the UTF-16 encoded filename
@@ -584,7 +509,9 @@ int libphdi_extent_values_get_utf16_filename(
      size_t utf16_string_size,
      libcerror_error_t **error )
 {
-	static char *function = "libphdi_extent_values_get_utf16_filename";
+	libphdi_image_values_t *image_values = NULL;
+	static char *function                = "libphdi_extent_values_get_utf16_filename";
+	int result                           = 0;
 
 	if( extent_values == NULL )
 	{
@@ -597,23 +524,114 @@ int libphdi_extent_values_get_utf16_filename(
 
 		return( -1 );
 	}
-	if( extent_values->filename == NULL )
-	{
-		return( 0 );
-	}
-	if( libuna_utf16_string_copy_from_utf8(
-	     utf16_string,
-	     utf16_string_size,
-	     (uint8_t *) extent_values->filename,
-	     extent_values->filename_size,
+	if( libcdata_array_get_entry_by_index(
+	     extent_values->image_values_array,
+	     0,
+	     (intptr_t **) &image_values,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
-		 "%s: unable to copy UTF-16 string.",
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve image values: 0 from array.",
 		 function );
+
+		return( -1 );
+	}
+	result = libphdi_image_values_get_utf16_filename(
+	          image_values,
+	          utf16_string,
+	          utf16_string_size,
+	          error );
+
+	if( result == -1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve UTF-16 filename from image values: 0.",
+		 function );
+
+		return( -1 );
+	}
+	return( result );
+}
+
+/* Retrieves the number of images
+ * Returns 1 if successful or -1 on error
+ */
+int libphdi_extent_values_get_number_of_images(
+     libphdi_extent_values_t *extent_values,
+     int *number_of_images,
+     libcerror_error_t **error )
+{
+	static char *function = "libphdi_extent_values_get_number_of_images";
+
+	if( extent_values == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid extent values.",
+		 function );
+
+		return( -1 );
+	}
+	if( libcdata_array_get_number_of_entries(
+	     extent_values->image_values_array,
+	     number_of_images,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve number of images from array.",
+		 function );
+
+		return( -1 );
+	}
+	return( 1 );
+}
+
+/* Retrieves a specific image values
+ * Returns 1 if successful or -1 on error
+ */
+int libphdi_extent_values_get_image_values_by_index(
+     libphdi_extent_values_t *extent_values,
+     int image_index,
+     libphdi_image_values_t **image_values,
+     libcerror_error_t **error )
+{
+	static char *function = "libphdi_extent_values_get_image_values_by_index";
+
+	if( extent_values == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid extent values.",
+		 function );
+
+		return( -1 );
+	}
+	if( libcdata_array_get_entry_by_index(
+	     extent_values->image_values_array,
+	     image_index,
+	     (intptr_t **) image_values,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve image: %d values from array.",
+		 function,
+		 image_index );
 
 		return( -1 );
 	}

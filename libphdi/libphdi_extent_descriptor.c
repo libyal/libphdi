@@ -27,6 +27,8 @@
 #include "libphdi_extent_values.h"
 #include "libphdi_libcerror.h"
 #include "libphdi_libcthreads.h"
+#include "libphdi_image_descriptor.h"
+#include "libphdi_image_values.h"
 #include "libphdi_types.h"
 
 /* Creates an extent descriptor
@@ -185,78 +187,6 @@ int libphdi_extent_descriptor_free(
 	return( result );
 }
 
-/* Retrieves the extent type
- * Returns 1 if successful or -1 on error
- */
-int libphdi_extent_descriptor_get_type(
-     libphdi_extent_descriptor_t *extent_descriptor,
-     int *type,
-     libcerror_error_t **error )
-{
-	libphdi_internal_extent_descriptor_t *internal_extent_descriptor = NULL;
-	static char *function                                            = "libphdi_extent_descriptor_get_type";
-	int result                                                       = 1;
-
-	if( extent_descriptor == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid extent descriptor.",
-		 function );
-
-		return( -1 );
-	}
-	internal_extent_descriptor = (libphdi_internal_extent_descriptor_t *) extent_descriptor;
-
-#if defined( HAVE_LIBPHDI_MULTI_THREAD_SUPPORT )
-	if( libcthreads_read_write_lock_grab_for_read(
-	     internal_extent_descriptor->read_write_lock,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-		 "%s: unable to grab read/write lock for reading.",
-		 function );
-
-		return( -1 );
-	}
-#endif
-	if( libphdi_extent_values_get_type(
-	     internal_extent_descriptor->extent_values,
-	     type,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve type.",
-		 function );
-
-		result = -1;
-	}
-#if defined( HAVE_LIBPHDI_MULTI_THREAD_SUPPORT )
-	if( libcthreads_read_write_lock_release_for_read(
-	     internal_extent_descriptor->read_write_lock,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-		 "%s: unable to release read/write lock for reading.",
-		 function );
-
-		return( -1 );
-	}
-#endif
-	return( result );
-}
-
 /* Retrieves the extent range (offset and size)
  * Returns 1 if successful or -1 on error
  */
@@ -331,17 +261,16 @@ int libphdi_extent_descriptor_get_range(
 	return( result );
 }
 
-/* Retrieves the size of the UTF-8 encoded filename
- * The returned size includes the end of string character
- * Returns 1 if successful, 0 if not available or -1 on error
+/* Retrieves the number of images
+ * Returns 1 if successful or -1 on error
  */
-int libphdi_extent_descriptor_get_utf8_filename_size(
+int libphdi_extent_descriptor_get_number_of_images(
      libphdi_extent_descriptor_t *extent_descriptor,
-     size_t *utf8_string_size,
+     int *number_of_images,
      libcerror_error_t **error )
 {
 	libphdi_internal_extent_descriptor_t *internal_extent_descriptor = NULL;
-	static char *function                                            = "libphdi_extent_descriptor_get_utf8_filename_size";
+	static char *function                                            = "libphdi_extent_descriptor_get_number_of_images";
 	int result                                                       = 1;
 
 	if( extent_descriptor == NULL )
@@ -372,16 +301,16 @@ int libphdi_extent_descriptor_get_utf8_filename_size(
 		return( -1 );
 	}
 #endif
-	if( libphdi_extent_values_get_utf8_filename_size(
+	if( libphdi_extent_values_get_number_of_images(
 	     internal_extent_descriptor->extent_values,
-	     utf8_string_size,
+	     number_of_images,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve UTF-8 string size.",
+		 "%s: unable to retrieve number of images from extent values.",
 		 function );
 
 		result = -1;
@@ -404,18 +333,18 @@ int libphdi_extent_descriptor_get_utf8_filename_size(
 	return( result );
 }
 
-/* Retrieves the UTF-8 encoded filename
- * The size should include the end of string character
- * Returns 1 if successful, 0 if not available or -1 on error
+/* Retrieves a specific image descriptor
+ * Returns 1 if successful or -1 on error
  */
-int libphdi_extent_descriptor_get_utf8_filename(
+int libphdi_extent_descriptor_get_image_descriptor_by_index(
      libphdi_extent_descriptor_t *extent_descriptor,
-     uint8_t *utf8_string,
-     size_t utf8_string_size,
+     int image_index,
+     libphdi_image_descriptor_t **image_descriptor,
      libcerror_error_t **error )
 {
+	libphdi_image_values_t *image_values                             = NULL;
 	libphdi_internal_extent_descriptor_t *internal_extent_descriptor = NULL;
-	static char *function                                            = "libphdi_extent_descriptor_get_utf8_filename";
+	static char *function                                            = "libphdi_extent_descriptor_get_image_descriptor_by_index";
 	int result                                                       = 1;
 
 	if( extent_descriptor == NULL )
@@ -431,6 +360,28 @@ int libphdi_extent_descriptor_get_utf8_filename(
 	}
 	internal_extent_descriptor = (libphdi_internal_extent_descriptor_t *) extent_descriptor;
 
+	if( image_descriptor == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid image descriptor.",
+		 function );
+
+		return( -1 );
+	}
+	if( *image_descriptor != NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
+		 "%s: invalid image descriptor value already set.",
+		 function );
+
+		return( -1 );
+	}
 #if defined( HAVE_LIBPHDI_MULTI_THREAD_SUPPORT )
 	if( libcthreads_read_write_lock_grab_for_read(
 	     internal_extent_descriptor->read_write_lock,
@@ -446,165 +397,32 @@ int libphdi_extent_descriptor_get_utf8_filename(
 		return( -1 );
 	}
 #endif
-	if( libphdi_extent_values_get_utf8_filename(
+	if( libphdi_extent_values_get_image_values_by_index(
 	     internal_extent_descriptor->extent_values,
-	     utf8_string,
-	     utf8_string_size,
+	     image_index,
+	     &image_values,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve UTF-8 string.",
-		 function );
+		 "%s: unable to retrieve image: %d values from extent values.",
+		 function,
+		 image_index );
 
 		result = -1;
 	}
-#if defined( HAVE_LIBPHDI_MULTI_THREAD_SUPPORT )
-	if( libcthreads_read_write_lock_release_for_read(
-	     internal_extent_descriptor->read_write_lock,
-	     error ) != 1 )
+	else if( libphdi_image_descriptor_initialize(
+	          image_descriptor,
+	          image_values,
+	          error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-		 "%s: unable to release read/write lock for reading.",
-		 function );
-
-		return( -1 );
-	}
-#endif
-	return( result );
-}
-
-/* Retrieves the size of the UTF-16 encoded filename
- * The returned size includes the end of string character
- * Returns 1 if successful, 0 if not available or -1 on error
- */
-int libphdi_extent_descriptor_get_utf16_filename_size(
-     libphdi_extent_descriptor_t *extent_descriptor,
-     size_t *utf16_string_size,
-     libcerror_error_t **error )
-{
-	libphdi_internal_extent_descriptor_t *internal_extent_descriptor = NULL;
-	static char *function                                            = "libphdi_extent_descriptor_get_utf16_filename_size";
-	int result                                                       = 1;
-
-	if( extent_descriptor == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid extent descriptor.",
-		 function );
-
-		return( -1 );
-	}
-	internal_extent_descriptor = (libphdi_internal_extent_descriptor_t *) extent_descriptor;
-
-#if defined( HAVE_LIBPHDI_MULTI_THREAD_SUPPORT )
-	if( libcthreads_read_write_lock_grab_for_read(
-	     internal_extent_descriptor->read_write_lock,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-		 "%s: unable to grab read/write lock for reading.",
-		 function );
-
-		return( -1 );
-	}
-#endif
-	if( libphdi_extent_values_get_utf16_filename_size(
-	     internal_extent_descriptor->extent_values,
-	     utf16_string_size,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve UTF-16 string size.",
-		 function );
-
-		result = -1;
-	}
-#if defined( HAVE_LIBPHDI_MULTI_THREAD_SUPPORT )
-	if( libcthreads_read_write_lock_release_for_read(
-	     internal_extent_descriptor->read_write_lock,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-		 "%s: unable to release read/write lock for reading.",
-		 function );
-
-		return( -1 );
-	}
-#endif
-	return( result );
-}
-
-/* Retrieves the UTF-16 encoded filename
- * The size should include the end of string character
- * Returns 1 if successful, 0 if not available or -1 on error
- */
-int libphdi_extent_descriptor_get_utf16_filename(
-     libphdi_extent_descriptor_t *extent_descriptor,
-     uint16_t *utf16_string,
-     size_t utf16_string_size,
-     libcerror_error_t **error )
-{
-	libphdi_internal_extent_descriptor_t *internal_extent_descriptor = NULL;
-	static char *function                                            = "libphdi_extent_descriptor_get_utf16_filename";
-	int result                                                       = 1;
-
-	if( extent_descriptor == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid extent descriptor.",
-		 function );
-
-		return( -1 );
-	}
-	internal_extent_descriptor = (libphdi_internal_extent_descriptor_t *) extent_descriptor;
-
-#if defined( HAVE_LIBPHDI_MULTI_THREAD_SUPPORT )
-	if( libcthreads_read_write_lock_grab_for_read(
-	     internal_extent_descriptor->read_write_lock,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-		 "%s: unable to grab read/write lock for reading.",
-		 function );
-
-		return( -1 );
-	}
-#endif
-	if( libphdi_extent_values_get_utf16_filename(
-	     internal_extent_descriptor->extent_values,
-	     utf16_string,
-	     utf16_string_size,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve UTF-16 string.",
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create image descriptor.",
 		 function );
 
 		result = -1;

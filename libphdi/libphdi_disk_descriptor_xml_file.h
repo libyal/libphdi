@@ -92,7 +92,6 @@ int libphdi_disk_descriptor_xml_file_get_disk_type(
 
 int libphdi_disk_descriptor_xml_file_get_storage_data(
      libphdi_disk_descriptor_xml_file_t *disk_descriptor_xml_file,
-     libcdata_array_t *snapshot_values_array,
      libcdata_array_t *extent_values_array,
      libcerror_error_t **error );
 

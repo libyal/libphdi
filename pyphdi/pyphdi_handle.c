@@ -1717,7 +1717,7 @@ PyObject *pyphdi_handle_get_extent_descriptor_by_index(
 	}
 	Py_BEGIN_ALLOW_THREADS
 
-	result = libphdi_handle_get_extent_descriptor(
+	result = libphdi_handle_get_extent_descriptor_by_index(
 	          ( ( pyphdi_handle_t *) pyphdi_handle )->handle,
 	          extent_index,
 	          &extent_descriptor,

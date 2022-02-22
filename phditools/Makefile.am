@@ -12,6 +12,7 @@ AM_CPPFLAGS = \
 	@LIBBFIO_CPPFLAGS@ \
 	@LIBFCACHE_CPPFLAGS@ \
 	@LIBFDATA_CPPFLAGS@ \
+	@LIBFGUID_CPPFLAGS@ \
 	@LIBFUSE_CPPFLAGS@ \
 	@LIBPHDI_DLL_IMPORT@
 
@@ -32,6 +33,8 @@ phdiinfo_SOURCES = \
 	phditools_libcerror.h \
 	phditools_libclocale.h \
 	phditools_libcnotify.h \
+	phditools_libcpath.h \
+	phditools_libfguid.h \
 	phditools_libphdi.h \
 	phditools_libuna.h \
 	phditools_output.c phditools_output.h \
@@ -39,6 +42,7 @@ phdiinfo_SOURCES = \
 	phditools_unused.h
 
 phdiinfo_LDADD = \
+	@LIBFGUID_LIBADD@ \
 	@LIBCNOTIFY_LIBADD@ \
 	@LIBCLOCALE_LIBADD@ \
 	../libphdi/libphdi.la \

@@ -42,14 +42,6 @@ struct libphdi_snapshot_values
 	/* The parent identifier
 	 */
 	uint8_t parent_identifier[ 16 ];
-
-	/* The filename
-	 */
-	uint8_t *filename;
-
-	/* The filename size
-	 */
-	size_t filename_size;
 };
 
 int libphdi_snapshot_values_initialize(
@@ -72,32 +64,16 @@ int libphdi_snapshot_values_set_parent_identifier(
      size_t utf8_string_length,
      libcerror_error_t **error );
 
-int libphdi_snapshot_values_set_filename(
+int libphdi_snapshot_values_get_identifier(
      libphdi_snapshot_values_t *snapshot_values,
-     const uint8_t *utf8_string,
-     size_t utf8_string_length,
+     uint8_t *guid_data,
+     size_t guid_data_size,
      libcerror_error_t **error );
 
-int libphdi_snapshot_values_get_utf8_filename_size(
+int libphdi_snapshot_values_get_parent_identifier(
      libphdi_snapshot_values_t *snapshot_values,
-     size_t *utf8_string_size,
-     libcerror_error_t **error );
-
-int libphdi_snapshot_values_get_utf8_filename(
-     libphdi_snapshot_values_t *snapshot_values,
-     uint8_t *utf8_string,
-     size_t utf8_string_size,
-     libcerror_error_t **error );
-
-int libphdi_snapshot_values_get_utf16_filename_size(
-     libphdi_snapshot_values_t *snapshot_values,
-     size_t *utf16_string_size,
-     libcerror_error_t **error );
-
-int libphdi_snapshot_values_get_utf16_filename(
-     libphdi_snapshot_values_t *snapshot_values,
-     uint16_t *utf16_string,
-     size_t utf16_string_size,
+     uint8_t *guid_data,
+     size_t guid_data_size,
      libcerror_error_t **error );
 
 #if defined( __cplusplus )

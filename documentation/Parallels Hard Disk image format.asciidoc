@@ -315,7 +315,7 @@ corresponds to disk image offset 0.
 A value of 0x800 represents sparse storage data image file offset 0x100000
 (0x800 x 512).
 
-A value of 0 represent a sparse block.
+A value of 0 represent a sparse block or a block stored in the parent image.
 
 [appendix]
 == GNU Free Documentation License

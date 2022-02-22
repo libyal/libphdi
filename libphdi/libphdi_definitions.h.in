@@ -72,6 +72,7 @@ enum LIBPHDI_DISK_TYPES
 	LIBPHDI_DISK_TYPE_FIXED					= 2
 };
 
+/* TODO remove */
 /* The extent (storage image) type definitions
  */
 enum LIBPHDI_EXTENT_TYPE
@@ -79,6 +80,15 @@ enum LIBPHDI_EXTENT_TYPE
 	LIBPHDI_EXTENT_TYPE_UNKNOWN				= 0,
 	LIBPHDI_EXTENT_TYPE_COMPRESSED				= 1,
 	LIBPHDI_EXTENT_TYPE_PLAIN				= 2
+};
+
+/* The (storage) image type definitions
+ */
+enum LIBPHDI_IMAGE_TYPE
+{
+	LIBPHDI_IMAGE_TYPE_UNKNOWN				= 0,
+	LIBPHDI_IMAGE_TYPE_COMPRESSED				= 1,
+	LIBPHDI_IMAGE_TYPE_PLAIN				= 2
 };
 
 #endif /* !defined( HAVE_LOCAL_LIBPHDI ) */

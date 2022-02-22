@@ -11,15 +11,15 @@ Read supported file formats:
 
 Supported image types:
 
-* Dynamic-size (expanding) hard disk image
 * Fixed-size (plain) hard disk image
+* Dynamic-size (expanding) hard disk image
 * Split hard disk image
 
 Unsupported format features:
 
 * Version 1
+* Differential (or differencing) hard disk image
 * Snapshots
-* Split hard disk image with snapshots
 
 For more information see:
 

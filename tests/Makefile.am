@@ -52,8 +52,11 @@ check_PROGRAMS = \
 	phdi_test_extent_table \
 	phdi_test_extent_values \
 	phdi_test_handle \
+	phdi_test_image_descriptor \
+	phdi_test_image_values \
 	phdi_test_io_handle \
 	phdi_test_notify \
+	phdi_test_snapshot_values \
 	phdi_test_support \
 	phdi_test_system_string \
 	phdi_test_xml_tag
@@ -203,6 +206,30 @@ phdi_test_handle_LDADD = \
 	@LIBCERROR_LIBADD@ \
 	@PTHREAD_LIBADD@
 
+phdi_test_image_descriptor_SOURCES = \
+	phdi_test_image_descriptor.c \
+	phdi_test_libcerror.h \
+	phdi_test_libphdi.h \
+	phdi_test_macros.h \
+	phdi_test_memory.c phdi_test_memory.h \
+	phdi_test_unused.h
+
+phdi_test_image_descriptor_LDADD = \
+	../libphdi/libphdi.la \
+	@LIBCERROR_LIBADD@
+
+phdi_test_image_values_SOURCES = \
+	phdi_test_image_values.c \
+	phdi_test_libcerror.h \
+	phdi_test_libphdi.h \
+	phdi_test_macros.h \
+	phdi_test_memory.c phdi_test_memory.h \
+	phdi_test_unused.h
+
+phdi_test_image_values_LDADD = \
+	../libphdi/libphdi.la \
+	@LIBCERROR_LIBADD@
+
 phdi_test_io_handle_SOURCES = \
 	phdi_test_io_handle.c \
 	phdi_test_libcerror.h \
@@ -223,6 +250,18 @@ phdi_test_notify_SOURCES = \
 	phdi_test_unused.h
 
 phdi_test_notify_LDADD = \
+	../libphdi/libphdi.la \
+	@LIBCERROR_LIBADD@
+
+phdi_test_snapshot_values_SOURCES = \
+	phdi_test_libcerror.h \
+	phdi_test_libphdi.h \
+	phdi_test_macros.h \
+	phdi_test_memory.c phdi_test_memory.h \
+	phdi_test_snapshot_values.c \
+	phdi_test_unused.h
+
+phdi_test_snapshot_values_LDADD = \
 	../libphdi/libphdi.la \
 	@LIBCERROR_LIBADD@
 

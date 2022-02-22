@@ -27,13 +27,13 @@
 #include "libphdi_disk_descriptor_xml_file.h"
 #include "libphdi_definitions.h"
 #include "libphdi_extent_values.h"
+#include "libphdi_image_values.h"
 #include "libphdi_libbfio.h"
 #include "libphdi_libcdata.h"
 #include "libphdi_libcerror.h"
 #include "libphdi_libcnotify.h"
 #include "libphdi_libfvalue.h"
 #include "libphdi_snapshot_values.h"
-#include "libphdi_uuid_string.h"
 #include "libphdi_xml_parser.h"
 
 extern \
@@ -1180,36 +1180,28 @@ int libphdi_disk_descriptor_xml_file_get_disk_type(
  */
 int libphdi_disk_descriptor_xml_file_get_storage_data(
      libphdi_disk_descriptor_xml_file_t *disk_descriptor_xml_file,
-     libcdata_array_t *snapshot_values_array,
      libcdata_array_t *extent_values_array,
      libcerror_error_t **error )
 {
-	uint8_t image_identifier[ 16 ];
-
-	libphdi_extent_values_t *extent_values     = NULL;
-	libphdi_snapshot_values_t *snapshot_values = NULL;
-	libphdi_xml_tag_t *element_tag             = NULL;
-	libphdi_xml_tag_t *image_element_tag       = NULL;
-	libphdi_xml_tag_t *image_file_tag          = NULL;
-	libphdi_xml_tag_t *image_tag               = NULL;
-	libphdi_xml_tag_t *image_type_tag          = NULL;
-	libphdi_xml_tag_t *storage_tag             = NULL;
-	static char *function                      = "libphdi_disk_descriptor_xml_file_get_storage_data";
-	off64_t end_offset                         = 0;
-	off64_t start_offset                       = 0;
-	uint64_t value_64bit                       = 0;
-	int element_index                          = 0;
-	int entry_index                            = 0;
-	int extent_type                            = 0;
-	int image_element_index                    = 0;
-	int is_current_snapshot                    = 0;
-	int number_of_elements                     = 0;
-	int number_of_image_elements               = 0;
-	int number_of_snapshots                    = 0;
-	int number_of_storage_elements             = 0;
-	int result                                 = 0;
-	int snapshot_values_index                  = 0;
-	int storage_element_index                  = 0;
+	libphdi_extent_values_t *extent_values = NULL;
+	libphdi_image_values_t *image_values   = NULL;
+	libphdi_xml_tag_t *element_tag         = NULL;
+	libphdi_xml_tag_t *image_element_tag   = NULL;
+	libphdi_xml_tag_t *storage_tag         = NULL;
+	static char *function                  = "libphdi_disk_descriptor_xml_file_get_storage_data";
+	off64_t end_offset                     = 0;
+	off64_t start_offset                   = 0;
+	uint64_t value_64bit                   = 0;
+	int element_index                      = 0;
+	int entry_index                        = 0;
+	int image_element_index                = 0;
+	int image_type                         = 0;
+	int number_of_elements                 = 0;
+	int number_of_image_elements           = 0;
+	int number_of_snapshots                = 0;
+	int number_of_storage_elements         = 0;
+	int result                             = 0;
+	int storage_element_index              = 0;
 
 	if( disk_descriptor_xml_file == NULL )
 	{
@@ -1221,20 +1213,6 @@ int libphdi_disk_descriptor_xml_file_get_storage_data(
 		 function );
 
 		return( -1 );
-	}
-	if( libcdata_array_get_number_of_entries(
-	     snapshot_values_array,
-	     &number_of_snapshots,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve snapshots.",
-		 function );
-
-		goto on_error;
 	}
 	if( libcdata_array_empty(
 	     extent_values_array,
@@ -1326,6 +1304,19 @@ int libphdi_disk_descriptor_xml_file_get_storage_data(
 
 			goto on_error;
 		}
+		if( libphdi_extent_values_initialize(
+		     &extent_values,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 "%s: unable to create extent values.",
+			 function );
+
+			goto on_error;
+		}
 		if( libphdi_xml_tag_get_number_of_elements(
 		     storage_tag,
 		     &number_of_elements,
@@ -1341,12 +1332,8 @@ int libphdi_disk_descriptor_xml_file_get_storage_data(
 
 			goto on_error;
 		}
-		image_tag             = NULL;
-		image_file_tag        = NULL;
-		image_type_tag        = NULL;
-		start_offset          = -1;
-		end_offset            = -1;
-		snapshot_values_index = 0;
+		start_offset = -1;
+		end_offset   = -1;
 
 		for( element_index = 0;
 		     element_index < number_of_elements;
@@ -1496,81 +1483,18 @@ int libphdi_disk_descriptor_xml_file_get_storage_data(
 			}
 			else if( result != 0 )
 			{
-				if( memory_set(
-				     image_identifier,
-				     0,
-				     16 ) == NULL )
+				if( libphdi_image_values_initialize(
+				     &image_values,
+				     error ) != 1 )
 				{
 					libcerror_error_set(
 					 error,
-					 LIBCERROR_ERROR_DOMAIN_MEMORY,
-					 LIBCERROR_MEMORY_ERROR_SET_FAILED,
-					 "%s: unable to clear image identifier.",
+					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+					 "%s: unable to create image values.",
 					 function );
 
 					goto on_error;
-				}
-				snapshot_values     = NULL;
-				is_current_snapshot = 0;
-
-				if( number_of_snapshots == 0 )
-				{
-					is_current_snapshot = 1;
-				}
-				else
-				{
-					if( libcdata_array_get_entry_by_index(
-					     snapshot_values_array,
-					     snapshot_values_index,
-					     (intptr_t **) &snapshot_values,
-					     error ) != 1 )
-					{
-						libcerror_error_set(
-						 error,
-						 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-						 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-						 "%s: unable to retrieve snapshot values: %d from array.",
-						 function,
-						 snapshot_values_index );
-
-						goto on_error;
-					}
-					if( snapshot_values == NULL )
-					{
-						libcerror_error_set(
-						 error,
-						 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-						 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-						 "%s: missing snapshot values: %d.",
-						 function,
-						 snapshot_values_index );
-
-						goto on_error;
-					}
-					snapshot_values_index++;
-
-					if( memory_compare(
-					     snapshot_values->parent_identifier,
-					     image_identifier,
-					     16 ) == 0 )
-					{
-						is_current_snapshot = 1;
-					}
-				}
-				if( is_current_snapshot != 0 )
-				{
-					if( image_tag != NULL )
-					{
-						libcerror_error_set(
-						 error,
-						 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-						 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
-						 "%s: invalid image tag value already set.",
-						 function );
-
-						goto on_error;
-					}
-					image_tag = element_tag;
 				}
 				if( libphdi_xml_tag_get_number_of_elements(
 				     element_tag,
@@ -1632,18 +1556,17 @@ int libphdi_disk_descriptor_xml_file_get_storage_data(
 					}
 					else if( result != 0 )
 					{
-						if( libphdi_uuid_string_copy_to_byte_stream(
+						if( libphdi_image_values_set_identifier(
+						     image_values,
 						     image_element_tag->value,
 						     image_element_tag->value_size - 1,
-						     image_identifier,
-						     16,
 						     error ) != 1 )
 						{
 							libcerror_error_set(
 							 error,
 							 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 							 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-							 "%s: unable to copy UUID string to image identifier.",
+							 "%s: unable to set image identifier.",
 							 function );
 
 							goto on_error;
@@ -1672,52 +1595,20 @@ int libphdi_disk_descriptor_xml_file_get_storage_data(
 					}
 					else if( result != 0 )
 					{
-						if( snapshot_values != NULL )
+						if( libphdi_image_values_set_filename(
+						     image_values,
+						     image_element_tag->value,
+						     image_element_tag->value_size - 1,
+						     error ) != 1 )
 						{
-							if( memory_compare(
-							     snapshot_values->identifier,
-							     image_identifier,
-							     16 ) != 0 )
-							{
-								libcerror_error_set(
-								 error,
-								 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-								 LIBCERROR_RUNTIME_ERROR_UNSUPPORTED_VALUE,
-								 "%s: mismatch between image and snapshot identifier.",
-								 function );
+							libcerror_error_set(
+							 error,
+							 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+							 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+							 "%s: unable to set image filename.",
+							 function );
 
-								goto on_error;
-							}
-							if( libphdi_snapshot_values_set_filename(
-							     snapshot_values,
-							     image_element_tag->value,
-							     image_element_tag->value_size - 1,
-							     error ) != 1 )
-							{
-								libcerror_error_set(
-								 error,
-								 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-								 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-								 "%s: unable to set snapshot filename.",
-								 function );
-
-								goto on_error;
-							}
-						}
-						if( is_current_snapshot != 0 )
-						{
-							if( image_file_tag != NULL )
-							{
-								libcerror_error_set(
-								 error,
-								 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-								 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
-								 "%s: invalid image file tag value already set.",
-								 function );
-
-								goto on_error;
-							}
-							image_file_tag = image_element_tag;
+							goto on_error;
 						}
 						continue;
 					}
@@ -1743,25 +1634,70 @@ int libphdi_disk_descriptor_xml_file_get_storage_data(
 					}
 					else if( result != 0 )
 					{
-						if( is_current_snapshot != 0 )
+						if( ( image_element_tag->value == NULL )
+						 || ( image_element_tag->value_size == 0 ) )
 						{
-							if( image_type_tag != NULL )
-							{
-								libcerror_error_set(
-								 error,
-								 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-								 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
-								 "%s: invalid image type tag value already set.",
-								 function );
+							libcerror_error_set(
+							 error,
+							 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+							 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+							 "%s: invalid type tag of element: %d of image tag: %d of storage tag: %d - missing value.",
+							 function );
 
-								goto on_error;
+							goto on_error;
+						}
+						image_type = LIBPHDI_IMAGE_TYPE_UNKNOWN;
+
+						if( ( image_element_tag->value_size == 6 )
+						 && ( narrow_string_compare(
+						       "Plain",
+						       image_element_tag->value,
+						       image_element_tag->value_size ) == 0 ) )
+						{
+							image_type = LIBPHDI_IMAGE_TYPE_PLAIN;
+						}
+						else if( ( image_element_tag->value_size == 11 )
+						      && ( narrow_string_compare(
+						            "Compressed",
+						            image_element_tag->value,
+						            image_element_tag->value_size ) == 0 ) )
+						{
+							image_type = LIBPHDI_IMAGE_TYPE_COMPRESSED;
+						}
+						image_values->type = image_type;
+
+						if( disk_descriptor_xml_file->disk_type == 0 )
+						{
+							if( image_type == LIBPHDI_IMAGE_TYPE_COMPRESSED )
+							{
+								disk_descriptor_xml_file->disk_type = LIBPHDI_DISK_TYPE_EXPANDING;
 							}
-							image_type_tag = image_element_tag;
+							else if( image_type == LIBPHDI_IMAGE_TYPE_PLAIN )
+							{
+								disk_descriptor_xml_file->disk_type = LIBPHDI_DISK_TYPE_FIXED;
+							}
 						}
 						continue;
 					}
 /* TODO print unsupported tags */
 				}
+				if( libcdata_array_append_entry(
+				     extent_values->image_values_array,
+				     &entry_index,
+				     (intptr_t *) image_values,
+				     error ) != 1 )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBCERROR_RUNTIME_ERROR_APPEND_FAILED,
+					 "%s: unable to append image values to array.",
+					 function );
+
+					goto on_error;
+				}
+				image_values = NULL;
+
 				continue;
 			}
 			result = libphdi_xml_tag_compare_name(
@@ -1818,87 +1754,8 @@ int libphdi_disk_descriptor_xml_file_get_storage_data(
 			}
 /* TODO print unsupported tags */
 		}
-		if( image_file_tag == NULL )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-			 "%s: missing image file tag.",
-			 function );
-
-			goto on_error;
-		}
-		if( image_type_tag == NULL )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-			 "%s: missing image type tag.",
-			 function );
-
-			goto on_error;
-		}
-		if( ( image_type_tag->value == NULL )
-		 || ( image_file_tag->value_size == 0 ) )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-			 "%s: invalid image type tag - missing value.",
-			 function );
-
-			goto on_error;
-		}
-		extent_type = LIBPHDI_EXTENT_TYPE_UNKNOWN;
-
-		if( ( image_type_tag->value_size == 6 )
-		 && ( narrow_string_compare(
-		       "Plain",
-		       image_type_tag->value,
-		       image_type_tag->value_size ) == 0 ) )
-		{
-			extent_type = LIBPHDI_EXTENT_TYPE_PLAIN;
-		}
-		else if( ( image_type_tag->value_size == 11 )
-		      && ( narrow_string_compare(
-		            "Compressed",
-		            image_type_tag->value,
-		            image_type_tag->value_size ) == 0 ) )
-		{
-			extent_type = LIBPHDI_EXTENT_TYPE_COMPRESSED;
-		}
-		if( disk_descriptor_xml_file->disk_type == 0 )
-		{
-			if( extent_type == LIBPHDI_EXTENT_TYPE_COMPRESSED )
-			{
-				disk_descriptor_xml_file->disk_type = LIBPHDI_DISK_TYPE_EXPANDING;
-			}
-			else if( extent_type == LIBPHDI_EXTENT_TYPE_PLAIN )
-			{
-				disk_descriptor_xml_file->disk_type = LIBPHDI_DISK_TYPE_FIXED;
-			}
-		}
-		if( libphdi_extent_values_initialize(
-		     &extent_values,
-		     error ) != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-			 "%s: unable to create extent values.",
-			 function );
-
-			goto on_error;
-		}
-		if( libphdi_extent_values_set(
+		if( libphdi_extent_values_set_range(
 		     extent_values,
-		     image_file_tag->value,
-		     image_file_tag->value_size - 1,
-		     extent_type,
 		     start_offset,
 		     end_offset,
 		     error ) != 1 )
@@ -1907,7 +1764,7 @@ int libphdi_disk_descriptor_xml_file_get_storage_data(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-			 "%s: unable to set extent values.",
+			 "%s: unable to set extent values range.",
 			 function );
 
 			goto on_error;
@@ -1932,6 +1789,12 @@ int libphdi_disk_descriptor_xml_file_get_storage_data(
 	return( 1 );
 
 on_error:
+	if( image_values != NULL )
+	{
+		libphdi_image_values_free(
+		 &image_values,
+		 NULL );
+	}
 	if( extent_values != NULL )
 	{
 		libphdi_extent_values_free(

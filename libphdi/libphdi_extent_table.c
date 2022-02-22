@@ -28,7 +28,8 @@
 
 #include "libphdi_definitions.h"
 #include "libphdi_extent_table.h"
-#include "libphdi_extent_values.h"
+#include "libphdi_image_values.h"
+#include "libphdi_io_handle.h"
 #include "libphdi_libbfio.h"
 #include "libphdi_libcdata.h"
 #include "libphdi_libcerror.h"
@@ -767,7 +768,7 @@ on_error:
  */
 int libphdi_extent_table_get_extent_data_file_path(
      libphdi_extent_table_t *extent_table,
-     libphdi_extent_values_t *extent_values,
+     libphdi_image_values_t *image_values,
      char **path,
      size_t *path_size,
      libcerror_error_t **error )
@@ -791,13 +792,13 @@ int libphdi_extent_table_get_extent_data_file_path(
 
 		return( -1 );
 	}
-	if( extent_values == NULL )
+	if( image_values == NULL )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid extent values.",
+		 "%s: invalid image values.",
 		 function );
 
 		return( -1 );
@@ -824,8 +825,8 @@ int libphdi_extent_table_get_extent_data_file_path(
 
 		return( -1 );
 	}
-	if( libphdi_extent_values_get_utf8_filename_size(
-	     extent_values,
+	if( libphdi_image_values_get_utf8_filename_size(
+	     image_values,
 	     &utf8_filename_size,
 	     error ) != 1 )
 	{
@@ -864,8 +865,8 @@ int libphdi_extent_table_get_extent_data_file_path(
 
 		goto on_error;
 	}
-	if( libphdi_extent_values_get_utf8_filename(
-	     extent_values,
+	if( libphdi_image_values_get_utf8_filename(
+	     image_values,
 	     utf8_filename,
 	     utf8_filename_size,
 	     error ) != 1 )
@@ -1223,7 +1224,7 @@ on_error:
  */
 int libphdi_extent_table_get_extent_data_file_path_wide(
      libphdi_extent_table_t *extent_table,
-     libphdi_extent_values_t *extent_values,
+     libphdi_image_values_t *image_values,
      wchar_t **path,
      size_t *path_size,
      libcerror_error_t **error )
@@ -1248,13 +1249,13 @@ int libphdi_extent_table_get_extent_data_file_path_wide(
 
 		return( -1 );
 	}
-	if( extent_values == NULL )
+	if( image_values == NULL )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid extent values.",
+		 "%s: invalid image values.",
 		 function );
 
 		return( -1 );
@@ -1281,8 +1282,8 @@ int libphdi_extent_table_get_extent_data_file_path_wide(
 
 		return( -1 );
 	}
-	if( libphdi_extent_values_get_utf8_filename_size(
-	     extent_values,
+	if( libphdi_image_values_get_utf8_filename_size(
+	     image_values,
 	     &utf8_filename_size,
 	     error ) != 1 )
 	{
@@ -1321,8 +1322,8 @@ int libphdi_extent_table_get_extent_data_file_path_wide(
 
 		goto on_error;
 	}
-	if( libphdi_extent_values_get_utf8_filename(
-	     extent_values,
+	if( libphdi_image_values_get_utf8_filename(
+	     image_values,
 	     utf8_filename,
 	     utf8_filename_size,
 	     error ) != 1 )
@@ -1935,12 +1936,12 @@ int libphdi_extent_table_get_extent_file_at_offset(
 	return( 1 );
 }
 
-/* Sets an extent in the extent table based on the extent values
+/* Sets an extent in the extent table based on the image values
  * Returns 1 if successful or -1 on error
  */
-int libphdi_extent_table_set_extent_by_extent_values(
+int libphdi_extent_table_set_extent_by_image_values(
      libphdi_extent_table_t *extent_table,
-     libphdi_extent_values_t *extent_values,
+     int image_type,
      int extent_index,
      int file_io_pool_entry,
      size64_t extent_file_size,
@@ -1948,7 +1949,7 @@ int libphdi_extent_table_set_extent_by_extent_values(
      size64_t extent_size,
      libcerror_error_t **error )
 {
-	static char *function = "libphdi_extent_table_set_extent_by_extent_values";
+	static char *function = "libphdi_extent_table_set_extent_by_image_values";
 
 	if( extent_table == NULL )
 	{
@@ -1957,17 +1958,6 @@ int libphdi_extent_table_set_extent_by_extent_values(
 		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid extent table.",
-		 function );
-
-		return( -1 );
-	}
-	if( extent_values == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid extent values.",
 		 function );
 
 		return( -1 );
@@ -1986,7 +1976,7 @@ int libphdi_extent_table_set_extent_by_extent_values(
 	}
 	if( extent_index == 0 )
 	{
-		if( extent_values->type == LIBPHDI_EXTENT_TYPE_COMPRESSED )
+		if( image_type == LIBPHDI_IMAGE_TYPE_COMPRESSED )
 		{
 			if( extent_table->disk_type != LIBPHDI_DISK_TYPE_EXPANDING )
 			{
@@ -1994,13 +1984,13 @@ int libphdi_extent_table_set_extent_by_extent_values(
 				 error,
 				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 				 LIBCERROR_RUNTIME_ERROR_UNSUPPORTED_VALUE,
-				 "%s: extent type not supported for disk type.",
+				 "%s: image type not supported for disk type.",
 				 function );
 
 				return( -1 );
 			}
 		}
-		else if( extent_values->type == LIBPHDI_EXTENT_TYPE_PLAIN )
+		else if( image_type == LIBPHDI_IMAGE_TYPE_PLAIN )
 		{
 			if( extent_table->disk_type != LIBPHDI_DISK_TYPE_FIXED )
 			{
@@ -2008,7 +1998,7 @@ int libphdi_extent_table_set_extent_by_extent_values(
 				 error,
 				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 				 LIBCERROR_RUNTIME_ERROR_UNSUPPORTED_VALUE,
-				 "%s: extent type not supported for disk type.",
+				 "%s: image type not supported for disk type.",
 				 function );
 
 				return( -1 );
@@ -2020,25 +2010,25 @@ int libphdi_extent_table_set_extent_by_extent_values(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_UNSUPPORTED_VALUE,
-			 "%s: unsupported extent type.",
+			 "%s: unsupported image type.",
 			 function );
 
 			return( -1 );
 		}
-		extent_table->extent_type = extent_values->type;
+		extent_table->image_type = image_type;
 	}
-	else if( extent_table->extent_type != extent_values->type )
+	else if( extent_table->image_type != image_type )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_UNSUPPORTED_VALUE,
-		 "%s: mixed extent types not supported.",
+		 "%s: mixed image types not supported.",
 		 function );
 
 		return( -1 );
 	}
-	if( extent_values->type == LIBPHDI_EXTENT_TYPE_PLAIN )
+	if( image_type == LIBPHDI_IMAGE_TYPE_PLAIN )
 	{
 		if( ( extent_offset < 0 )
 		 || ( (size64_t) extent_offset >= extent_file_size ) )
@@ -2083,7 +2073,7 @@ int libphdi_extent_table_set_extent_by_extent_values(
 			return( -1 );
 		}
 	}
-	else if( extent_values->type == LIBPHDI_EXTENT_TYPE_COMPRESSED )
+	else if( image_type == LIBPHDI_IMAGE_TYPE_COMPRESSED )
 	{
 		if( extent_offset != 0 )
 		{

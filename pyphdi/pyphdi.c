@@ -33,6 +33,8 @@
 #include "pyphdi_extent_descriptors.h"
 #include "pyphdi_file_object_io_handle.h"
 #include "pyphdi_handle.h"
+#include "pyphdi_image_descriptor.h"
+#include "pyphdi_image_descriptors.h"
 #include "pyphdi_libbfio.h"
 #include "pyphdi_libcerror.h"
 #include "pyphdi_libphdi.h"
@@ -645,6 +647,40 @@ PyMODINIT_FUNC initpyphdi(
 	 module,
 	 "handle",
 	 (PyObject *) &pyphdi_handle_type_object );
+
+	/* Setup the image_descriptor type object
+	 */
+	pyphdi_image_descriptor_type_object.tp_new = PyType_GenericNew;
+
+	if( PyType_Ready(
+	     &pyphdi_image_descriptor_type_object ) < 0 )
+	{
+		goto on_error;
+	}
+	Py_IncRef(
+	 (PyObject *) &pyphdi_image_descriptor_type_object );
+
+	PyModule_AddObject(
+	 module,
+	 "image_descriptor",
+	 (PyObject *) &pyphdi_image_descriptor_type_object );
+
+	/* Setup the image_descriptors type object
+	 */
+	pyphdi_image_descriptors_type_object.tp_new = PyType_GenericNew;
+
+	if( PyType_Ready(
+	     &pyphdi_image_descriptors_type_object ) < 0 )
+	{
+		goto on_error;
+	}
+	Py_IncRef(
+	 (PyObject *) &pyphdi_image_descriptors_type_object );
+
+	PyModule_AddObject(
+	 module,
+	 "image_descriptors",
+	 (PyObject *) &pyphdi_image_descriptors_type_object );
 
 	PyGILState_Release(
 	 gil_state );

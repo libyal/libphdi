@@ -26,6 +26,7 @@
 #include <types.h>
 
 #include "libphdi_extent_values.h"
+#include "libphdi_image_values.h"
 #include "libphdi_io_handle.h"
 #include "libphdi_libbfio.h"
 #include "libphdi_libcerror.h"
@@ -57,9 +58,9 @@ struct libphdi_extent_table
 	 */
 	int disk_type;
 
-	/* The extent type
+	/* The image type
 	 */
-	int extent_type;
+	int image_type;
 
 	/* The number of extents
 	 */
@@ -131,7 +132,7 @@ int libphdi_extent_table_set_data_files_path_wide(
 
 int libphdi_extent_table_get_extent_data_file_path(
      libphdi_extent_table_t *extent_table,
-     libphdi_extent_values_t *extent_values,
+     libphdi_image_values_t *image_values,
      char **path,
      size_t *path_size,
      libcerror_error_t **error );
@@ -148,7 +149,7 @@ int libphdi_extent_table_join_extent_data_file_path(
 
 int libphdi_extent_table_get_extent_data_file_path_wide(
      libphdi_extent_table_t *extent_table,
-     libphdi_extent_values_t *extent_values,
+     libphdi_image_values_t *image_values,
      wchar_t **path,
      size_t *path_size,
      libcerror_error_t **error );
@@ -184,9 +185,9 @@ int libphdi_extent_table_get_extent_file_at_offset(
      libphdi_storage_image_t **extent_file,
      libcerror_error_t **error );
 
-int libphdi_extent_table_set_extent_by_extent_values(
+int libphdi_extent_table_set_extent_by_image_values(
      libphdi_extent_table_t *extent_table,
-     libphdi_extent_values_t *extent_values,
+     int image_type,
      int extent_index,
      int file_io_pool_entry,
      size64_t extent_file_size,

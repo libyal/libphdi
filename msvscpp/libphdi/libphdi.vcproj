@@ -222,11 +222,23 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\libphdi\libphdi_image_descriptor.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libphdi\libphdi_image_values.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\libphdi\libphdi_io_handle.c"
 				>
 			</File>
 			<File
 				RelativePath="..\..\libphdi\libphdi_notify.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libphdi\libphdi_snapshot.c"
 				>
 			</File>
 			<File
@@ -336,6 +348,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\libphdi\libphdi_image_descriptor.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libphdi\libphdi_image_values.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\libphdi\libphdi_io_handle.h"
 				>
 			</File>
@@ -393,6 +413,10 @@
 			</File>
 			<File
 				RelativePath="..\..\libphdi\libphdi_notify.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libphdi\libphdi_snapshot.h"
 				>
 			</File>
 			<File

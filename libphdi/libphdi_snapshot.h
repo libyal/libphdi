@@ -1,5 +1,5 @@
 /*
- * Extent descriptor functions
+ * Snapshot functions
  *
  * Copyright (C) 2015-2022, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -19,29 +19,29 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#if !defined( _LIBPHDI_EXTENT_DESCRIPTOR_H )
-#define _LIBPHDI_EXTENT_DESCRIPTOR_H
+#if !defined( _LIBPHDI_SNAPSHOT_H )
+#define _LIBPHDI_SNAPSHOT_H
 
 #include <common.h>
 #include <types.h>
 
 #include "libphdi_extern.h"
-#include "libphdi_extent_values.h"
 #include "libphdi_libcerror.h"
 #include "libphdi_libcthreads.h"
+#include "libphdi_snapshot_values.h"
 #include "libphdi_types.h"
 
 #if defined( __cplusplus )
 extern "C" {
 #endif
 
-typedef struct libphdi_internal_extent_descriptor libphdi_internal_extent_descriptor_t;
+typedef struct libphdi_internal_snapshot libphdi_internal_snapshot_t;
 
-struct libphdi_internal_extent_descriptor
+struct libphdi_internal_snapshot
 {
-	/* The extent values
+	/* The snapshot values
 	 */
-	libphdi_extent_values_t *extent_values;
+	libphdi_snapshot_values_t *snapshot_values;
 
 #if defined( HAVE_LIBPHDI_MULTI_THREAD_SUPPORT )
 	/* The read/write lock
@@ -50,39 +50,33 @@ struct libphdi_internal_extent_descriptor
 #endif
 };
 
-int libphdi_extent_descriptor_initialize(
-     libphdi_extent_descriptor_t **extent_descriptor,
-     libphdi_extent_values_t *extent_values,
+int libphdi_snapshot_initialize(
+     libphdi_snapshot_t **snapshot,
+     libphdi_snapshot_values_t *snapshot_values,
      libcerror_error_t **error );
 
 LIBPHDI_EXTERN \
-int libphdi_extent_descriptor_free(
-     libphdi_extent_descriptor_t **extent_descriptor,
+int libphdi_snapshot_free(
+     libphdi_snapshot_t **snapshot,
      libcerror_error_t **error );
 
 LIBPHDI_EXTERN \
-int libphdi_extent_descriptor_get_range(
-     libphdi_extent_descriptor_t *extent_descriptor,
-     off64_t *offset,
-     size64_t *size,
+int libphdi_snapshot_get_identifier(
+     libphdi_snapshot_t *snapshot,
+     uint8_t *guid_data,
+     size_t guid_data_size,
      libcerror_error_t **error );
 
 LIBPHDI_EXTERN \
-int libphdi_extent_descriptor_get_number_of_images(
-     libphdi_extent_descriptor_t *extent_descriptor,
-     int *number_of_images,
-     libcerror_error_t **error );
-
-LIBPHDI_EXTERN \
-int libphdi_extent_descriptor_get_image_descriptor_by_index(
-     libphdi_extent_descriptor_t *extent_descriptor,
-     int image_index,
-     libphdi_image_descriptor_t **image_descriptor,
+int libphdi_snapshot_get_parent_identifier(
+     libphdi_snapshot_t *snapshot,
+     uint8_t *guid_data,
+     size_t guid_data_size,
      libcerror_error_t **error );
 
 #if defined( __cplusplus )
 }
 #endif
 
-#endif /* !defined( _LIBPHDI_EXTENT_DESCRIPTOR_H ) */
+#endif /* !defined( _LIBPHDI_SNAPSHOT_H ) */
 

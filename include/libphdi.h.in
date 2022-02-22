@@ -433,10 +433,29 @@ int libphdi_handle_get_number_of_extents(
  * Returns 1 if successful or -1 on error
  */
 LIBPHDI_EXTERN \
-int libphdi_handle_get_extent_descriptor(
+int libphdi_handle_get_extent_descriptor_by_index(
      libphdi_handle_t *handle,
      int extent_index,
      libphdi_extent_descriptor_t **extent_descriptor,
+     libphdi_error_t **error );
+
+/* Retrieves the number of snapshots
+ * Returns 1 if successful or -1 on error
+ */
+LIBPHDI_EXTERN \
+int libphdi_handle_get_number_of_snapshots(
+     libphdi_handle_t *handle,
+     int *number_of_snapshots,
+     libphdi_error_t **error );
+
+/* Retrieves a specific snapshot
+ * Returns 1 if successful or -1 on error
+ */
+LIBPHDI_EXTERN \
+int libphdi_handle_get_snapshot_by_index(
+     libphdi_handle_t *handle,
+     int snapshot_index,
+     libphdi_snapshot_t **snapshot,
      libphdi_error_t **error );
 
 /* -------------------------------------------------------------------------
@@ -451,15 +470,6 @@ int libphdi_extent_descriptor_free(
      libphdi_extent_descriptor_t **extent_descriptor,
      libphdi_error_t **error );
 
-/* Retrieves the extent type
- * Returns 1 if successful or -1 on error
- */
-LIBPHDI_EXTERN \
-int libphdi_extent_descriptor_get_type(
-     libphdi_extent_descriptor_t *extent_descriptor,
-     int *type,
-     libphdi_error_t **error );
-
 /* Retrieves the extent range (offset and size)
  * Returns 1 if successful or -1 on error
  */
@@ -470,13 +480,53 @@ int libphdi_extent_descriptor_get_range(
      size64_t *size,
      libphdi_error_t **error );
 
+/* Retrieves the number of images
+ * Returns 1 if successful or -1 on error
+ */
+LIBPHDI_EXTERN \
+int libphdi_extent_descriptor_get_number_of_images(
+     libphdi_extent_descriptor_t *extent_descriptor,
+     int *number_of_images,
+     libphdi_error_t **error );
+
+/* Retrieves a specific image descriptor
+ * Returns 1 if successful or -1 on error
+ */
+LIBPHDI_EXTERN \
+int libphdi_extent_descriptor_get_image_descriptor_by_index(
+     libphdi_extent_descriptor_t *extent_descriptor,
+     int image_index,
+     libphdi_image_descriptor_t **image_descriptor,
+     libphdi_error_t **error );
+
+/* -------------------------------------------------------------------------
+ * Image descriptor functions
+ * ------------------------------------------------------------------------- */
+
+/* Frees an image descriptor
+ * Returns 1 if successful or -1 on error
+ */
+LIBPHDI_EXTERN \
+int libphdi_image_descriptor_free(
+     libphdi_image_descriptor_t **image_descriptor,
+     libphdi_error_t **error );
+
+/* Retrieves the image type
+ * Returns 1 if successful or -1 on error
+ */
+LIBPHDI_EXTERN \
+int libphdi_image_descriptor_get_type(
+     libphdi_image_descriptor_t *image_descriptor,
+     int *type,
+     libphdi_error_t **error );
+
 /* Retrieves the size of the UTF-8 encoded filename
  * The returned size includes the end of string character
  * Returns 1 if successful, 0 if not available or -1 on error
  */
 LIBPHDI_EXTERN \
-int libphdi_extent_descriptor_get_utf8_filename_size(
-     libphdi_extent_descriptor_t *extent_descriptor,
+int libphdi_image_descriptor_get_utf8_filename_size(
+     libphdi_image_descriptor_t *image_descriptor,
      size_t *utf8_string_size,
      libphdi_error_t **error );
 
@@ -485,8 +535,8 @@ int libphdi_extent_descriptor_get_utf8_filename_size(
  * Returns 1 if successful, 0 if not available or -1 on error
  */
 LIBPHDI_EXTERN \
-int libphdi_extent_descriptor_get_utf8_filename(
-     libphdi_extent_descriptor_t *extent_descriptor,
+int libphdi_image_descriptor_get_utf8_filename(
+     libphdi_image_descriptor_t *image_descriptor,
      uint8_t *utf8_string,
      size_t utf8_string_size,
      libphdi_error_t **error );
@@ -496,8 +546,8 @@ int libphdi_extent_descriptor_get_utf8_filename(
  * Returns 1 if successful, 0 if not available or -1 on error
  */
 LIBPHDI_EXTERN \
-int libphdi_extent_descriptor_get_utf16_filename_size(
-     libphdi_extent_descriptor_t *extent_descriptor,
+int libphdi_image_descriptor_get_utf16_filename_size(
+     libphdi_image_descriptor_t *image_descriptor,
      size_t *utf16_string_size,
      libphdi_error_t **error );
 
@@ -506,10 +556,44 @@ int libphdi_extent_descriptor_get_utf16_filename_size(
  * Returns 1 if successful, 0 if not available or -1 on error
  */
 LIBPHDI_EXTERN \
-int libphdi_extent_descriptor_get_utf16_filename(
-     libphdi_extent_descriptor_t *extent_descriptor,
+int libphdi_image_descriptor_get_utf16_filename(
+     libphdi_image_descriptor_t *image_descriptor,
      uint16_t *utf16_string,
      size_t utf16_string_size,
+     libphdi_error_t **error );
+
+/* -------------------------------------------------------------------------
+ * Snapshot functions
+ * ------------------------------------------------------------------------- */
+
+/* Frees a snapshot
+ * Returns 1 if successful or -1 on error
+ */
+LIBPHDI_EXTERN \
+int libphdi_snapshot_free(
+     libphdi_snapshot_t **snapshot,
+     libphdi_error_t **error );
+
+/* Retrieves the identifier
+ * The identifier is a big-endian GUID and is 16 bytes of size
+ * Returns 1 if successful or -1 on error
+ */
+LIBPHDI_EXTERN \
+int libphdi_snapshot_get_identifier(
+     libphdi_snapshot_t *snapshot,
+     uint8_t *guid_data,
+     size_t guid_data_size,
+     libphdi_error_t **error );
+
+/* Retrieves the parent identifier
+ * The identifier is a big-endian GUID and is 16 bytes of size
+ * Returns 1 if successful, 0 if not available or -1 on error
+ */
+LIBPHDI_EXTERN \
+int libphdi_snapshot_get_parent_identifier(
+     libphdi_snapshot_t *snapshot,
+     uint8_t *guid_data,
+     size_t guid_data_size,
      libphdi_error_t **error );
 
 #if defined( __cplusplus )

@@ -356,11 +356,12 @@ PyObject *pyphdi_extent_descriptor_get_type(
            pyphdi_extent_descriptor_t *pyphdi_extent_descriptor,
            PyObject *arguments PYPHDI_ATTRIBUTE_UNUSED )
 {
-	libcerror_error_t *error = NULL;
-	PyObject *integer_object = NULL;
-	static char *function    = "pyphdi_extent_descriptor_get_type";
-	int result               = 0;
-	int type                 = 0;
+	PyObject *integer_object                     = NULL;
+	libcerror_error_t *error                     = NULL;
+	libphdi_image_descriptor_t *image_descriptor = NULL;
+	static char *function                        = "pyphdi_extent_descriptor_get_type";
+	int result                                   = 0;
+	int type                                     = 0;
 
 	PYPHDI_UNREFERENCED_PARAMETER( arguments )
 
@@ -375,8 +376,31 @@ PyObject *pyphdi_extent_descriptor_get_type(
 	}
 	Py_BEGIN_ALLOW_THREADS
 
-	result = libphdi_extent_descriptor_get_type(
+	result = libphdi_extent_descriptor_get_image_descriptor_by_index(
 	          pyphdi_extent_descriptor->extent_descriptor,
+	          0,
+	          &image_descriptor,
+	          &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result != 1 )
+	{
+		pyphdi_error_raise(
+		 error,
+		 PyExc_IOError,
+		 "%s: unable to retrieve image descriptor.",
+		 function );
+
+		libcerror_error_free(
+		 &error );
+
+		return( NULL );
+	}
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libphdi_image_descriptor_get_type(
+	          image_descriptor,
 	          &type,
 	          &error );
 
@@ -388,6 +412,30 @@ PyObject *pyphdi_extent_descriptor_get_type(
 		 error,
 		 PyExc_IOError,
 		 "%s: unable to retrieve type.",
+		 function );
+
+		libphdi_image_descriptor_free(
+		 &image_descriptor,
+		 NULL );
+		libcerror_error_free(
+		 &error );
+
+		return( NULL );
+	}
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libphdi_image_descriptor_free(
+	          &image_descriptor,
+	          &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result != 1 )
+	{
+		pyphdi_error_raise(
+		 error,
+		 PyExc_IOError,
+		 "%s: unable to free image descriptor.",
 		 function );
 
 		libcerror_error_free(
@@ -520,13 +568,14 @@ PyObject *pyphdi_extent_descriptor_get_filename(
            pyphdi_extent_descriptor_t *pyphdi_extent_descriptor,
            PyObject *arguments PYPHDI_ATTRIBUTE_UNUSED )
 {
-	libcerror_error_t *error = NULL;
-	PyObject *string_object  = NULL;
-	const char *errors       = NULL;
-	uint8_t *filename        = NULL;
-	static char *function    = "pyphdi_extent_descriptor_get_filename";
-	size_t filename_size     = 0;
-	int result               = 0;
+	PyObject *string_object                      = NULL;
+	libcerror_error_t *error                     = NULL;
+	libphdi_image_descriptor_t *image_descriptor = NULL;
+	uint8_t *filename                            = NULL;
+	const char *errors                           = NULL;
+	static char *function                        = "pyphdi_extent_descriptor_get_filename";
+	size_t filename_size                         = 0;
+	int result                                   = 0;
 
 	PYPHDI_UNREFERENCED_PARAMETER( arguments )
 
@@ -541,8 +590,31 @@ PyObject *pyphdi_extent_descriptor_get_filename(
 	}
 	Py_BEGIN_ALLOW_THREADS
 
-	result = libphdi_extent_descriptor_get_utf8_filename_size(
+	result = libphdi_extent_descriptor_get_image_descriptor_by_index(
 	          pyphdi_extent_descriptor->extent_descriptor,
+	          0,
+	          &image_descriptor,
+	          &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result != 1 )
+	{
+		pyphdi_error_raise(
+		 error,
+		 PyExc_IOError,
+		 "%s: unable to retrieve image descriptor.",
+		 function );
+
+		libcerror_error_free(
+		 &error );
+
+		return( NULL );
+	}
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libphdi_image_descriptor_get_utf8_filename_size(
+	          image_descriptor,
 	          &filename_size,
 	          &error );
 
@@ -583,8 +655,8 @@ PyObject *pyphdi_extent_descriptor_get_filename(
 	}
 	Py_BEGIN_ALLOW_THREADS
 
-	result = libphdi_extent_descriptor_get_utf8_filename(
-		  pyphdi_extent_descriptor->extent_descriptor,
+	result = libphdi_image_descriptor_get_utf8_filename(
+		  image_descriptor,
 		  filename,
 		  filename_size,
 		  &error );
@@ -603,6 +675,27 @@ PyObject *pyphdi_extent_descriptor_get_filename(
 		 &error );
 
 		goto on_error;
+	}
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libphdi_image_descriptor_free(
+	          &image_descriptor,
+	          &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result != 1 )
+	{
+		pyphdi_error_raise(
+		 error,
+		 PyExc_IOError,
+		 "%s: unable to free image descriptor.",
+		 function );
+
+		libcerror_error_free(
+		 &error );
+
+		return( NULL );
 	}
 	/* Pass the string length to PyUnicode_DecodeUTF8
 	 * otherwise it makes the end of string character is part
@@ -623,6 +716,12 @@ on_error:
 	{
 		PyMem_Free(
 		 filename );
+	}
+	if( image_descriptor != NULL )
+	{
+		libphdi_extent_descriptor_free(
+		 &image_descriptor,
+		 NULL );
 	}
 	return( NULL );
 }

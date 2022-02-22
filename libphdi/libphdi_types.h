@@ -36,10 +36,14 @@
 #if defined( HAVE_DEBUG_OUTPUT ) && !defined( WINAPI )
 typedef struct libphdi_extent_descriptor {}	libphdi_extent_descriptor_t;
 typedef struct libphdi_handle {}		libphdi_handle_t;
+typedef struct libphdi_image_descriptor {}	libphdi_image_descriptor_t;
+typedef struct libphdi_snapshot {}		libphdi_snapshot_t;
 
 #else
 typedef intptr_t libphdi_extent_descriptor_t;
 typedef intptr_t libphdi_handle_t;
+typedef intptr_t libphdi_image_descriptor_t;
+typedef intptr_t libphdi_snapshot_t;
 
 #endif /* defined( HAVE_DEBUG_OUTPUT ) && !defined( WINAPI ) */
 

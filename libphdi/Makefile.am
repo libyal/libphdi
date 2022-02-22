@@ -44,6 +44,8 @@ libphdi_la_SOURCES = \
 	libphdi_extern.h \
 	libphdi_handle.c libphdi_handle.h \
 	libphdi_i18n.c libphdi_i18n.h \
+	libphdi_image_descriptor.c libphdi_image_descriptor.h \
+	libphdi_image_values.c libphdi_image_values.h \
 	libphdi_io_handle.c libphdi_io_handle.h \
 	libphdi_libbfio.h \
 	libphdi_libcdata.h \
@@ -59,6 +61,7 @@ libphdi_la_SOURCES = \
 	libphdi_libfvalue.h \
 	libphdi_libuna.h \
 	libphdi_notify.c libphdi_notify.h \
+	libphdi_snapshot.c libphdi_snapshot.h \
 	libphdi_snapshot_values.c libphdi_snapshot_values.h \
 	libphdi_sparse_image_header.c libphdi_sparse_image_header.h \
 	libphdi_storage_image.c libphdi_storage_image.h \

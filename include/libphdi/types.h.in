@@ -203,6 +203,8 @@ typedef int64_t off64_t;
  */
 typedef intptr_t libphdi_extent_descriptor_t;
 typedef intptr_t libphdi_handle_t;
+typedef intptr_t libphdi_image_descriptor_t;
+typedef intptr_t libphdi_snapshot_t;
 
 #ifdef __cplusplus
 }

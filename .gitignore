@@ -143,8 +143,11 @@ stamp-h[1-9]
 /tests/phdi_test_extent_table
 /tests/phdi_test_extent_values
 /tests/phdi_test_handle
+/tests/phdi_test_image_descriptor
+/tests/phdi_test_image_values
 /tests/phdi_test_io_handle
 /tests/phdi_test_notify
+/tests/phdi_test_snapshot_values
 /tests/phdi_test_sparse_image_header
 /tests/phdi_test_storage_image
 /tests/phdi_test_storage_table

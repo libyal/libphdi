@@ -39,6 +39,7 @@
 
 #include "../libphdi/libphdi_extent_table.h"
 #include "../libphdi/libphdi_extent_values.h"
+#include "../libphdi/libphdi_image_values.h"
 #include "../libphdi/libphdi_io_handle.h"
 
 #if defined( __GNUC__ ) && !defined( LIBPHDI_DLL_IMPORT )
@@ -1307,14 +1308,14 @@ on_error:
 int phdi_test_extent_table_get_extent_data_file_path(
      void )
 {
-	libcerror_error_t *error               = NULL;
-	libphdi_extent_table_t *extent_table   = NULL;
-	libphdi_extent_values_t *extent_values = NULL;
-	libphdi_io_handle_t *io_handle         = NULL;
-	const char *expected_path              = NULL;
-	char *path                             = NULL;
-	size_t path_size                       = 0;
-	int result                             = 0;
+	libcerror_error_t *error             = NULL;
+	libphdi_extent_table_t *extent_table = NULL;
+	libphdi_image_values_t *image_values = NULL;
+	libphdi_io_handle_t *io_handle       = NULL;
+	const char *expected_path            = NULL;
+	char *path                           = NULL;
+	size_t path_size                     = 0;
+	int result                           = 0;
 
 	/* Initialize test
 	 */
@@ -1353,8 +1354,8 @@ int phdi_test_extent_table_get_extent_data_file_path(
 	 "error",
 	 error );
 
-	result = libphdi_extent_values_initialize(
-	          &extent_values,
+	result = libphdi_image_values_initialize(
+	          &image_values,
 	          &error );
 
 	PHDI_TEST_ASSERT_EQUAL_INT(
@@ -1363,15 +1364,15 @@ int phdi_test_extent_table_get_extent_data_file_path(
 	 1 );
 
 	PHDI_TEST_ASSERT_IS_NOT_NULL(
-	 "extent_values",
-	 extent_values );
+	 "image_values",
+	 image_values );
 
 	PHDI_TEST_ASSERT_IS_NULL(
 	 "error",
 	 error );
 
-	result = libphdi_extent_values_set_filename(
-	          extent_values,
+	result = libphdi_image_values_set_filename(
+	          image_values,
 	          (uint8_t *) "filename.hdd",
 	          12,
 	          &error );
@@ -1389,7 +1390,7 @@ int phdi_test_extent_table_get_extent_data_file_path(
 	 */
 	result = libphdi_extent_table_get_extent_data_file_path(
 	          extent_table,
-	          extent_values,
+	          image_values,
 	          &path,
 	          &path_size,
 	          &error );
@@ -1448,7 +1449,7 @@ int phdi_test_extent_table_get_extent_data_file_path(
 
 	result = libphdi_extent_table_get_extent_data_file_path(
 	          extent_table,
-	          extent_values,
+	          image_values,
 	          &path,
 	          &path_size,
 	          &error );
@@ -1497,7 +1498,7 @@ int phdi_test_extent_table_get_extent_data_file_path(
 
 	result = libphdi_extent_table_get_extent_data_file_path(
 	          NULL,
-	          extent_values,
+	          image_values,
 	          &path,
 	          &path_size,
 	          &error );
@@ -1553,7 +1554,7 @@ int phdi_test_extent_table_get_extent_data_file_path(
 
 	result = libphdi_extent_table_get_extent_data_file_path(
 	          extent_table,
-	          extent_values,
+	          image_values,
 	          NULL,
 	          &path_size,
 	          &error );
@@ -1581,7 +1582,7 @@ int phdi_test_extent_table_get_extent_data_file_path(
 
 	result = libphdi_extent_table_get_extent_data_file_path(
 	          extent_table,
-	          extent_values,
+	          image_values,
 	          &path,
 	          NULL,
 	          &error );
@@ -1609,8 +1610,8 @@ int phdi_test_extent_table_get_extent_data_file_path(
 
 	/* Clean up
 	 */
-	result = libphdi_extent_values_free(
-	          &extent_values,
+	result = libphdi_image_values_free(
+	          &image_values,
 	          &error );
 
 	PHDI_TEST_ASSERT_EQUAL_INT(
@@ -1619,8 +1620,8 @@ int phdi_test_extent_table_get_extent_data_file_path(
 	 1 );
 
 	PHDI_TEST_ASSERT_IS_NULL(
-	 "extent_values",
-	 extent_values );
+	 "image_values",
+	 image_values );
 
 	PHDI_TEST_ASSERT_IS_NULL(
 	 "error",
@@ -1668,10 +1669,10 @@ on_error:
 		libcerror_error_free(
 		 &error );
 	}
-	if( extent_values != NULL )
+	if( image_values != NULL )
 	{
-		libphdi_extent_values_free(
-		 &extent_values,
+		libphdi_image_values_free(
+		 &image_values,
 		 NULL );
 	}
 	if( extent_table != NULL )
@@ -1697,14 +1698,14 @@ on_error:
 int phdi_test_extent_table_get_extent_data_file_path_wide(
      void )
 {
-	libcerror_error_t *error               = NULL;
-	libphdi_extent_table_t *extent_table   = NULL;
-	libphdi_extent_values_t *extent_values = NULL;
-	libphdi_io_handle_t *io_handle         = NULL;
-	const wchar_t *expected_path           = NULL;
-	wchar_t *path                          = NULL;
-	size_t path_size                       = 0;
-	int result                             = 0;
+	libcerror_error_t *error             = NULL;
+	libphdi_extent_table_t *extent_table = NULL;
+	libphdi_image_values_t *image_values = NULL;
+	libphdi_io_handle_t *io_handle       = NULL;
+	const wchar_t *expected_path         = NULL;
+	wchar_t *path                        = NULL;
+	size_t path_size                     = 0;
+	int result                           = 0;
 
 	/* Initialize test
 	 */
@@ -1743,8 +1744,8 @@ int phdi_test_extent_table_get_extent_data_file_path_wide(
 	 "error",
 	 error );
 
-	result = libphdi_extent_values_initialize(
-	          &extent_values,
+	result = libphdi_image_values_initialize(
+	          &image_values,
 	          &error );
 
 	PHDI_TEST_ASSERT_EQUAL_INT(
@@ -1753,15 +1754,15 @@ int phdi_test_extent_table_get_extent_data_file_path_wide(
 	 1 );
 
 	PHDI_TEST_ASSERT_IS_NOT_NULL(
-	 "extent_values",
-	 extent_values );
+	 "image_values",
+	 image_values );
 
 	PHDI_TEST_ASSERT_IS_NULL(
 	 "error",
 	 error );
 
-	result = libphdi_extent_values_set_filename(
-	          extent_values,
+	result = libphdi_image_values_set_filename(
+	          image_values,
 	          (uint8_t *) "filename.hdd",
 	          12,
 	          &error );
@@ -1779,7 +1780,7 @@ int phdi_test_extent_table_get_extent_data_file_path_wide(
 	 */
 	result = libphdi_extent_table_get_extent_data_file_path_wide(
 	          extent_table,
-	          extent_values,
+	          image_values,
 	          &path,
 	          &path_size,
 	          &error );
@@ -1838,7 +1839,7 @@ int phdi_test_extent_table_get_extent_data_file_path_wide(
 	 */
 	result = libphdi_extent_table_get_extent_data_file_path_wide(
 	          extent_table,
-	          extent_values,
+	          image_values,
 	          &path,
 	          &path_size,
 	          &error );
@@ -1888,7 +1889,7 @@ int phdi_test_extent_table_get_extent_data_file_path_wide(
 
 	result = libphdi_extent_table_get_extent_data_file_path_wide(
 	          NULL,
-	          extent_values,
+	          image_values,
 	          &path,
 	          &path_size,
 	          &error );
@@ -1944,7 +1945,7 @@ int phdi_test_extent_table_get_extent_data_file_path_wide(
 
 	result = libphdi_extent_table_get_extent_data_file_path_wide(
 	          extent_table,
-	          extent_values,
+	          image_values,
 	          NULL,
 	          &path_size,
 	          &error );
@@ -1972,7 +1973,7 @@ int phdi_test_extent_table_get_extent_data_file_path_wide(
 
 	result = libphdi_extent_table_get_extent_data_file_path_wide(
 	          extent_table,
-	          extent_values,
+	          image_values,
 	          &path,
 	          NULL,
 	          &error );
@@ -2000,8 +2001,8 @@ int phdi_test_extent_table_get_extent_data_file_path_wide(
 
 	/* Clean up
 	 */
-	result = libphdi_extent_values_free(
-	          &extent_values,
+	result = libphdi_image_values_free(
+	          &image_values,
 	          &error );
 
 	PHDI_TEST_ASSERT_EQUAL_INT(
@@ -2010,8 +2011,8 @@ int phdi_test_extent_table_get_extent_data_file_path_wide(
 	 1 );
 
 	PHDI_TEST_ASSERT_IS_NULL(
-	 "extent_values",
-	 extent_values );
+	 "image_values",
+	 image_values );
 
 	PHDI_TEST_ASSERT_IS_NULL(
 	 "error",
@@ -2059,10 +2060,10 @@ on_error:
 		libcerror_error_free(
 		 &error );
 	}
-	if( extent_values != NULL )
+	if( image_values != NULL )
 	{
-		libphdi_extent_values_free(
-		 &extent_values,
+		libphdi_image_values_free(
+		 &image_values,
 		 NULL );
 	}
 	if( extent_table != NULL )

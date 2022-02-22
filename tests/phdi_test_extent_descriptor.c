@@ -27,14 +27,17 @@
 #include <stdlib.h>
 #endif
 
+#include "phdi_test_libcdata.h"
 #include "phdi_test_libcerror.h"
 #include "phdi_test_libphdi.h"
 #include "phdi_test_macros.h"
 #include "phdi_test_memory.h"
 #include "phdi_test_unused.h"
 
+#include "../libphdi/libphdi_definitions.h"
 #include "../libphdi/libphdi_extent_descriptor.h"
 #include "../libphdi/libphdi_extent_values.h"
+#include "../libphdi/libphdi_image_values.h"
 
 #if defined( __GNUC__ ) && !defined( LIBPHDI_DLL_IMPORT )
 
@@ -315,79 +318,6 @@ on_error:
 	return( 0 );
 }
 
-/* Tests the libphdi_extent_descriptor_get_type function
- * Returns 1 if successful or 0 if not
- */
-int phdi_test_extent_descriptor_get_type(
-     libphdi_extent_descriptor_t *extent_descriptor )
-{
-	libcerror_error_t *error = NULL;
-	int result               = 0;
-	int type                 = 0;
-
-	/* Test regular cases
-	 */
-	result = libphdi_extent_descriptor_get_type(
-	          extent_descriptor,
-	          &type,
-	          &error );
-
-	PHDI_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 1 );
-
-	PHDI_TEST_ASSERT_IS_NULL(
-	 "error",
-	 error );
-
-	/* Test error cases
-	 */
-	result = libphdi_extent_descriptor_get_type(
-	          NULL,
-	          &type,
-	          &error );
-
-	PHDI_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 -1 );
-
-	PHDI_TEST_ASSERT_IS_NOT_NULL(
-	 "error",
-	 error );
-
-	libcerror_error_free(
-	 &error );
-
-	result = libphdi_extent_descriptor_get_type(
-	          extent_descriptor,
-	          NULL,
-	          &error );
-
-	PHDI_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 -1 );
-
-	PHDI_TEST_ASSERT_IS_NOT_NULL(
-	 "error",
-	 error );
-
-	libcerror_error_free(
-	 &error );
-
-	return( 1 );
-
-on_error:
-	if( error != NULL )
-	{
-		libcerror_error_free(
-		 &error );
-	}
-	return( 0 );
-}
-
 /* Tests the libphdi_extent_descriptor_get_range function
  * Returns 1 if successful or 0 if not
  */
@@ -483,378 +413,6 @@ on_error:
 	return( 0 );
 }
 
-/* Tests the libphdi_extent_descriptor_get_utf8_filename_size function
- * Returns 1 if successful or 0 if not
- */
-int phdi_test_extent_descriptor_get_utf8_filename_size(
-     libphdi_extent_descriptor_t *extent_descriptor )
-{
-	libcerror_error_t *error  = NULL;
-	size_t utf8_filename_size = 0;
-	int result                = 0;
-
-	/* Test regular cases
-	 */
-	result = libphdi_extent_descriptor_get_utf8_filename_size(
-	          extent_descriptor,
-	          &utf8_filename_size,
-	          &error );
-
-	PHDI_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 1 );
-
-	PHDI_TEST_ASSERT_IS_NULL(
-	 "error",
-	 error );
-
-	/* Test error cases
-	 */
-	result = libphdi_extent_descriptor_get_utf8_filename_size(
-	          NULL,
-	          &utf8_filename_size,
-	          &error );
-
-	PHDI_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 -1 );
-
-	PHDI_TEST_ASSERT_IS_NOT_NULL(
-	 "error",
-	 error );
-
-	libcerror_error_free(
-	 &error );
-
-	result = libphdi_extent_descriptor_get_utf8_filename_size(
-	          extent_descriptor,
-	          NULL,
-	          &error );
-
-	PHDI_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 -1 );
-
-	PHDI_TEST_ASSERT_IS_NOT_NULL(
-	 "error",
-	 error );
-
-	libcerror_error_free(
-	 &error );
-
-	return( 1 );
-
-on_error:
-	if( error != NULL )
-	{
-		libcerror_error_free(
-		 &error );
-	}
-	return( 0 );
-}
-
-/* Tests the libphdi_extent_descriptor_get_utf8_filename function
- * Returns 1 if successful or 0 if not
- */
-int phdi_test_extent_descriptor_get_utf8_filename(
-     libphdi_extent_descriptor_t *extent_descriptor )
-{
-	uint8_t utf8_filename[ 512 ];
-
-	libcerror_error_t *error = NULL;
-	int result               = 0;
-
-	/* Test regular cases
-	 */
-	result = libphdi_extent_descriptor_get_utf8_filename(
-	          extent_descriptor,
-	          utf8_filename,
-	          512,
-	          &error );
-
-	PHDI_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 1 );
-
-	PHDI_TEST_ASSERT_IS_NULL(
-	 "error",
-	 error );
-
-	/* Test error cases
-	 */
-	result = libphdi_extent_descriptor_get_utf8_filename(
-	          NULL,
-	          utf8_filename,
-	          512,
-	          &error );
-
-	PHDI_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 -1 );
-
-	PHDI_TEST_ASSERT_IS_NOT_NULL(
-	 "error",
-	 error );
-
-	libcerror_error_free(
-	 &error );
-
-	result = libphdi_extent_descriptor_get_utf8_filename(
-	          extent_descriptor,
-	          NULL,
-	          512,
-	          &error );
-
-	PHDI_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 -1 );
-
-	PHDI_TEST_ASSERT_IS_NOT_NULL(
-	 "error",
-	 error );
-
-	libcerror_error_free(
-	 &error );
-
-	result = libphdi_extent_descriptor_get_utf8_filename(
-	          extent_descriptor,
-	          utf8_filename,
-	          0,
-	          &error );
-
-	PHDI_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 -1 );
-
-	PHDI_TEST_ASSERT_IS_NOT_NULL(
-	 "error",
-	 error );
-
-	libcerror_error_free(
-	 &error );
-
-	result = libphdi_extent_descriptor_get_utf8_filename(
-	          extent_descriptor,
-	          utf8_filename,
-	          (size_t) SSIZE_MAX + 1,
-	          &error );
-
-	PHDI_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 -1 );
-
-	PHDI_TEST_ASSERT_IS_NOT_NULL(
-	 "error",
-	 error );
-
-	libcerror_error_free(
-	 &error );
-
-	return( 1 );
-
-on_error:
-	if( error != NULL )
-	{
-		libcerror_error_free(
-		 &error );
-	}
-	return( 0 );
-}
-
-/* Tests the libphdi_extent_descriptor_get_utf16_filename_size function
- * Returns 1 if successful or 0 if not
- */
-int phdi_test_extent_descriptor_get_utf16_filename_size(
-     libphdi_extent_descriptor_t *extent_descriptor )
-{
-	libcerror_error_t *error   = NULL;
-	size_t utf16_filename_size = 0;
-	int result                 = 0;
-
-	/* Test regular cases
-	 */
-	result = libphdi_extent_descriptor_get_utf16_filename_size(
-	          extent_descriptor,
-	          &utf16_filename_size,
-	          &error );
-
-	PHDI_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 1 );
-
-	PHDI_TEST_ASSERT_IS_NULL(
-	 "error",
-	 error );
-
-	/* Test error cases
-	 */
-	result = libphdi_extent_descriptor_get_utf16_filename_size(
-	          NULL,
-	          &utf16_filename_size,
-	          &error );
-
-	PHDI_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 -1 );
-
-	PHDI_TEST_ASSERT_IS_NOT_NULL(
-	 "error",
-	 error );
-
-	libcerror_error_free(
-	 &error );
-
-	result = libphdi_extent_descriptor_get_utf16_filename_size(
-	          extent_descriptor,
-	          NULL,
-	          &error );
-
-	PHDI_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 -1 );
-
-	PHDI_TEST_ASSERT_IS_NOT_NULL(
-	 "error",
-	 error );
-
-	libcerror_error_free(
-	 &error );
-
-	return( 1 );
-
-on_error:
-	if( error != NULL )
-	{
-		libcerror_error_free(
-		 &error );
-	}
-	return( 0 );
-}
-
-/* Tests the libphdi_extent_descriptor_get_utf16_filename function
- * Returns 1 if successful or 0 if not
- */
-int phdi_test_extent_descriptor_get_utf16_filename(
-     libphdi_extent_descriptor_t *extent_descriptor )
-{
-	uint16_t utf16_filename[ 512 ];
-
-	libcerror_error_t *error = NULL;
-	int result               = 0;
-
-	/* Test regular cases
-	 */
-	result = libphdi_extent_descriptor_get_utf16_filename(
-	          extent_descriptor,
-	          utf16_filename,
-	          512,
-	          &error );
-
-	PHDI_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 1 );
-
-	PHDI_TEST_ASSERT_IS_NULL(
-	 "error",
-	 error );
-
-	/* Test error cases
-	 */
-	result = libphdi_extent_descriptor_get_utf16_filename(
-	          NULL,
-	          utf16_filename,
-	          512,
-	          &error );
-
-	PHDI_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 -1 );
-
-	PHDI_TEST_ASSERT_IS_NOT_NULL(
-	 "error",
-	 error );
-
-	libcerror_error_free(
-	 &error );
-
-	result = libphdi_extent_descriptor_get_utf16_filename(
-	          extent_descriptor,
-	          NULL,
-	          512,
-	          &error );
-
-	PHDI_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 -1 );
-
-	PHDI_TEST_ASSERT_IS_NOT_NULL(
-	 "error",
-	 error );
-
-	libcerror_error_free(
-	 &error );
-
-	result = libphdi_extent_descriptor_get_utf16_filename(
-	          extent_descriptor,
-	          utf16_filename,
-	          0,
-	          &error );
-
-	PHDI_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 -1 );
-
-	PHDI_TEST_ASSERT_IS_NOT_NULL(
-	 "error",
-	 error );
-
-	libcerror_error_free(
-	 &error );
-
-	result = libphdi_extent_descriptor_get_utf16_filename(
-	          extent_descriptor,
-	          utf16_filename,
-	          (size_t) SSIZE_MAX + 1,
-	          &error );
-
-	PHDI_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 -1 );
-
-	PHDI_TEST_ASSERT_IS_NOT_NULL(
-	 "error",
-	 error );
-
-	libcerror_error_free(
-	 &error );
-
-	return( 1 );
-
-on_error:
-	if( error != NULL )
-	{
-		libcerror_error_free(
-		 &error );
-	}
-	return( 0 );
-}
-
 /* The main program
  */
 #if defined( HAVE_WIDE_SYSTEM_CHARACTER )
@@ -872,6 +430,8 @@ int main(
 	libcerror_error_t *error                       = NULL;
 	libphdi_extent_descriptor_t *extent_descriptor = NULL;
 	libphdi_extent_values_t *extent_values         = NULL;
+	libphdi_image_values_t *image_values           = NULL;
+	int entry_index                                = 0;
 	int result                                     = 0;
 
 #endif /* defined( __GNUC__ ) && !defined( LIBPHDI_DLL_IMPORT ) */
@@ -913,11 +473,8 @@ int main(
 	 "error",
 	 error );
 
-	result = libphdi_extent_values_set(
+	result = libphdi_extent_values_set_range(
 	          extent_values,
-	          (uint8_t *) "test.hdd",
-	          9,
-	          1,
 	          0,
 	          1024,
 	          &error );
@@ -930,6 +487,57 @@ int main(
 	PHDI_TEST_ASSERT_IS_NULL(
 	 "error",
 	 error );
+
+	result = libphdi_image_values_initialize(
+	          &image_values,
+	          &error );
+
+	PHDI_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	PHDI_TEST_ASSERT_IS_NOT_NULL(
+	 "image_values",
+	 image_values );
+
+	PHDI_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	image_values->type = LIBPHDI_IMAGE_TYPE_COMPRESSED;
+
+	result = libphdi_image_values_set_filename(
+	          image_values,
+	          (uint8_t *) "test.hdd",
+	          9,
+	          &error );
+
+	PHDI_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	PHDI_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libcdata_array_append_entry(
+	          extent_values->image_values_array,
+	          &entry_index,
+	          (intptr_t *) image_values,
+	          &error );
+
+	PHDI_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	PHDI_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	image_values = NULL;
 
 	result = libphdi_extent_descriptor_initialize(
 	          &extent_descriptor,
@@ -950,34 +558,13 @@ int main(
 	 error );
 
 	PHDI_TEST_RUN_WITH_ARGS(
-	 "libphdi_extent_descriptor_get_type",
-	 phdi_test_extent_descriptor_get_type,
-	 extent_descriptor );
-
-	PHDI_TEST_RUN_WITH_ARGS(
 	 "libphdi_extent_descriptor_get_range",
 	 phdi_test_extent_descriptor_get_range,
 	 extent_descriptor );
 
-	PHDI_TEST_RUN_WITH_ARGS(
-	 "libphdi_extent_descriptor_get_utf8_filename_size",
-	 phdi_test_extent_descriptor_get_utf8_filename_size,
-	 extent_descriptor );
+	/* TODO add tests for libphdi_extent_values_get_number_of_images */
 
-	PHDI_TEST_RUN_WITH_ARGS(
-	 "libphdi_extent_descriptor_get_utf8_filename",
-	 phdi_test_extent_descriptor_get_utf8_filename,
-	 extent_descriptor );
-
-	PHDI_TEST_RUN_WITH_ARGS(
-	 "libphdi_extent_descriptor_get_utf16_filename_size",
-	 phdi_test_extent_descriptor_get_utf16_filename_size,
-	 extent_descriptor );
-
-	PHDI_TEST_RUN_WITH_ARGS(
-	 "libphdi_extent_descriptor_get_utf16_filename",
-	 phdi_test_extent_descriptor_get_utf16_filename,
-	 extent_descriptor );
+	/* TODO add tests for libphdi_extent_values_get_image_values_by_index */
 
 	/* Clean up
 	 */
@@ -1031,6 +618,12 @@ on_error:
 	{
 		libphdi_extent_descriptor_free(
 		 &extent_descriptor,
+		 NULL );
+	}
+	if( image_values != NULL )
+	{
+		libphdi_image_values_free(
+		 &image_values,
 		 NULL );
 	}
 	if( extent_values != NULL )

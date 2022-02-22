@@ -452,7 +452,6 @@ int phdi_test_disk_descriptor_xml_file_get_storage_data(
      void )
 {
 	libcdata_array_t *extent_values_array                        = NULL;
-	libcdata_array_t *snapshot_values_array                      = NULL;
 	libcerror_error_t *error                                     = NULL;
 	libphdi_disk_descriptor_xml_file_t *disk_descriptor_xml_file = NULL;
 	int result                                                   = 0;
@@ -471,24 +470,6 @@ int phdi_test_disk_descriptor_xml_file_get_storage_data(
 	PHDI_TEST_ASSERT_IS_NOT_NULL(
 	 "disk_descriptor_xml_file",
 	 disk_descriptor_xml_file );
-
-	PHDI_TEST_ASSERT_IS_NULL(
-	 "error",
-	 error );
-
-	result = libcdata_array_initialize(
-	          &snapshot_values_array,
-	          0,
-	          &error );
-
-	PHDI_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 1 );
-
-	PHDI_TEST_ASSERT_IS_NOT_NULL(
-	 "snapshot_values_array",
-	 snapshot_values_array );
 
 	PHDI_TEST_ASSERT_IS_NULL(
 	 "error",
@@ -517,7 +498,6 @@ int phdi_test_disk_descriptor_xml_file_get_storage_data(
 /* TODO make changes to get test to pass
 	result = libphdi_disk_descriptor_xml_file_get_storage_data(
 	          disk_descriptor_xml_file,
-	          snapshot_values_array,
 	          extent_values_array,
 	          &error );
 
@@ -535,7 +515,6 @@ int phdi_test_disk_descriptor_xml_file_get_storage_data(
 	 */
 	result = libphdi_disk_descriptor_xml_file_get_storage_data(
 	          NULL,
-	          snapshot_values_array,
 	          extent_values_array,
 	          &error );
 
@@ -553,25 +532,6 @@ int phdi_test_disk_descriptor_xml_file_get_storage_data(
 
 	result = libphdi_disk_descriptor_xml_file_get_storage_data(
 	          disk_descriptor_xml_file,
-	          NULL,
-	          extent_values_array,
-	          &error );
-
-	PHDI_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 -1 );
-
-	PHDI_TEST_ASSERT_IS_NOT_NULL(
-	 "error",
-	 error );
-
-	libcerror_error_free(
-	 &error );
-
-	result = libphdi_disk_descriptor_xml_file_get_storage_data(
-	          disk_descriptor_xml_file,
-	          snapshot_values_array,
 	          NULL,
 	          &error );
 
@@ -592,20 +552,6 @@ int phdi_test_disk_descriptor_xml_file_get_storage_data(
 	result = libcdata_array_free(
 	          &extent_values_array,
 	          (int (*)(intptr_t **, libcerror_error_t **)) &libphdi_extent_values_free,
-	          &error );
-
-	PHDI_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 1 );
-
-	PHDI_TEST_ASSERT_IS_NULL(
-	 "error",
-	 error );
-
-	result = libcdata_array_free(
-	          &snapshot_values_array,
-	          (int (*)(intptr_t **, libcerror_error_t **)) &libphdi_snapshot_values_free,
 	          &error );
 
 	PHDI_TEST_ASSERT_EQUAL_INT(
@@ -647,13 +593,6 @@ on_error:
 		libcdata_array_free(
 		 &extent_values_array,
 		 (int (*)(intptr_t **, libcerror_error_t **)) &libphdi_extent_values_free,
-		 NULL );
-	}
-	if( snapshot_values_array != NULL )
-	{
-		libcdata_array_free(
-		 &snapshot_values_array,
-		 (int (*)(intptr_t **, libcerror_error_t **)) &libphdi_snapshot_values_free,
 		 NULL );
 	}
 	if( disk_descriptor_xml_file != NULL )

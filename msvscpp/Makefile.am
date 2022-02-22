@@ -25,8 +25,11 @@ MSVSCPP_FILES = \
 	phdi_test_extent_table/phdi_test_extent_table.vcproj \
 	phdi_test_extent_values/phdi_test_extent_values.vcproj \
 	phdi_test_handle/phdi_test_handle.vcproj \
+	phdi_test_image_descriptor/phdi_test_image_descriptor.vcproj \
+	phdi_test_image_values/phdi_test_image_values.vcproj \
 	phdi_test_io_handle/phdi_test_io_handle.vcproj \
 	phdi_test_notify/phdi_test_notify.vcproj \
+	phdi_test_snapshot_values/phdi_test_snapshot_values.vcproj \
 	phdi_test_support/phdi_test_support.vcproj \
 	phdi_test_system_string/phdi_test_system_string.vcproj \
 	phdi_test_xml_tag/phdi_test_xml_tag.vcproj \

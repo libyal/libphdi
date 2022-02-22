@@ -303,10 +303,23 @@ int libphdi_handle_get_number_of_extents(
      libcerror_error_t **error );
 
 LIBPHDI_EXTERN \
-int libphdi_handle_get_extent_descriptor(
+int libphdi_handle_get_extent_descriptor_by_index(
      libphdi_handle_t *handle,
      int extent_index,
      libphdi_extent_descriptor_t **extent_descriptor,
+     libcerror_error_t **error );
+
+LIBPHDI_EXTERN \
+int libphdi_handle_get_number_of_snapshots(
+     libphdi_handle_t *handle,
+     int *number_of_snapshots,
+     libcerror_error_t **error );
+
+LIBPHDI_EXTERN \
+int libphdi_handle_get_snapshot_by_index(
+     libphdi_handle_t *handle,
+     int snapshot_index,
+     libphdi_snapshot_t **snapshot,
      libcerror_error_t **error );
 
 #if defined( __cplusplus )

@@ -1,5 +1,5 @@
 /*
- * Library extent_values type test program
+ * Library snapshot_values type test program
  *
  * Copyright (C) 2015-2022, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -33,30 +33,30 @@
 #include "phdi_test_memory.h"
 #include "phdi_test_unused.h"
 
-#include "../libphdi/libphdi_extent_values.h"
+#include "../libphdi/libphdi_snapshot_values.h"
 
 #if defined( __GNUC__ ) && !defined( LIBPHDI_DLL_IMPORT )
 
-/* Tests the libphdi_extent_values_initialize function
+/* Tests the libphdi_snapshot_values_initialize function
  * Returns 1 if successful or 0 if not
  */
-int phdi_test_extent_values_initialize(
+int phdi_test_snapshot_values_initialize(
      void )
 {
-	libcerror_error_t *error               = NULL;
-	libphdi_extent_values_t *extent_values = NULL;
-	int result                             = 0;
+	libcerror_error_t *error                   = NULL;
+	libphdi_snapshot_values_t *snapshot_values = NULL;
+	int result                                 = 0;
 
 #if defined( HAVE_PHDI_TEST_MEMORY )
-	int number_of_malloc_fail_tests        = 1;
-	int number_of_memset_fail_tests        = 1;
-	int test_number                        = 0;
+	int number_of_malloc_fail_tests            = 1;
+	int number_of_memset_fail_tests            = 1;
+	int test_number                            = 0;
 #endif
 
 	/* Test regular cases
 	 */
-	result = libphdi_extent_values_initialize(
-	          &extent_values,
+	result = libphdi_snapshot_values_initialize(
+	          &snapshot_values,
 	          &error );
 
 	PHDI_TEST_ASSERT_EQUAL_INT(
@@ -65,15 +65,15 @@ int phdi_test_extent_values_initialize(
 	 1 );
 
 	PHDI_TEST_ASSERT_IS_NOT_NULL(
-	 "extent_values",
-	 extent_values );
+	 "snapshot_values",
+	 snapshot_values );
 
 	PHDI_TEST_ASSERT_IS_NULL(
 	 "error",
 	 error );
 
-	result = libphdi_extent_values_free(
-	          &extent_values,
+	result = libphdi_snapshot_values_free(
+	          &snapshot_values,
 	          &error );
 
 	PHDI_TEST_ASSERT_EQUAL_INT(
@@ -82,8 +82,8 @@ int phdi_test_extent_values_initialize(
 	 1 );
 
 	PHDI_TEST_ASSERT_IS_NULL(
-	 "extent_values",
-	 extent_values );
+	 "snapshot_values",
+	 snapshot_values );
 
 	PHDI_TEST_ASSERT_IS_NULL(
 	 "error",
@@ -91,7 +91,7 @@ int phdi_test_extent_values_initialize(
 
 	/* Test error cases
 	 */
-	result = libphdi_extent_values_initialize(
+	result = libphdi_snapshot_values_initialize(
 	          NULL,
 	          &error );
 
@@ -107,13 +107,13 @@ int phdi_test_extent_values_initialize(
 	libcerror_error_free(
 	 &error );
 
-	extent_values = (libphdi_extent_values_t *) 0x12345678UL;
+	snapshot_values = (libphdi_snapshot_values_t *) 0x12345678UL;
 
-	result = libphdi_extent_values_initialize(
-	          &extent_values,
+	result = libphdi_snapshot_values_initialize(
+	          &snapshot_values,
 	          &error );
 
-	extent_values = NULL;
+	snapshot_values = NULL;
 
 	PHDI_TEST_ASSERT_EQUAL_INT(
 	 "result",
@@ -133,22 +133,22 @@ int phdi_test_extent_values_initialize(
 	     test_number < number_of_malloc_fail_tests;
 	     test_number++ )
 	{
-		/* Test libphdi_extent_values_initialize with malloc failing
+		/* Test libphdi_snapshot_values_initialize with malloc failing
 		 */
 		phdi_test_malloc_attempts_before_fail = test_number;
 
-		result = libphdi_extent_values_initialize(
-		          &extent_values,
+		result = libphdi_snapshot_values_initialize(
+		          &snapshot_values,
 		          &error );
 
 		if( phdi_test_malloc_attempts_before_fail != -1 )
 		{
 			phdi_test_malloc_attempts_before_fail = -1;
 
-			if( extent_values != NULL )
+			if( snapshot_values != NULL )
 			{
-				libphdi_extent_values_free(
-				 &extent_values,
+				libphdi_snapshot_values_free(
+				 &snapshot_values,
 				 NULL );
 			}
 		}
@@ -160,8 +160,8 @@ int phdi_test_extent_values_initialize(
 			 -1 );
 
 			PHDI_TEST_ASSERT_IS_NULL(
-			 "extent_values",
-			 extent_values );
+			 "snapshot_values",
+			 snapshot_values );
 
 			PHDI_TEST_ASSERT_IS_NOT_NULL(
 			 "error",
@@ -175,22 +175,22 @@ int phdi_test_extent_values_initialize(
 	     test_number < number_of_memset_fail_tests;
 	     test_number++ )
 	{
-		/* Test libphdi_extent_values_initialize with memset failing
+		/* Test libphdi_snapshot_values_initialize with memset failing
 		 */
 		phdi_test_memset_attempts_before_fail = test_number;
 
-		result = libphdi_extent_values_initialize(
-		          &extent_values,
+		result = libphdi_snapshot_values_initialize(
+		          &snapshot_values,
 		          &error );
 
 		if( phdi_test_memset_attempts_before_fail != -1 )
 		{
 			phdi_test_memset_attempts_before_fail = -1;
 
-			if( extent_values != NULL )
+			if( snapshot_values != NULL )
 			{
-				libphdi_extent_values_free(
-				 &extent_values,
+				libphdi_snapshot_values_free(
+				 &snapshot_values,
 				 NULL );
 			}
 		}
@@ -202,8 +202,8 @@ int phdi_test_extent_values_initialize(
 			 -1 );
 
 			PHDI_TEST_ASSERT_IS_NULL(
-			 "extent_values",
-			 extent_values );
+			 "snapshot_values",
+			 snapshot_values );
 
 			PHDI_TEST_ASSERT_IS_NOT_NULL(
 			 "error",
@@ -223,19 +223,19 @@ on_error:
 		libcerror_error_free(
 		 &error );
 	}
-	if( extent_values != NULL )
+	if( snapshot_values != NULL )
 	{
-		libphdi_extent_values_free(
-		 &extent_values,
+		libphdi_snapshot_values_free(
+		 &snapshot_values,
 		 NULL );
 	}
 	return( 0 );
 }
 
-/* Tests the libphdi_extent_values_free function
+/* Tests the libphdi_snapshot_values_free function
  * Returns 1 if successful or 0 if not
  */
-int phdi_test_extent_values_free(
+int phdi_test_snapshot_values_free(
      void )
 {
 	libcerror_error_t *error = NULL;
@@ -243,7 +243,7 @@ int phdi_test_extent_values_free(
 
 	/* Test error cases
 	 */
-	result = libphdi_extent_values_free(
+	result = libphdi_snapshot_values_free(
 	          NULL,
 	          &error );
 
@@ -270,23 +270,23 @@ on_error:
 	return( 0 );
 }
 
-/* Tests the libphdi_extent_values_get_range function
+/* Tests the libphdi_snapshot_values_get_identifier function
  * Returns 1 if successful or 0 if not
  */
-int phdi_test_extent_values_get_range(
-     libphdi_extent_values_t *extent_values )
+int phdi_test_snapshot_values_get_identifier(
+     libphdi_snapshot_values_t *snapshot_values )
 {
+	uint8_t identifier[ 16 ];
+
 	libcerror_error_t *error = NULL;
-	size64_t size            = 0;
-	off64_t offset           = 0;
 	int result               = 0;
 
 	/* Test regular cases
 	 */
-	result = libphdi_extent_values_get_range(
-	          extent_values,
-	          &offset,
-	          &size,
+	result = libphdi_snapshot_values_get_identifier(
+	          snapshot_values,
+	          identifier,
+	          16,
 	          &error );
 
 	PHDI_TEST_ASSERT_EQUAL_INT(
@@ -300,10 +300,10 @@ int phdi_test_extent_values_get_range(
 
 	/* Test error cases
 	 */
-	result = libphdi_extent_values_get_range(
+	result = libphdi_snapshot_values_get_identifier(
 	          NULL,
-	          &offset,
-	          &size,
+	          identifier,
+	          16,
 	          &error );
 
 	PHDI_TEST_ASSERT_EQUAL_INT(
@@ -318,10 +318,10 @@ int phdi_test_extent_values_get_range(
 	libcerror_error_free(
 	 &error );
 
-	result = libphdi_extent_values_get_range(
-	          extent_values,
+	result = libphdi_snapshot_values_get_identifier(
+	          snapshot_values,
 	          NULL,
-	          &size,
+	          16,
 	          &error );
 
 	PHDI_TEST_ASSERT_EQUAL_INT(
@@ -336,10 +336,28 @@ int phdi_test_extent_values_get_range(
 	libcerror_error_free(
 	 &error );
 
-	result = libphdi_extent_values_get_range(
-	          extent_values,
-	          &offset,
-	          NULL,
+	result = libphdi_snapshot_values_get_identifier(
+	          snapshot_values,
+	          identifier,
+	          0,
+	          &error );
+
+	PHDI_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	PHDI_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libphdi_snapshot_values_get_identifier(
+	          snapshot_values,
+	          identifier,
+	          (size_t) SSIZE_MAX + 1,
 	          &error );
 
 	PHDI_TEST_ASSERT_EQUAL_INT(
@@ -381,9 +399,9 @@ int main(
 {
 #if defined( __GNUC__ ) && !defined( LIBPHDI_DLL_IMPORT )
 
-	libcerror_error_t *error               = NULL;
-	libphdi_extent_values_t *extent_values = NULL;
-	int result                             = 0;
+	libcerror_error_t *error                   = NULL;
+	libphdi_snapshot_values_t *snapshot_values = NULL;
+	int result                                 = 0;
 
 #endif /* defined( __GNUC__ ) && !defined( LIBPHDI_DLL_IMPORT ) */
 
@@ -393,21 +411,23 @@ int main(
 #if defined( __GNUC__ ) && !defined( LIBPHDI_DLL_IMPORT )
 
 	PHDI_TEST_RUN(
-	 "libphdi_extent_values_initialize",
-	 phdi_test_extent_values_initialize );
+	 "libphdi_snapshot_values_initialize",
+	 phdi_test_snapshot_values_initialize );
 
 	PHDI_TEST_RUN(
-	 "libphdi_extent_values_free",
-	 phdi_test_extent_values_free );
+	 "libphdi_snapshot_values_free",
+	 phdi_test_snapshot_values_free );
 
-	/* TODO add tests for libphdi_extent_values_set_range */
+	/* TODO add tests for libphdi_snapshot_values_set_identifier */
+
+	/* TODO add tests for libphdi_snapshot_values_set_parent_identifier */
 
 #if !defined( __BORLANDC__ ) || ( __BORLANDC__ >= 0x0560 )
 
-	/* Initialize extent_values for tests
+	/* Initialize snapshot_values for tests
 	 */
-	result = libphdi_extent_values_initialize(
-	          &extent_values,
+	result = libphdi_snapshot_values_initialize(
+	          &snapshot_values,
 	          &error );
 
 	PHDI_TEST_ASSERT_EQUAL_INT(
@@ -416,17 +436,17 @@ int main(
 	 1 );
 
 	PHDI_TEST_ASSERT_IS_NOT_NULL(
-	 "extent_values",
-	 extent_values );
+	 "snapshot_values",
+	 snapshot_values );
 
 	PHDI_TEST_ASSERT_IS_NULL(
 	 "error",
 	 error );
 
-	result = libphdi_extent_values_set_range(
-	          extent_values,
-	          0,
-	          1024,
+	result = libphdi_snapshot_values_set_identifier(
+	          snapshot_values,
+	          (uint8_t *) "{5fbaabe3-6958-40ff-92a7-860e329aab41}",
+	          38,
 	          &error );
 
 	PHDI_TEST_ASSERT_EQUAL_INT(
@@ -439,14 +459,14 @@ int main(
 	 error );
 
 	PHDI_TEST_RUN_WITH_ARGS(
-	 "libphdi_extent_values_get_range",
-	 phdi_test_extent_values_get_range,
-	 extent_values );
+	 "libphdi_snapshot_values_get_identifier",
+	 phdi_test_snapshot_values_get_identifier,
+	 snapshot_values );
 
 	/* Clean up
 	 */
-	result = libphdi_extent_values_free(
-	          &extent_values,
+	result = libphdi_snapshot_values_free(
+	          &snapshot_values,
 	          &error );
 
 	PHDI_TEST_ASSERT_EQUAL_INT(
@@ -455,8 +475,8 @@ int main(
 	 1 );
 
 	PHDI_TEST_ASSERT_IS_NULL(
-	 "extent_values",
-	 extent_values );
+	 "snapshot_values",
+	 snapshot_values );
 
 	PHDI_TEST_ASSERT_IS_NULL(
 	 "error",
@@ -475,10 +495,10 @@ on_error:
 		libcerror_error_free(
 		 &error );
 	}
-	if( extent_values != NULL )
+	if( snapshot_values != NULL )
 	{
-		libphdi_extent_values_free(
-		 &extent_values,
+		libphdi_snapshot_values_free(
+		 &snapshot_values,
 		 NULL );
 	}
 	return( EXIT_FAILURE );

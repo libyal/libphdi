@@ -28,6 +28,8 @@ BUILT_SOURCES = \
 	pyphdi_file_object_io_handle.c pyphdi_file_object_io_handle.h \
 	pyphdi_file_objects_io_pool.c pyphdi_file_objects_io_pool.h \
 	pyphdi_handle.c pyphdi_handle.h \
+	pyphdi_image_descriptor.c pyphdi_image_descriptor.h \
+	pyphdi_image_descriptors.c pyphdi_image_descriptors.h \
 	pyphdi_integer.c pyphdi_integer.h \
 	pyphdi_libbfio.h \
 	pyphdi_libcerror.h \

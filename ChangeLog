@@ -1,8 +1,10 @@
 TODO:
 * replace block tree by flat lookup table
 * add snapshot/parent image support
-  * read image file name into snaphot values
-  * read from parent
+  * move extents into snapshots? "current" snapshot is represented by handle
+  * read from parent files
+  * update python bindings
+  * expose snaphots in phdimount
 
 20151219
 * see `git log' for more recent change log

@@ -198,6 +198,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\pyphdi\pyphdi_image_descriptor.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\pyphdi\pyphdi_image_descriptors.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\pyphdi\pyphdi_integer.c"
 				>
 			</File>
@@ -233,6 +241,14 @@
 			</File>
 			<File
 				RelativePath="..\..\pyphdi\pyphdi_handle.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\pyphdi\pyphdi_image_descriptor.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\pyphdi\pyphdi_image_descriptors.h"
 				>
 			</File>
 			<File
