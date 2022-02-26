@@ -49,6 +49,12 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "phdi_test_error", "phdi_tes
 		{590C1718-49FC-4F82-8797-6928B911FAB7} = {590C1718-49FC-4F82-8797-6928B911FAB7}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "phdi_test_data_files", "phdi_test_data_files\phdi_test_data_files.vcproj", "{B6D72797-6018-432E-8D6C-0AA42730C4BA}"
+	ProjectSection(ProjectDependencies) = postProject
+		{590C1718-49FC-4F82-8797-6928B911FAB7} = {590C1718-49FC-4F82-8797-6928B911FAB7}
+		{1128D4A2-34AE-4A04-A803-0A210F4640B7} = {1128D4A2-34AE-4A04-A803-0A210F4640B7}
+	EndProjectSection
+EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "phdi_test_disk_descriptor_xml_file", "phdi_test_disk_descriptor_xml_file\phdi_test_disk_descriptor_xml_file.vcproj", "{634AD39E-E6AA-4BD7-9139-E4D10CF0510A}"
 	ProjectSection(ProjectDependencies) = postProject
 		{6E214463-1064-4AF1-AF21-41F14B7E9270} = {6E214463-1064-4AF1-AF21-41F14B7E9270}
@@ -319,6 +325,10 @@ Global
 		{0E3D3AB3-62DA-40C2-8C3C-8CB24614FB89}.Release|Win32.Build.0 = Release|Win32
 		{0E3D3AB3-62DA-40C2-8C3C-8CB24614FB89}.VSDebug|Win32.ActiveCfg = VSDebug|Win32
 		{0E3D3AB3-62DA-40C2-8C3C-8CB24614FB89}.VSDebug|Win32.Build.0 = VSDebug|Win32
+		{B6D72797-6018-432E-8D6C-0AA42730C4BA}.Release|Win32.ActiveCfg = Release|Win32
+		{B6D72797-6018-432E-8D6C-0AA42730C4BA}.Release|Win32.Build.0 = Release|Win32
+		{B6D72797-6018-432E-8D6C-0AA42730C4BA}.VSDebug|Win32.ActiveCfg = VSDebug|Win32
+		{B6D72797-6018-432E-8D6C-0AA42730C4BA}.VSDebug|Win32.Build.0 = VSDebug|Win32
 		{634AD39E-E6AA-4BD7-9139-E4D10CF0510A}.Release|Win32.ActiveCfg = Release|Win32
 		{634AD39E-E6AA-4BD7-9139-E4D10CF0510A}.Release|Win32.Build.0 = Release|Win32
 		{634AD39E-E6AA-4BD7-9139-E4D10CF0510A}.VSDebug|Win32.ActiveCfg = VSDebug|Win32

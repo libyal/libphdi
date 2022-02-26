@@ -23,8 +23,11 @@
 #include <memory.h>
 #include <types.h>
 
+#include "libphdi_extent_table.h"
 #include "libphdi_libcerror.h"
+#include "libphdi_libcnotify.h"
 #include "libphdi_snapshot_values.h"
+#include "libphdi_storage_image.h"
 #include "libphdi_uuid_string.h"
 
 const uint8_t libphdi_snapshot_values_empty_identifier[ 16 ] = {
@@ -95,6 +98,19 @@ int libphdi_snapshot_values_initialize(
 
 		return( -1 );
 	}
+	if( libphdi_extent_table_initialize(
+	     &( ( *snapshot_values )->extent_table ),
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create extent table.",
+		 function );
+
+		goto on_error;
+	}
 	return( 1 );
 
 on_error:
@@ -116,6 +132,7 @@ int libphdi_snapshot_values_free(
      libcerror_error_t **error )
 {
 	static char *function = "libphdi_snapshot_values_free";
+	int result            = 1;
 
 	if( snapshot_values == NULL )
 	{
@@ -130,12 +147,25 @@ int libphdi_snapshot_values_free(
 	}
 	if( *snapshot_values != NULL )
 	{
+		if( libphdi_extent_table_free(
+		     &( ( *snapshot_values )->extent_table ),
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 "%s: unable to free extent table.",
+			 function );
+
+			result = -1;
+		}
 		memory_free(
 		 *snapshot_values );
 
 		*snapshot_values = NULL;
 	}
-	return( 1 );
+	return( result );
 }
 
 /* Sets the identifier

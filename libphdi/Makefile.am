@@ -33,6 +33,7 @@ libphdi_la_SOURCES = \
 	libphdi_block_tree.c libphdi_block_tree.h \
 	libphdi_block_tree_node.c libphdi_block_tree_node.h \
 	libphdi_codepage.h \
+	libphdi_data_files.c libphdi_data_files.h \
 	libphdi_debug.c libphdi_debug.h \
 	libphdi_definitions.h \
 	libphdi_disk_descriptor_xml_file.c libphdi_disk_descriptor_xml_file.h \

@@ -50,6 +50,10 @@ struct libphdi_image_values
 	/* The filename size
 	 */
 	size_t filename_size;
+
+	/* The file IO pool entry
+	 */
+	int file_io_pool_entry;
 };
 
 int libphdi_image_values_initialize(

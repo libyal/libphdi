@@ -365,6 +365,13 @@ PyObject *pyphdi_extent_descriptor_get_type(
 
 	PYPHDI_UNREFERENCED_PARAMETER( arguments )
 
+	if( PyErr_WarnEx(
+	     PyExc_DeprecationWarning,
+	     "Call to deprecated function: get_type",
+	     1 ) < 0 )
+	{
+		return( NULL );
+	}
 	if( pyphdi_extent_descriptor == NULL )
 	{
 		PyErr_Format(
@@ -579,6 +586,13 @@ PyObject *pyphdi_extent_descriptor_get_filename(
 
 	PYPHDI_UNREFERENCED_PARAMETER( arguments )
 
+	if( PyErr_WarnEx(
+	     PyExc_DeprecationWarning,
+	     "Call to deprecated function: get_filename",
+	     1 ) < 0 )
+	{
+		return( NULL );
+	}
 	if( pyphdi_extent_descriptor == NULL )
 	{
 		PyErr_Format(

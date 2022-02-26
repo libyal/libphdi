@@ -25,9 +25,9 @@
 #include <common.h>
 #include <types.h>
 
+#include "libphdi_data_files.h"
 #include "libphdi_disk_parameters.h"
 #include "libphdi_extern.h"
-#include "libphdi_extent_table.h"
 #include "libphdi_io_handle.h"
 #include "libphdi_libbfio.h"
 #include "libphdi_libcdata.h"
@@ -35,6 +35,7 @@
 #include "libphdi_libcthreads.h"
 #include "libphdi_libfcache.h"
 #include "libphdi_libfdata.h"
+#include "libphdi_snapshot_values.h"
 
 #if defined( __cplusplus )
 extern "C" {
@@ -56,17 +57,25 @@ struct libphdi_internal_handle
 	 */
 	libphdi_io_handle_t *io_handle;
 
-	/* The snapshot values array
-	 */
-	libcdata_array_t *snapshot_values_array;
-
 	/* The extent values array
 	 */
 	libcdata_array_t *extent_values_array;
 
-	/* The extent table
+	/* The unique image values array
 	 */
-	libphdi_extent_table_t *extent_table;
+	libcdata_array_t *image_values_array;
+
+	/* The snapshot values array
+	 */
+	libcdata_array_t *snapshot_values_array;
+
+	/* The data files
+	 */
+	libphdi_data_files_t *data_files;
+
+	/* The current snapshot values
+	 */
+	libphdi_snapshot_values_t *current_snapshot_values;
 
 	/* The file IO handle
 	 */

@@ -186,6 +186,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\libphdi\libphdi_data_files.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\libphdi\libphdi_debug.c"
 				>
 			</File>
@@ -301,6 +305,10 @@
 			</File>
 			<File
 				RelativePath="..\..\libphdi\libphdi_codepage.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libphdi\libphdi_data_files.h"
 				>
 			</File>
 			<File

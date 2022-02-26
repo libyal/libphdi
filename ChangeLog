@@ -5,6 +5,7 @@ TODO:
   * read from parent files
   * update python bindings
   * expose snaphots in phdimount
+  * add read seek functions to snapshot
 
 20151219
 * see `git log' for more recent change log

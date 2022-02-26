@@ -27,6 +27,7 @@
 #include <wide_string.h>
 
 #include "libphdi_block_descriptor.h"
+#include "libphdi_data_files.h"
 #include "libphdi_debug.h"
 #include "libphdi_definitions.h"
 #include "libphdi_disk_descriptor_xml_file.h"
@@ -129,20 +130,6 @@ int libphdi_handle_initialize(
 		goto on_error;
 	}
 	if( libcdata_array_initialize(
-	     &( internal_handle->snapshot_values_array ),
-	     0,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-		 "%s: unable to create snapshot values array.",
-		 function );
-
-		goto on_error;
-	}
-	if( libcdata_array_initialize(
 	     &( internal_handle->extent_values_array ),
 	     0,
 	     error ) != 1 )
@@ -156,16 +143,43 @@ int libphdi_handle_initialize(
 
 		goto on_error;
 	}
-	if( libphdi_extent_table_initialize(
-	     &( internal_handle->extent_table ),
-	     internal_handle->io_handle,
+	if( libcdata_array_initialize(
+	     &( internal_handle->image_values_array ),
+	     0,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-		 "%s: unable to create extent table.",
+		 "%s: unable to create image values array.",
+		 function );
+
+		goto on_error;
+	}
+	if( libcdata_array_initialize(
+	     &( internal_handle->snapshot_values_array ),
+	     0,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create snapshot values array.",
+		 function );
+
+		goto on_error;
+	}
+	if( libphdi_data_files_initialize(
+	     &( internal_handle->data_files ),
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create data files.",
 		 function );
 
 		goto on_error;
@@ -206,23 +220,30 @@ int libphdi_handle_initialize(
 on_error:
 	if( internal_handle != NULL )
 	{
-		if( internal_handle->extent_table != NULL )
+		if( internal_handle->data_files != NULL )
 		{
-			libphdi_extent_table_free(
-			 &( internal_handle->extent_table ),
-			 NULL );
-		}
-		if( internal_handle->extent_values_array != NULL )
-		{
-			libcdata_array_free(
-			 &( internal_handle->extent_values_array ),
-			 NULL,
+			libphdi_data_files_free(
+			 &( internal_handle->data_files ),
 			 NULL );
 		}
 		if( internal_handle->snapshot_values_array != NULL )
 		{
 			libcdata_array_free(
 			 &( internal_handle->snapshot_values_array ),
+			 NULL,
+			 NULL );
+		}
+		if( internal_handle->image_values_array != NULL )
+		{
+			libcdata_array_free(
+			 &( internal_handle->image_values_array ),
+			 NULL,
+			 NULL );
+		}
+		if( internal_handle->extent_values_array != NULL )
+		{
+			libcdata_array_free(
+			 &( internal_handle->extent_values_array ),
 			 NULL,
 			 NULL );
 		}
@@ -298,29 +319,15 @@ int libphdi_handle_free(
 			result = -1;
 		}
 #endif
-		if( libphdi_extent_table_free(
-		     &( internal_handle->extent_table ),
+		if( libphdi_data_files_free(
+		     &( internal_handle->data_files ),
 		     error ) != 1 )
 		{
 			libcerror_error_set(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-			 "%s: unable to free extent table.",
-			 function );
-
-			result = -1;
-		}
-		if( libcdata_array_free(
-		     &( internal_handle->extent_values_array ),
-		     (int (*)(intptr_t **, libcerror_error_t **)) &libphdi_extent_values_free,
-		     error ) != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-			 "%s: unable to free extent values array.",
+			 "%s: unable to free data files.",
 			 function );
 
 			result = -1;
@@ -335,6 +342,34 @@ int libphdi_handle_free(
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
 			 "%s: unable to free snapshot values array.",
+			 function );
+
+			result = -1;
+		}
+		if( libcdata_array_free(
+		     &( internal_handle->image_values_array ),
+		     NULL,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 "%s: unable to free extent values array.",
+			 function );
+
+			result = -1;
+		}
+		if( libcdata_array_free(
+		     &( internal_handle->extent_values_array ),
+		     (int (*)(intptr_t **, libcerror_error_t **)) &libphdi_extent_values_free,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 "%s: unable to free extent values array.",
 			 function );
 
 			result = -1;
@@ -632,8 +667,8 @@ int libphdi_handle_open(
 			return( -1 );
 		}
 #endif
-		if( libphdi_extent_table_set_data_files_path(
-		     internal_handle->extent_table,
+		if( libphdi_data_files_set_path(
+		     internal_handle->data_files,
 		     filename,
 		     data_files_path_length,
 		     error ) != 1 )
@@ -642,7 +677,7 @@ int libphdi_handle_open(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-			 "%s: unable to set data files path in extent table.",
+			 "%s: unable to set data files path.",
 			 function );
 
 			result = -1;
@@ -930,8 +965,8 @@ int libphdi_handle_open_wide(
 			return( -1 );
 		}
 #endif
-		if( libphdi_extent_table_set_data_files_path_wide(
-		     internal_handle->extent_table,
+		if( libphdi_data_files_set_path_wide(
+		     internal_handle->data_files,
 		     filename,
 		     data_files_path_length,
 		     error ) != 1 )
@@ -940,7 +975,7 @@ int libphdi_handle_open_wide(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-			 "%s: unable to set data files path in extent table.",
+			 "%s: unable to set data files path.",
 			 function );
 
 			result = -1;
@@ -1167,14 +1202,13 @@ int libphdi_handle_open_extent_data_files(
      libcerror_error_t **error )
 {
 	libbfio_pool_t *file_io_pool                  = NULL;
-	libphdi_extent_values_t *extent_values        = NULL;
 	libphdi_image_values_t *image_values          = NULL;
 	libphdi_internal_handle_t *internal_handle    = NULL;
 	system_character_t *extent_data_file_location = NULL;
 	static char *function                         = "libphdi_handle_open_extent_data_files";
 	size_t extent_data_file_location_size         = 0;
-	int extent_index                              = 0;
-	int number_of_extents                         = 0;
+	int image_index                               = 0;
+	int number_of_images                          = 0;
 	int result                                    = 0;
 
 	if( handle == NULL )
@@ -1251,8 +1285,8 @@ int libphdi_handle_open_extent_data_files(
 	}
 #endif
 	if( libcdata_array_get_number_of_entries(
-	     internal_handle->extent_values_array,
-	     &number_of_extents,
+	     internal_handle->image_values_array,
+	     &number_of_images,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
@@ -1264,20 +1298,20 @@ int libphdi_handle_open_extent_data_files(
 
 		goto on_error;
 	}
-	if( number_of_extents == 0 )
+	if( number_of_images == 0 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
-		 "%s: invalid number of extents value out of bounds.",
+		 "%s: invalid number of images value out of bounds.",
 		 function );
 
 		return( -1 );
 	}
 	if( libbfio_pool_initialize(
 	     &file_io_pool,
-	     number_of_extents,
+	     number_of_images,
 	     internal_handle->maximum_number_of_open_handles,
 	     error ) != 1 )
 	{
@@ -1290,29 +1324,13 @@ int libphdi_handle_open_extent_data_files(
 
 		goto on_error;
 	}
-	for( extent_index = 0;
-	     extent_index < number_of_extents;
-	     extent_index++ )
+	for( image_index = 0;
+	     image_index < number_of_images;
+	     image_index++ )
 	{
 		if( libcdata_array_get_entry_by_index(
-		     internal_handle->extent_values_array,
-		     extent_index,
-		     (intptr_t **) &extent_values,
-		     error ) != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve extent values: %d from descriptor file.",
-			 function,
-			 extent_index );
-
-			goto on_error;
-		}
-		if( libcdata_array_get_entry_by_index(
-		     extent_values->image_values_array,
-		     0,
+		     internal_handle->image_values_array,
+		     image_index,
 		     (intptr_t **) &image_values,
 		     error ) != 1 )
 		{
@@ -1320,22 +1338,22 @@ int libphdi_handle_open_extent_data_files(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve image values: 0 from extent values: %d.",
+			 "%s: unable to retrieve image values: %d from array.",
 			 function,
-			 extent_index );
+			 image_index );
 
 			goto on_error;
 		}
 #if defined( HAVE_WIDE_SYSTEM_CHARACTER )
-		result = libphdi_extent_table_get_extent_data_file_path_wide(
-		          internal_handle->extent_table,
+		result = libphdi_data_files_get_extent_data_file_path_wide(
+		          internal_handle->data_files,
 		          image_values,
 		          &extent_data_file_location,
 		          &extent_data_file_location_size,
 		          error );
 #else
-		result = libphdi_extent_table_get_extent_data_file_path(
-		          internal_handle->extent_table,
+		result = libphdi_data_files_get_extent_data_file_path(
+		          internal_handle->data_files,
 		          image_values,
 		          &extent_data_file_location,
 		          &extent_data_file_location_size,
@@ -1358,14 +1376,14 @@ int libphdi_handle_open_extent_data_files(
 		result = libphdi_handle_open_extent_data_file_wide(
 			  internal_handle,
 			  file_io_pool,
-			  extent_index,
+			  image_values->file_io_pool_entry,
 			  extent_data_file_location,
 			  error );
 #else
 		result = libphdi_handle_open_extent_data_file(
 			  internal_handle,
 			  file_io_pool,
-			  extent_index,
+			  image_values->file_io_pool_entry,
 			  extent_data_file_location,
 			  error );
 #endif
@@ -1997,15 +2015,15 @@ int libphdi_handle_close(
 
 		result = -1;
 	}
-	if( libphdi_extent_table_clear(
-	     internal_handle->extent_table,
+	if( libphdi_data_files_clear(
+	     internal_handle->data_files,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-		 "%s: unable to clear extent table.",
+		 "%s: unable to clear data files.",
 		 function );
 
 		result = -1;
@@ -2063,7 +2081,14 @@ int libphdi_internal_handle_open_read(
      libcerror_error_t **error )
 {
 	libphdi_disk_descriptor_xml_file_t *disk_descriptor_xml_file = NULL;
+	libphdi_extent_values_t *extent_values                       = NULL;
+	libphdi_image_values_t *image_values                         = NULL;
 	static char *function                                        = "libphdi_internal_handle_open_read";
+	int entry_index                                              = 0;
+	int extent_index                                             = 0;
+	int image_index                                              = 0;
+	int number_of_extents                                        = 0;
+	int number_of_images                                         = 0;
 
 	if( internal_handle == NULL )
 	{
@@ -2170,20 +2195,6 @@ int libphdi_internal_handle_open_read(
 
 		goto on_error;
 	}
-	if( libphdi_disk_descriptor_xml_file_get_snapshots(
-	     disk_descriptor_xml_file,
-	     internal_handle->snapshot_values_array,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve snapshots from disk descriptor XML file.",
-		 function );
-
-		goto on_error;
-	}
 	if( libphdi_disk_descriptor_xml_file_get_storage_data(
 	     disk_descriptor_xml_file,
 	     internal_handle->extent_values_array,
@@ -2212,6 +2223,20 @@ int libphdi_internal_handle_open_read(
 
 		goto on_error;
 	}
+	if( libphdi_disk_descriptor_xml_file_get_snapshots(
+	     disk_descriptor_xml_file,
+	     internal_handle->snapshot_values_array,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve snapshots from disk descriptor XML file.",
+		 function );
+
+		goto on_error;
+	}
 	if( libphdi_disk_descriptor_xml_file_free(
 	     &disk_descriptor_xml_file,
 	     error ) != 1 )
@@ -2224,6 +2249,116 @@ int libphdi_internal_handle_open_read(
 		 function );
 
 		goto on_error;
+	}
+	if( libcdata_array_get_number_of_entries(
+	     internal_handle->extent_values_array,
+	     &number_of_extents,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve number of extents.",
+		 function );
+
+		goto on_error;
+	}
+	if( number_of_extents == 0 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid number of extents value out of bounds.",
+		 function );
+
+		goto on_error;
+	}
+	for( extent_index = 0;
+	     extent_index < number_of_extents;
+	     extent_index++ )
+	{
+		if( libcdata_array_get_entry_by_index(
+		     internal_handle->extent_values_array,
+		     extent_index,
+		     (intptr_t **) &extent_values,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve extent values: %d from array.",
+			 function,
+			 extent_index );
+
+			goto on_error;
+		}
+		if( libphdi_extent_values_get_number_of_images(
+		     extent_values,
+		     &number_of_images,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve number of extents.",
+			 function );
+
+			goto on_error;
+		}
+		if( number_of_images == 0 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+			 "%s: invalid number of images value out of bounds.",
+			 function );
+
+			goto on_error;
+		}
+		for( image_index = 0;
+		     image_index < number_of_images;
+		     image_index++ )
+		{
+			if( libphdi_extent_values_get_image_values_by_index(
+			     extent_values,
+			     image_index,
+			     &image_values,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+				 "%s: unable to retrieve image values: %d from extent values.",
+				 function,
+				 image_index );
+
+				goto on_error;
+			}
+			image_values->file_io_pool_entry = image_index;
+
+			if( libcdata_array_append_entry(
+			     internal_handle->image_values_array,
+			     &entry_index,
+			     (intptr_t *) image_values,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_APPEND_FAILED,
+				 "%s: unable to append image values to array.",
+				 function );
+
+				goto on_error;
+			}
+			image_values = NULL;
+		}
 	}
 	return( 1 );
 
@@ -2263,15 +2398,22 @@ int libphdi_internal_handle_open_read_extent_data_files(
      libbfio_pool_t *file_io_pool,
      libcerror_error_t **error )
 {
-	libphdi_extent_values_t *extent_values = NULL;
-	libphdi_image_values_t *image_values   = NULL;
-	libphdi_storage_image_t *storage_image = NULL;
-	static char *function                  = "libphdi_internal_handle_open_read_extent_data_files";
-	size64_t extent_file_size              = 0;
-	int extent_index                       = 0;
-	int image_type                         = 0;
-	int number_of_extents                  = 0;
-	int number_of_file_io_handles          = 0;
+	libphdi_extent_values_t *extent_values            = NULL;
+	libphdi_image_values_t *image_values              = NULL;
+	libphdi_snapshot_values_t *parent_snapshot_values = NULL;
+	libphdi_snapshot_values_t *snapshot_values        = NULL;
+	libphdi_storage_image_t *storage_image            = NULL;
+	static char *function                             = "libphdi_internal_handle_open_read_extent_data_files";
+	size64_t image_file_size                          = 0;
+	int extent_index                                  = 0;
+	int image_index                                   = 0;
+	int image_type                                    = 0;
+	int number_of_extents                             = 0;
+	int number_of_file_io_handles                     = 0;
+	int number_of_images                              = 0;
+	int number_of_snapshots                           = 0;
+	int parent_snapshot_index                         = 0;
+	int snapshot_index                                = 0;
 
 	if( internal_handle == NULL )
 	{
@@ -2295,31 +2437,6 @@ int libphdi_internal_handle_open_read_extent_data_files(
 
 		return( -1 );
 	}
-	if( libcdata_array_get_number_of_entries(
-	     internal_handle->extent_values_array,
-	     &number_of_extents,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve number of extents.",
-		 function );
-
-		goto on_error;
-	}
-	if( number_of_extents == 0 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: missing extents.",
-		 function );
-
-		goto on_error;
-	}
 	if( libbfio_pool_get_number_of_handles(
 	     file_io_pool,
 	     &number_of_file_io_handles,
@@ -2334,189 +2451,251 @@ int libphdi_internal_handle_open_read_extent_data_files(
 
 		return( -1 );
 	}
-	if( number_of_extents != number_of_file_io_handles )
+	if( number_of_file_io_handles == 0 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: mismatch between number of file IO handles in pool and number of extents in metadata.",
+		 "%s: missing file IO handles.",
 		 function );
 
 		goto on_error;
 	}
-	if( libphdi_extent_table_initialize_extents(
-	     internal_handle->extent_table,
-	     number_of_extents,
-	     internal_handle->disk_type,
+	if( libcdata_array_get_number_of_entries(
+	     internal_handle->image_values_array,
+	     &number_of_images,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-		 "%s: unable to initialize extent table extents.",
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve number of images.",
 		 function );
 
 		goto on_error;
 	}
-	for( extent_index = 0;
-	     extent_index < number_of_extents;
-	     extent_index++ )
+	if( number_of_file_io_handles != number_of_images )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: mismatch between number of file IO handles in pool and number of images in metadata.",
+		 function );
+
+		goto on_error;
+	}
+	if( libcdata_array_get_number_of_entries(
+	     internal_handle->snapshot_values_array,
+	     &number_of_snapshots,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve number of snapshots.",
+		 function );
+
+		goto on_error;
+	}
+	if( libcdata_array_get_number_of_entries(
+	     internal_handle->extent_values_array,
+	     &number_of_extents,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve number of extents.",
+		 function );
+
+		goto on_error;
+	}
+	for( snapshot_index = 0;
+	     snapshot_index < number_of_snapshots;
+	     snapshot_index++ )
 	{
 		if( libcdata_array_get_entry_by_index(
-		     internal_handle->extent_values_array,
-		     extent_index,
-		     (intptr_t **) &extent_values,
+		     internal_handle->snapshot_values_array,
+		     snapshot_index,
+		     (intptr_t **) &snapshot_values,
 		     error ) != 1 )
 		{
 			libcerror_error_set(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve extent values: %d from array.",
+			 "%s: unable to retrieve snapshot values: %d from array.",
 			 function,
-			 extent_index );
+			 snapshot_index );
 
 			goto on_error;
 		}
-		if( libcdata_array_get_entry_by_index(
-		     extent_values->image_values_array,
-		     0,
-		     (intptr_t **) &image_values,
-		     error ) != 1 )
+		for( parent_snapshot_index = 0;
+		     parent_snapshot_index < number_of_snapshots;
+		     parent_snapshot_index++ )
 		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve image values: 0 from extent values: %d.",
-			 function,
-			 extent_index );
-
-			goto on_error;
-		}
-		if( libphdi_image_values_get_type(
-		     image_values,
-		     &image_type,
-		     error ) != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve type from image values: 0 of extent values: %d.",
-			 function,
-			 extent_index );
-
-			goto on_error;
-		}
-		if( libbfio_pool_get_size(
-		     file_io_pool,
-		     extent_index,
-		     &extent_file_size,
-		     error ) != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve size of file IO pool entry: %d.",
-			 function,
-			 extent_index );
-
-			goto on_error;
-		}
-		if( libphdi_extent_table_set_extent_by_image_values(
-		     internal_handle->extent_table,
-		     image_type,
-		     extent_index,
-		     extent_index,
-		     extent_file_size,
-		     extent_values->offset,
-		     extent_values->size,
-		     error ) != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-			 "%s: unable to set extent: %d in table.",
-			 function,
-			 extent_index );
-
-			goto on_error;
-		}
-		if( image_type == LIBPHDI_IMAGE_TYPE_COMPRESSED )
-		{
-			if( libphdi_storage_image_initialize(
-			     &storage_image,
+			if( libcdata_array_get_entry_by_index(
+			     internal_handle->snapshot_values_array,
+			     parent_snapshot_index,
+			     (intptr_t **) &parent_snapshot_values,
 			     error ) != 1 )
 			{
 				libcerror_error_set(
 				 error,
 				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-				 "%s: unable to create storage image: %d.",
+				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+				 "%s: unable to retrieve snapshot values: %d from array.",
 				 function,
-				 extent_index );
+				 parent_snapshot_index );
 
 				goto on_error;
 			}
-#if defined( HAVE_DEBUG_OUTPUT )
-			if( libcnotify_verbose != 0 )
+			if( memory_compare(
+			     snapshot_values->parent_identifier,
+			     parent_snapshot_values->identifier,
+			     16 ) == 0 )
 			{
-				libcnotify_printf(
-				 "Reading storage image: %d file header:\n",
-				 extent_index );
+				snapshot_values->parent_snapshot_values = parent_snapshot_values;
+
+				break;
 			}
-#endif
-			if( libphdi_storage_image_read_file_header(
-			     storage_image,
-			     file_io_pool,
+		}
+		if( libphdi_extent_table_initialize_extents(
+		     snapshot_values->extent_table,
+		     internal_handle->io_handle,
+		     internal_handle->disk_type,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 "%s: unable to initialize extent table extents.",
+			 function );
+
+			goto on_error;
+		}
+		for( extent_index = 0;
+		     extent_index < number_of_extents;
+		     extent_index++ )
+		{
+			if( libcdata_array_get_entry_by_index(
+			     internal_handle->extent_values_array,
 			     extent_index,
-			     error ) != 1 )
-			{
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_IO,
-				 LIBCERROR_IO_ERROR_READ_FAILED,
-				 "%s: unable to read storage image: %d header.",
-				 function,
-				 extent_index );
-
-				goto on_error;
-			}
-			if( libphdi_storage_image_read_block_allocation_table(
-			     storage_image,
-			     file_io_pool,
-			     extent_index,
-			     error ) != 1 )
-			{
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_IO,
-				 LIBCERROR_IO_ERROR_READ_FAILED,
-				 "%s: unable to read storage image: %d block allocation table.",
-				 function,
-				 extent_index );
-
-				goto on_error;
-			}
-			if( libphdi_storage_image_free(
-			     &storage_image,
+			     (intptr_t **) &extent_values,
 			     error ) != 1 )
 			{
 				libcerror_error_set(
 				 error,
 				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-				 "%s: unable to free storage image: %d.",
+				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+				 "%s: unable to retrieve extent values: %d from array.",
 				 function,
 				 extent_index );
 
 				goto on_error;
 			}
+			if( libphdi_extent_values_get_number_of_images(
+			     extent_values,
+			     &number_of_images,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+				 "%s: unable to retrieve number of images.",
+				 function );
+
+				goto on_error;
+			}
+			for( image_index = 0;
+			     image_index < number_of_images;
+			     image_index++ )
+			{
+				if( libphdi_extent_values_get_image_values_by_index(
+				     extent_values,
+				     image_index,
+				     &image_values,
+				     error ) != 1 )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+					 "%s: unable to retrieve image values: %d from array.",
+					 function,
+					 image_index );
+
+					goto on_error;
+				}
+				if( memory_compare(
+				     snapshot_values->identifier,
+				     image_values->identifier,
+				     16 ) == 0 )
+				{
+					if( libphdi_image_values_get_type(
+					     image_values,
+					     &image_type,
+					     error ) != 1 )
+					{
+						libcerror_error_set(
+						 error,
+						 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+						 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+						 "%s: unable to retrieve type from image values: %d of extent values: %d.",
+						 function,
+						 image_index,
+						 extent_index );
+
+						goto on_error;
+					}
+					if( libbfio_pool_get_size(
+					     file_io_pool,
+					     image_values->file_io_pool_entry,
+					     &image_file_size,
+					     error ) != 1 )
+					{
+						libcerror_error_set(
+						 error,
+						 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+						 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+						 "%s: unable to retrieve size of file IO pool entry: %d.",
+						 function,
+						 image_values->file_io_pool_entry );
+
+						goto on_error;
+					}
+					if( libphdi_extent_table_append_extent(
+					     snapshot_values->extent_table,
+					     image_type,
+					     image_values->file_io_pool_entry,
+					     image_file_size,
+					     extent_values->offset,
+					     extent_values->size,
+					     error ) != 1 )
+					{
+						libcerror_error_set(
+						 error,
+						 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+						 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+						 "%s: unable to set extent: %d in table.",
+						 function,
+						 extent_index );
+
+						goto on_error;
+					}
+				}
+			}
+		}
+		if( snapshot_index == 0 )
+		{
+		     internal_handle->current_snapshot_values = snapshot_values;
 		}
 		if( internal_handle->io_handle->abort == 1 )
 		{
@@ -2535,6 +2714,228 @@ on_error:
 	return( -1 );
 }
 
+/* Reads a block of data at a specific offset into a buffer using a Basic File IO (bfio) pool
+ * Returns the number of bytes read or -1 on error
+ */
+ssize_t libphdi_internal_handle_read_block_from_file_io_pool(
+         libphdi_snapshot_values_t *snapshot_values,
+         libbfio_pool_t *file_io_pool,
+         void *buffer,
+         size_t buffer_size,
+         off64_t file_offset,
+         int level,
+         libcerror_error_t **error )
+{
+	libphdi_block_descriptor_t *block_descriptor = NULL;
+	libphdi_storage_image_t *storage_image       = NULL;
+	static char *function                        = "libphdi_internal_handle_read_block_from_file_io_pool";
+	size64_t block_size                          = 0;
+	size_t read_size                             = 0;
+	ssize_t read_count                           = 0;
+	off64_t block_offset                         = 0;
+	off64_t storage_image_data_offset            = 0;
+	int extent_number                            = 0;
+
+	if( snapshot_values == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid snapshot values.",
+		 function );
+
+		return( -1 );
+	}
+	if( buffer == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid buffer.",
+		 function );
+
+		return( -1 );
+	}
+	if( buffer_size > (size_t) SSIZE_MAX )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
+		 "%s: invalid element data size value exceeds maximum.",
+		 function );
+
+		return( -1 );
+	}
+#if defined( HAVE_DEBUG_OUTPUT )
+	if( libcnotify_verbose != 0 )
+	{
+		libcnotify_printf(
+		 "%s: requested offset: %" PRIi64 " (0x%08" PRIx64 ") at level: %d\n",
+		 function,
+		 file_offset,
+		 file_offset,
+		 level );
+	}
+#endif
+	if( libphdi_extent_table_get_extent_file_at_offset(
+	     snapshot_values->extent_table,
+	     file_offset,
+	     file_io_pool,
+	     &extent_number,
+	     &storage_image_data_offset,
+	     &storage_image,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve extent file at offset: %" PRIi64 " (0x%08" PRIx64 ") from extent table.",
+		 function,
+		 file_offset,
+		 file_offset );
+
+		return( -1 );
+	}
+	if( libphdi_storage_image_get_block_size(
+	     storage_image,
+	     &block_size,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve block size from storage image.",
+		 function );
+
+		return( -1 );
+	}
+	if( libphdi_storage_image_get_block_descriptor_at_offset(
+	     storage_image,
+	     storage_image_data_offset,
+	     &block_descriptor,
+	     &block_offset,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve block descriptor at offset: %" PRIi64 " (0x%08" PRIx64 ") from storage image.",
+		 function,
+		 storage_image_data_offset,
+		 storage_image_data_offset );
+
+		return( -1 );
+	}
+	read_size = (size_t) block_size - block_offset;
+
+	if( read_size > buffer_size )
+	{
+		read_size = buffer_size;
+	}
+	if( block_descriptor != NULL )
+	{
+#if defined( HAVE_DEBUG_OUTPUT )
+		if( libcnotify_verbose != 0 )
+		{
+			libcnotify_printf(
+			 "%s: reading block descriptor offset: %" PRIi64 " (0x%08" PRIx64 ")\n",
+			 function,
+			 block_descriptor->file_offset,
+			 block_descriptor->file_offset );
+
+			libcnotify_printf(
+			 "%s: reading block offset: %" PRIi64 " (0x%08" PRIx64 ")\n",
+			 function,
+			 block_offset,
+			 block_offset );
+
+			libcnotify_printf(
+			 "%s: reading from file IO pool entry: %d\n",
+			 function,
+			 block_descriptor->file_io_pool_entry );
+
+			libcnotify_printf(
+			 "%s: reading from offset: %" PRIi64 " (0x%08" PRIx64 ")\n",
+			 function,
+			 block_descriptor->file_offset + block_offset,
+			 block_descriptor->file_offset + block_offset );
+		}
+#endif
+		read_count = libbfio_pool_read_buffer_at_offset(
+		              file_io_pool,
+		              block_descriptor->file_io_pool_entry,
+		              buffer,
+		              read_size,
+		              block_descriptor->file_offset + block_offset,
+		              error );
+
+		if( read_count == -1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_IO,
+			 LIBCERROR_IO_ERROR_READ_FAILED,
+			 "%s: unable to read data from file IO pool entry: %d at offset: %" PRIi64 " (0x%08" PRIx64 ").",
+			 function,
+			 block_descriptor->file_io_pool_entry,
+			 block_descriptor->file_offset + block_offset,
+			 block_descriptor->file_offset + block_offset );
+
+			return( -1 );
+		}
+	}
+	else if( snapshot_values->parent_snapshot_values != NULL )
+	{
+		read_count = libphdi_internal_handle_read_block_from_file_io_pool(
+			      snapshot_values->parent_snapshot_values,
+		              file_io_pool,
+			      buffer,
+			      read_size,
+			      file_offset,
+			      level + 1,
+			      error );
+
+		if( read_count == -1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_IO,
+			 LIBCERROR_IO_ERROR_READ_FAILED,
+			 "%s: unable to read buffer from parent snapshot at offset: %" PRIi64 " (0x%08" PRIx64 ").",
+			 function,
+			 file_offset,
+			 file_offset );
+
+			return( -1 );
+		}
+	}
+	else
+	{
+		if( memory_set(
+		     buffer,
+		     0,
+		     read_size ) == NULL )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_MEMORY,
+			 LIBCERROR_MEMORY_ERROR_SET_FAILED,
+			 "%s: unable to fill buffer with sparse block.",
+			 function );
+
+			return( -1 );
+		}
+		read_count = (ssize_t) read_size;
+	}
+	return( read_count );
+}
+
 /* Reads (media) data at the current offset into a buffer using a Basic File IO (bfio) pool
  * This function is not multi-thread safe acquire write lock before call
  * Returns the number of bytes read or -1 on error
@@ -2546,17 +2947,10 @@ ssize_t libphdi_internal_handle_read_buffer_from_file_io_pool(
          size_t buffer_size,
          libcerror_error_t **error )
 {
-	libphdi_block_descriptor_t *block_descriptor = NULL;
-	libphdi_storage_image_t *storage_image       = NULL;
-	static char *function                        = "libphdi_internal_handle_read_buffer_from_file_io_pool";
-	size64_t block_size                          = 0;
-	size_t buffer_offset                         = 0;
-	size_t read_size                             = 0;
-	ssize_t read_count                           = 0;
-	off64_t block_offset                         = 0;
-	off64_t storage_image_data_offset            = 0;
-	int extent_number                            = 0;
-	int result                                   = 0;
+	static char *function = "libphdi_internal_handle_read_buffer_from_file_io_pool";
+	size_t buffer_offset  = 0;
+	size_t read_size      = 0;
+	ssize_t read_count    = 0;
 
 	if( internal_handle == NULL )
 	{
@@ -2576,6 +2970,17 @@ ssize_t libphdi_internal_handle_read_buffer_from_file_io_pool(
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
 		 "%s: invalid handle - missing disk parameters.",
+		 function );
+
+		return( -1 );
+	}
+	if( internal_handle->current_snapshot_values == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid handle - missing current snapshot values.",
 		 function );
 
 		return( -1 );
@@ -2615,22 +3020,22 @@ ssize_t libphdi_internal_handle_read_buffer_from_file_io_pool(
 	}
 	internal_handle->io_handle->abort = 0;
 
+#if defined( HAVE_DEBUG_OUTPUT )
+	if( libcnotify_verbose != 0 )
+	{
+		libcnotify_printf(
+		 "%s: requested offset: %" PRIi64 " (0x%08" PRIx64 ")\n",
+		 function,
+		 internal_handle->current_offset,
+		 internal_handle->current_offset );
+	}
+#endif
 	if( (size64_t) internal_handle->current_offset >= internal_handle->disk_parameters->media_size )
 	{
 		return( 0 );
 	}
-	if( internal_handle->extent_table->extent_files_stream != NULL )
+	if( internal_handle->current_snapshot_values->extent_table->extent_files_stream != NULL )
 	{
-#if defined( HAVE_DEBUG_OUTPUT )
-		if( libcnotify_verbose != 0 )
-		{
-			libcnotify_printf(
-			 "%s: requested offset: %" PRIi64 " (0x%08" PRIx64 ")\n",
-			 function,
-			 internal_handle->current_offset,
-			 internal_handle->current_offset );
-		}
-#endif
 		read_size = buffer_size;
 
 		if( ( (size64_t) read_size > internal_handle->disk_parameters->media_size )
@@ -2639,7 +3044,7 @@ ssize_t libphdi_internal_handle_read_buffer_from_file_io_pool(
 			read_size = (size_t) ( internal_handle->disk_parameters->media_size - internal_handle->current_offset );
 		}
 		read_count = libfdata_stream_read_buffer_at_offset(
-		              internal_handle->extent_table->extent_files_stream,
+		              internal_handle->current_snapshot_values->extent_table->extent_files_stream,
 			      (intptr_t *) file_io_pool,
 			      (uint8_t *) buffer,
 			      read_size,
@@ -2660,156 +3065,44 @@ ssize_t libphdi_internal_handle_read_buffer_from_file_io_pool(
 
 			return( -1 );
 		}
-		internal_handle->current_offset += (off64_t) read_size;
-
 		buffer_offset = read_size;
+
+		internal_handle->current_offset += (off64_t) read_size;
 	}
 	else
 	{
 		while( buffer_offset < buffer_size )
 		{
-#if defined( HAVE_DEBUG_OUTPUT )
-			if( libcnotify_verbose != 0 )
-			{
-				libcnotify_printf(
-				 "%s: requested offset: %" PRIi64 " (0x%08" PRIx64 ")\n",
-				 function,
-				 internal_handle->current_offset,
-				 internal_handle->current_offset );
-			}
-#endif
-			if( libphdi_extent_table_get_extent_file_at_offset(
-			     internal_handle->extent_table,
-			     internal_handle->current_offset,
-			     file_io_pool,
-			     &extent_number,
-			     &storage_image_data_offset,
-			     &storage_image,
-			     error ) != 1 )
-			{
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-				 "%s: unable to retrieve extent file at offset: %" PRIi64 " (0x%08" PRIx64 ") from extent table.",
-				 function,
-				 internal_handle->current_offset,
-				 internal_handle->current_offset );
-
-				return( -1 );
-			}
-			if( libphdi_storage_image_get_block_size(
-			     storage_image,
-			     &block_size,
-			     error ) != 1 )
-			{
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-				 "%s: unable to retrieve block size from storage image.",
-				 function );
-
-				return( -1 );
-			}
-			result = libphdi_storage_image_get_block_descriptor_at_offset(
-			          storage_image,
-			          storage_image_data_offset,
-			          &block_descriptor,
-			          &block_offset,
-			          error );
-
-			if( result == -1 )
-			{
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-				 "%s: unable to retrieve block descriptor at offset: %" PRIi64 " (0x%08" PRIx64 ") from storage image.",
-				 function,
-				 storage_image_data_offset,
-				 storage_image_data_offset );
-
-				return( -1 );
-			}
-			read_size = (size_t) block_size;
+			read_size = buffer_size - buffer_offset;
 
 			if( ( (size64_t) read_size > internal_handle->disk_parameters->media_size )
 			 || ( (size64_t) internal_handle->current_offset > ( internal_handle->disk_parameters->media_size - read_size ) ) )
 			{
 				read_size = (size_t) ( internal_handle->disk_parameters->media_size - internal_handle->current_offset );
 			}
-			if( read_size > ( buffer_size - buffer_offset ) )
+			read_count = libphdi_internal_handle_read_block_from_file_io_pool(
+				      internal_handle->current_snapshot_values,
+			              file_io_pool,
+				      &(( (uint8_t *) buffer )[ buffer_offset ] ),
+				      read_size,
+				      internal_handle->current_offset,
+				      0,
+				      error );
+
+			if( read_count == -1 )
 			{
-				read_size = buffer_size - buffer_offset;
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_IO,
+				 LIBCERROR_IO_ERROR_READ_FAILED,
+				 "%s: unable to read buffer from current snapshot.",
+				 function );
+
+				return( -1 );
 			}
-			if( block_descriptor == NULL )
-			{
-				if( memory_set(
-				     &( ( (uint8_t *) buffer )[ buffer_offset ] ),
-				     0,
-				     read_size ) == NULL )
-				{
-					libcerror_error_set(
-					 error,
-					 LIBCERROR_ERROR_DOMAIN_MEMORY,
-					 LIBCERROR_MEMORY_ERROR_SET_FAILED,
-					 "%s: unable to fill buffer with sparse block.",
-					 function );
+			buffer_offset += read_count;
 
-					return( -1 );
-				}
-			}
-			else
-			{
-#if defined( HAVE_DEBUG_OUTPUT )
-				if( libcnotify_verbose != 0 )
-				{
-					libcnotify_printf(
-					 "%s: reading block descriptor offset: %" PRIi64 " (0x%08" PRIx64 ")\n",
-					 function,
-					 block_descriptor->file_offset,
-					 block_descriptor->file_offset );
-
-					libcnotify_printf(
-					 "%s: reading block offset: %" PRIi64 " (0x%08" PRIx64 ")\n",
-					 function,
-					 block_offset,
-					 block_offset );
-
-					libcnotify_printf(
-					 "%s: reading from offset: %" PRIi64 " (0x%08" PRIx64 ")\n",
-					 function,
-					 block_descriptor->file_offset + block_offset,
-					 block_descriptor->file_offset + block_offset );
-				}
-#endif
-				read_count = libbfio_pool_read_buffer_at_offset(
-				              file_io_pool,
-				              block_descriptor->file_io_pool_entry,
-				              buffer,
-				              read_size,
-				              block_descriptor->file_offset + block_offset,
-				              error );
-
-				if( read_count == -1 )
-				{
-					libcerror_error_set(
-					 error,
-					 LIBCERROR_ERROR_DOMAIN_IO,
-					 LIBCERROR_IO_ERROR_READ_FAILED,
-					 "%s: unable to read data from file IO pool entry: %d at offset: %" PRIi64 " (0x%08" PRIx64 ").",
-					 function,
-					 block_descriptor->file_io_pool_entry,
-					 block_descriptor->file_offset + block_offset,
-					 block_descriptor->file_offset + block_offset );
-
-					return( -1 );
-				}
-			}
-			buffer_offset += read_size;
-
-			internal_handle->current_offset += (off64_t) read_size;
+			internal_handle->current_offset += (off64_t) read_count;
 
 			if( (size64_t) internal_handle->current_offset >= internal_handle->disk_parameters->media_size )
 			{
@@ -3399,8 +3692,8 @@ int libphdi_handle_set_extent_data_files_path(
 		return( -1 );
 	}
 #endif
-	if( libphdi_extent_table_set_data_files_path(
-	     internal_handle->extent_table,
+	if( libphdi_data_files_set_path(
+	     internal_handle->data_files,
 	     path,
 	     path_length,
 	     error ) != 1 )
@@ -3409,7 +3702,7 @@ int libphdi_handle_set_extent_data_files_path(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-		 "%s: unable to set data files path in extent table.",
+		 "%s: unable to set data files path.",
 		 function );
 
 		result = -1;
@@ -3497,8 +3790,8 @@ int libphdi_handle_set_extent_data_files_path_wide(
 		return( -1 );
 	}
 #endif
-	if( libphdi_extent_table_set_data_files_path_wide(
-	     internal_handle->extent_table,
+	if( libphdi_data_files_set_path_wide(
+	     internal_handle->data_files,
 	     path,
 	     path_length,
 	     error ) != 1 )
@@ -3507,7 +3800,7 @@ int libphdi_handle_set_extent_data_files_path_wide(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-		 "%s: unable to set data files path in extent table.",
+		 "%s: unable to set data files path.",
 		 function );
 
 		result = -1;
@@ -4054,7 +4347,7 @@ int libphdi_handle_get_extent_descriptor_by_index(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve extent: %d from descriptor file.",
+		 "%s: unable to retrieve extent: %d from array.",
 		 function,
 		 extent_index );
 
@@ -4239,7 +4532,7 @@ int libphdi_handle_get_snapshot_by_index(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve snapshot: %d from descriptor file.",
+		 "%s: unable to retrieve snapshot: %d from array.",
 		 function,
 		 snapshot_index );
 

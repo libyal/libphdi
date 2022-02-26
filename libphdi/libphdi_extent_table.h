@@ -42,18 +42,6 @@ typedef struct libphdi_extent_table libphdi_extent_table_t;
 
 struct libphdi_extent_table
 {
-	/* The IO handle
-	 */
-	libphdi_io_handle_t *io_handle;
-
-	/* The data files path
-	 */
-	system_character_t *data_files_path;
-
-	/* The data files path size
-	 */
-	size_t data_files_path_size;
-
 	/* The disk type
 	 */
 	int disk_type;
@@ -81,7 +69,6 @@ struct libphdi_extent_table
 
 int libphdi_extent_table_initialize(
      libphdi_extent_table_t **extent_table,
-     libphdi_io_handle_t *io_handle,
      libcerror_error_t **error );
 
 int libphdi_extent_table_free(
@@ -92,88 +79,10 @@ int libphdi_extent_table_clear(
      libphdi_extent_table_t *extent_table,
      libcerror_error_t **error );
 
-int libphdi_extent_table_get_data_files_path_size(
-     libphdi_extent_table_t *extent_table,
-     size_t *path,
-     libcerror_error_t **error );
-
-int libphdi_extent_table_get_data_files_path(
-     libphdi_extent_table_t *extent_table,
-     char *path,
-     size_t path_size,
-     libcerror_error_t **error );
-
-int libphdi_extent_table_set_data_files_path(
-     libphdi_extent_table_t *extent_table,
-     const char *path,
-     size_t path_length,
-     libcerror_error_t **error );
-
-#if defined( HAVE_WIDE_CHARACTER_TYPE )
-
-int libphdi_extent_table_get_data_files_path_size_wide(
-     libphdi_extent_table_t *extent_table,
-     size_t *path_size,
-     libcerror_error_t **error );
-
-int libphdi_extent_table_get_data_files_path_wide(
-     libphdi_extent_table_t *extent_table,
-     wchar_t *path,
-     size_t path_size,
-     libcerror_error_t **error );
-
-int libphdi_extent_table_set_data_files_path_wide(
-     libphdi_extent_table_t *extent_table,
-     const wchar_t *path,
-     size_t path_length,
-     libcerror_error_t **error );
-
-#endif /* defined( HAVE_WIDE_CHARACTER_TYPE ) */
-
-int libphdi_extent_table_get_extent_data_file_path(
-     libphdi_extent_table_t *extent_table,
-     libphdi_image_values_t *image_values,
-     char **path,
-     size_t *path_size,
-     libcerror_error_t **error );
-
-int libphdi_extent_table_join_extent_data_file_path(
-     libphdi_extent_table_t *extent_table,
-     const char *extent_data_filename,
-     size_t extent_data_filename_size,
-     char **path,
-     size_t *path_size,
-     libcerror_error_t **error );
-
-#if defined( HAVE_WIDE_CHARACTER_TYPE )
-
-int libphdi_extent_table_get_extent_data_file_path_wide(
-     libphdi_extent_table_t *extent_table,
-     libphdi_image_values_t *image_values,
-     wchar_t **path,
-     size_t *path_size,
-     libcerror_error_t **error );
-
-int libphdi_extent_table_join_extent_data_file_path_wide(
-     libphdi_extent_table_t *extent_table,
-     const wchar_t *extent_data_filename,
-     size_t extent_data_filename_size,
-     wchar_t **path,
-     size_t *path_size,
-     libcerror_error_t **error );
-
-#endif /* defined( HAVE_WIDE_CHARACTER_TYPE ) */
-
 int libphdi_extent_table_initialize_extents(
      libphdi_extent_table_t *extent_table,
-     int number_of_extents,
+     libphdi_io_handle_t *io_handle,
      int disk_type,
-     libcerror_error_t **error );
-
-int libphdi_extent_table_set_extent_storage_media_size_by_index(
-     libphdi_extent_table_t *extent_table,
-     int extent_index,
-     size64_t storage_media_size,
      libcerror_error_t **error );
 
 int libphdi_extent_table_get_extent_file_at_offset(
@@ -185,10 +94,9 @@ int libphdi_extent_table_get_extent_file_at_offset(
      libphdi_storage_image_t **extent_file,
      libcerror_error_t **error );
 
-int libphdi_extent_table_set_extent_by_image_values(
+int libphdi_extent_table_append_extent(
      libphdi_extent_table_t *extent_table,
      int image_type,
-     int extent_index,
      int file_io_pool_entry,
      size64_t extent_file_size,
      off64_t extent_file_offset,

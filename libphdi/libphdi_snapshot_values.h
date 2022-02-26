@@ -25,6 +25,8 @@
 #include <common.h>
 #include <types.h>
 
+#include "libphdi_extent_table.h"
+#include "libphdi_libbfio.h"
 #include "libphdi_libcerror.h"
 
 #if defined( __cplusplus )
@@ -42,6 +44,14 @@ struct libphdi_snapshot_values
 	/* The parent identifier
 	 */
 	uint8_t parent_identifier[ 16 ];
+
+	/* The parent snapshot values
+	 */
+	libphdi_snapshot_values_t *parent_snapshot_values;
+
+	/* The extent table
+	 */
+	libphdi_extent_table_t *extent_table;
 };
 
 int libphdi_snapshot_values_initialize(
