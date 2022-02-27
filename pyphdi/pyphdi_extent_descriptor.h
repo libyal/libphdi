@@ -79,6 +79,23 @@ PyObject *pyphdi_extent_descriptor_get_filename(
            pyphdi_extent_descriptor_t *pyphdi_extent_descriptor,
            PyObject *arguments );
 
+PyObject *pyphdi_extent_descriptor_get_number_of_images(
+           pyphdi_extent_descriptor_t *pyphdi_extent_descriptor,
+           PyObject *arguments );
+
+PyObject *pyphdi_extent_descriptor_get_image_descriptor_by_index(
+           PyObject *pyphdi_extent_descriptor,
+           int imagesindex );
+
+PyObject *pyphdi_extent_descriptor_get_image_descriptor(
+           pyphdi_extent_descriptor_t *pyphdi_extent_descriptor,
+           PyObject *arguments,
+           PyObject *keywords );
+
+PyObject *pyphdi_extent_descriptor_get_image_descriptors(
+           pyphdi_extent_descriptor_t *pyphdi_extent_descriptor,
+           PyObject *arguments );
+
 #if defined( __cplusplus )
 }
 #endif

@@ -14,11 +14,11 @@ Supported image types:
 * Fixed-size (plain) hard disk image
 * Dynamic-size (expanding) hard disk image
 * Split hard disk image
+* Differential (or differencing) hard disk image
 
 Unsupported format features:
 
 * Version 1
-* Differential (or differencing) hard disk image
 * Snapshots
 
 For more information see:

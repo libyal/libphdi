@@ -29,6 +29,8 @@
 #include "pyphdi_error.h"
 #include "pyphdi_extent_descriptor.h"
 #include "pyphdi_handle.h"
+#include "pyphdi_image_descriptor.h"
+#include "pyphdi_image_descriptors.h"
 #include "pyphdi_integer.h"
 #include "pyphdi_libcerror.h"
 #include "pyphdi_libphdi.h"
@@ -67,6 +69,22 @@ PyMethodDef pyphdi_extent_descriptor_object_methods[] = {
 	  "\n"
 	  "Retrieves the filename." },
 
+	/* Functions to access the image descriptors */
+
+	{ "get_number_of_images",
+	  (PyCFunction) pyphdi_extent_descriptor_get_number_of_images,
+	  METH_NOARGS,
+	  "get_number_of_images() -> Integer\n"
+	  "\n"
+	  "Retrieves the number of images" },
+
+	{ "get_image_descriptor",
+	  (PyCFunction) pyphdi_extent_descriptor_get_image_descriptor,
+	  METH_VARARGS | METH_KEYWORDS,
+	  "get_image_descriptor(image_index) -> Object or None\n"
+	  "\n"
+	  "Retrieves a specific image descriptor" },
+
 	/* Sentinel */
 	{ NULL, NULL, 0, NULL }
 };
@@ -95,6 +113,18 @@ PyGetSetDef pyphdi_extent_descriptor_object_get_set_definitions[] = {
 	  (getter) pyphdi_extent_descriptor_get_filename,
 	  (setter) 0,
 	  "The filename.",
+	  NULL },
+
+	{ "number_of_images",
+	  (getter) pyphdi_extent_descriptor_get_number_of_images,
+	  (setter) 0,
+	  "The number of images",
+	  NULL },
+
+	{ "image_descriptors",
+	  (getter) pyphdi_extent_descriptor_get_image_descriptors,
+	  (setter) 0,
+	  "The image descriptors",
 	  NULL },
 
 	/* Sentinel */
@@ -738,5 +768,223 @@ on_error:
 		 NULL );
 	}
 	return( NULL );
+}
+
+/* Retrieves the number of images
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pyphdi_extent_descriptor_get_number_of_images(
+           pyphdi_extent_descriptor_t *pyphdi_extent_descriptor,
+           PyObject *arguments PYPHDI_ATTRIBUTE_UNUSED )
+{
+	libcerror_error_t *error = NULL;
+	PyObject *integer_object = NULL;
+	static char *function    = "pyphdi_extent_descriptor_get_number_of_images";
+	int number_of_images     = 0;
+	int result               = 0;
+
+	PYPHDI_UNREFERENCED_PARAMETER( arguments )
+
+	if( pyphdi_extent_descriptor == NULL )
+	{
+		PyErr_Format(
+		 PyExc_TypeError,
+		 "%s: invalid extent descriptor.",
+		 function );
+
+		return( NULL );
+	}
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libphdi_extent_descriptor_get_number_of_images(
+	          pyphdi_extent_descriptor->extent_descriptor,
+	          &number_of_images,
+	          &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result != 1 )
+	{
+		pyphdi_error_raise(
+		 error,
+		 PyExc_IOError,
+		 "%s: unable to retrieve number of images.",
+		 function );
+
+		libcerror_error_free(
+		 &error );
+
+		return( NULL );
+	}
+#if PY_MAJOR_VERSION >= 3
+	integer_object = PyLong_FromLong(
+	                  (long) number_of_images );
+#else
+	integer_object = PyInt_FromLong(
+	                  (long) number_of_images );
+#endif
+	return( integer_object );
+}
+
+/* Retrieves a specific image descriptor by index
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pyphdi_extent_descriptor_get_image_descriptor_by_index(
+           PyObject *pyphdi_extent_descriptor,
+           int image_index )
+{
+	libcerror_error_t *error                     = NULL;
+	libphdi_image_descriptor_t *image_descriptor = NULL;
+	PyObject *image_descriptor_object            = NULL;
+	static char *function                        = "pyphdi_extent_descriptor_get_image_descriptor_by_index";
+	int result                                   = 0;
+
+	if( pyphdi_extent_descriptor == NULL )
+	{
+		PyErr_Format(
+		 PyExc_TypeError,
+		 "%s: invalid extent descriptor.",
+		 function );
+
+		return( NULL );
+	}
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libphdi_extent_descriptor_get_image_descriptor_by_index(
+	          ( ( pyphdi_extent_descriptor_t *) pyphdi_extent_descriptor )->extent_descriptor,
+	          image_index,
+	          &image_descriptor,
+	          &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result != 1 )
+	{
+		pyphdi_error_raise(
+		 error,
+		 PyExc_IOError,
+		 "%s: unable to retrieve image: %d descriptor.",
+		 function,
+		 image_index );
+
+		libcerror_error_free(
+		 &error );
+
+		goto on_error;
+	}
+	image_descriptor_object = pyphdi_image_descriptor_new(
+	                           image_descriptor,
+	                           pyphdi_extent_descriptor );
+
+	if( image_descriptor_object == NULL )
+	{
+		PyErr_Format(
+		 PyExc_MemoryError,
+		 "%s: unable to create image descriptor object.",
+		 function );
+
+		goto on_error;
+	}
+	return( image_descriptor_object );
+
+on_error:
+	if( image_descriptor != NULL )
+	{
+		libphdi_image_descriptor_free(
+		 &image_descriptor,
+		 NULL );
+	}
+	return( NULL );
+}
+
+/* Retrieves a specific image descriptor
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pyphdi_extent_descriptor_get_image_descriptor(
+           pyphdi_extent_descriptor_t *pyphdi_extent_descriptor,
+           PyObject *arguments,
+           PyObject *keywords )
+{
+	PyObject *image_descriptor_object = NULL;
+	static char *keyword_list[]       = { "image_index", NULL };
+	int image_index                   = 0;
+
+	if( PyArg_ParseTupleAndKeywords(
+	     arguments,
+	     keywords,
+	     "i",
+	     keyword_list,
+	     &image_index ) == 0 )
+	{
+		return( NULL );
+	}
+	image_descriptor_object = pyphdi_extent_descriptor_get_image_descriptor_by_index(
+	                           (PyObject *) pyphdi_extent_descriptor,
+	                           image_index );
+
+	return( image_descriptor_object );
+}
+
+/* Retrieves an image descriptors sequence and iterator object for the image descriptors
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pyphdi_extent_descriptor_get_image_descriptors(
+           pyphdi_extent_descriptor_t *pyphdi_extent_descriptor,
+           PyObject *arguments PYPHDI_ATTRIBUTE_UNUSED )
+{
+	PyObject *image_descriptors_object = NULL;
+	libcerror_error_t *error           = NULL;
+	static char *function              = "pyphdi_extent_descriptor_get_image_descriptors";
+	int number_of_image_descriptors    = 0;
+	int result                         = 0;
+
+	PYPHDI_UNREFERENCED_PARAMETER( arguments )
+
+	if( pyphdi_extent_descriptor == NULL )
+	{
+		PyErr_Format(
+		 PyExc_TypeError,
+		 "%s: invalid extent descriptor.",
+		 function );
+
+		return( NULL );
+	}
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libphdi_extent_descriptor_get_number_of_images(
+	          pyphdi_extent_descriptor->extent_descriptor,
+	          &number_of_image_descriptors,
+	          &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result != 1 )
+	{
+		pyphdi_error_raise(
+		 error,
+		 PyExc_IOError,
+		 "%s: unable to retrieve number of images.",
+		 function );
+
+		libcerror_error_free(
+		 &error );
+
+		return( NULL );
+	}
+	image_descriptors_object = pyphdi_image_descriptors_new(
+	                            (PyObject *) pyphdi_extent_descriptor,
+	                            &pyphdi_extent_descriptor_get_image_descriptor_by_index,
+	                            number_of_image_descriptors );
+
+	if( image_descriptors_object == NULL )
+	{
+		PyErr_Format(
+		 PyExc_MemoryError,
+		 "%s: unable to create image descriptors object.",
+		 function );
+
+		return( NULL );
+	}
+	return( image_descriptors_object );
 }
 
