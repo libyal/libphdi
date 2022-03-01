@@ -573,7 +573,7 @@ int libphdi_storage_image_get_block_size(
 }
 
 /* Retrieves the block descriptor at a specific offset
- * Returns 1 if successful or -1 on error
+ * Returns 1 if successful, 0 if not available or -1 on error
  */
 int libphdi_storage_image_get_block_descriptor_at_offset(
      libphdi_storage_image_t *storage_image,
@@ -583,6 +583,7 @@ int libphdi_storage_image_get_block_descriptor_at_offset(
      libcerror_error_t **error )
 {
 	static char *function = "libphdi_storage_image_get_block_descriptor_at_offset";
+	int result            = 0;
 
 	if( storage_image == NULL )
 	{
@@ -595,12 +596,14 @@ int libphdi_storage_image_get_block_descriptor_at_offset(
 
 		return( -1 );
 	}
-	if( libphdi_block_tree_get_block_descriptor_by_offset(
-	     storage_image->block_tree,
-	     offset,
-	     block_descriptor,
-	     block_offset,
-	     error ) != 1 )
+	result = libphdi_block_tree_get_block_descriptor_by_offset(
+	          storage_image->block_tree,
+	          offset,
+	          block_descriptor,
+	          block_offset,
+	          error );
+
+	if( result == -1 )
 	{
 		libcerror_error_set(
 		 error,
@@ -613,7 +616,7 @@ int libphdi_storage_image_get_block_descriptor_at_offset(
 
 		return( -1 );
 	}
-	return( 1 );
+	return( result );
 }
 
 /* Reads a storage image

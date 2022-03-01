@@ -182,7 +182,7 @@ int libphdi_block_tree_free(
 }
 
 /* Retrieves the block descriptor for a specific offset
- * Returns 1 if successful or -1 on error
+ * Returns 1 if successful, 0 if not available or -1 on error
  */
 int libphdi_block_tree_get_block_descriptor_by_offset(
      libphdi_block_tree_t *block_tree,
@@ -276,6 +276,10 @@ int libphdi_block_tree_get_block_descriptor_by_offset(
 	*block_descriptor = safe_block_descriptor;
 	*block_offset     = safe_block_offset;
 
+	if( safe_block_descriptor == NULL )
+	{
+		return( 0 );
+	}
 	return( 1 );
 }
 

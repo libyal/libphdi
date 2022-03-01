@@ -2735,6 +2735,7 @@ ssize_t libphdi_internal_handle_read_block_from_file_io_pool(
 	off64_t block_offset                         = 0;
 	off64_t storage_image_data_offset            = 0;
 	int extent_number                            = 0;
+	int result                                   = 0;
 
 	if( snapshot_values == NULL )
 	{
@@ -2814,12 +2815,14 @@ ssize_t libphdi_internal_handle_read_block_from_file_io_pool(
 
 		return( -1 );
 	}
-	if( libphdi_storage_image_get_block_descriptor_at_offset(
-	     storage_image,
-	     storage_image_data_offset,
-	     &block_descriptor,
-	     &block_offset,
-	     error ) != 1 )
+	result = libphdi_storage_image_get_block_descriptor_at_offset(
+	          storage_image,
+	          storage_image_data_offset,
+	          &block_descriptor,
+	          &block_offset,
+	          error );
+
+	if( result == -1 )
 	{
 		libcerror_error_set(
 		 error,
@@ -2832,13 +2835,17 @@ ssize_t libphdi_internal_handle_read_block_from_file_io_pool(
 
 		return( -1 );
 	}
+	else if( result == 0 )
+	{
+		block_offset = storage_image_data_offset % block_size;
+	}
 	read_size = (size_t) block_size - block_offset;
 
 	if( read_size > buffer_size )
 	{
 		read_size = buffer_size;
 	}
-	if( block_descriptor != NULL )
+	if( result != 0 )
 	{
 #if defined( HAVE_DEBUG_OUTPUT )
 		if( libcnotify_verbose != 0 )
