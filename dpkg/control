@@ -1,7 +1,7 @@
 Source: libphdi
 Priority: extra
 Maintainer: Joachim Metz <joachim.metz@gmail.com>
-Build-Depends: debhelper (>= 9), dh-autoreconf, pkg-config, python-dev, python-setuptools, python3-dev, python3-setuptools, libfuse-dev
+Build-Depends: debhelper (>= 9), dh-autoreconf, pkg-config, python3-dev, python3-setuptools, libfuse-dev
 Standards-Version: 4.1.4
 Section: libs
 Homepage: https://github.com/libyal/libphdi
@@ -45,23 +45,6 @@ Architecture: any
 Depends: libphdi-tools (= ${binary:Version}), ${misc:Depends}
 Description: Debugging symbols for libphdi-tools
  Debugging symbols for libphdi-tools.
-
-Package: libphdi-python
-Section: python
-Architecture: any
-Depends: libphdi (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
-Conflicts: python-libphdi
-Replaces: python-libphdi
-Suggests: libphdi-python-dbg
-Description: Python 2 bindings for libphdi
- Python 2 bindings for libphdi.
-
-Package: libphdi-python-dbg
-Section: debug
-Architecture: any
-Depends: libphdi-python (= ${binary:Version}), ${misc:Depends}
-Description: Debugging symbols for libphdi-python
- Debugging symbols for libphdi-python.
 
 Package: libphdi-python3
 Section: python
