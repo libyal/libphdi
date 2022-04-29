@@ -38,7 +38,6 @@ DPKG_FILES = \
 	dpkg/rules \
 	dpkg/libphdi.install \
 	dpkg/libphdi-dev.install \
-	dpkg/libphdi-python.install \
 	dpkg/libphdi-python3.install \
 	dpkg/libphdi-tools.install \
 	dpkg/source/format
