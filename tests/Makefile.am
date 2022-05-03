@@ -164,6 +164,7 @@ phdi_test_extent_descriptor_SOURCES = \
 	phdi_test_unused.h
 
 phdi_test_extent_descriptor_LDADD = \
+	@LIBCDATA_LIBADD@ \
 	../libphdi/libphdi.la \
 	@LIBCERROR_LIBADD@
 

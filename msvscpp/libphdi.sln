@@ -77,6 +77,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "phdi_test_disk_parameters",
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "phdi_test_extent_descriptor", "phdi_test_extent_descriptor\phdi_test_extent_descriptor.vcproj", "{34C38914-56E3-462B-AE49-D41E91A60865}"
 	ProjectSection(ProjectDependencies) = postProject
+		{578EB4C9-D025-4C05-86F5-1B0CA0CD7BE7} = {578EB4C9-D025-4C05-86F5-1B0CA0CD7BE7}
 		{590C1718-49FC-4F82-8797-6928B911FAB7} = {590C1718-49FC-4F82-8797-6928B911FAB7}
 		{1128D4A2-34AE-4A04-A803-0A210F4640B7} = {1128D4A2-34AE-4A04-A803-0A210F4640B7}
 	EndProjectSection
