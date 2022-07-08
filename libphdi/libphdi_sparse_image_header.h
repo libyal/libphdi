@@ -25,6 +25,7 @@
 #include <common.h>
 #include <types.h>
 
+#include "libphdi_libbfio.h"
 #include "libphdi_libcerror.h"
 
 #if defined( __cplusplus )

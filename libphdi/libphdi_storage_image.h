@@ -28,6 +28,7 @@
 #include "libphdi_block_descriptor.h"
 #include "libphdi_block_tree.h"
 #include "libphdi_libcerror.h"
+#include "libphdi_libfdata.h"
 #include "libphdi_sparse_image_header.h"
 
 #if defined( __cplusplus )

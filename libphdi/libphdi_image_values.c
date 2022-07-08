@@ -129,6 +129,11 @@ int libphdi_image_values_free(
 	}
 	if( *image_values != NULL )
 	{
+		if( ( *image_values )->filename != NULL )
+		{
+			memory_free(
+			 ( *image_values )->filename );
+		}
 		memory_free(
 		 *image_values );
 

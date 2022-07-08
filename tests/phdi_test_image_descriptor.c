@@ -259,6 +259,25 @@ int phdi_test_image_descriptor_initialize(
 	}
 #endif /* defined( HAVE_PHDI_TEST_MEMORY ) */
 
+	/* Clean up
+	 */
+	result = libphdi_image_values_free(
+	          &image_values,
+	          &error );
+
+	PHDI_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	PHDI_TEST_ASSERT_IS_NULL(
+	 "image_values",
+	 image_values );
+
+	PHDI_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
 	return( 1 );
 
 on_error:
@@ -271,6 +290,12 @@ on_error:
 	{
 		libphdi_image_descriptor_free(
 		 &image_descriptor,
+		 NULL );
+	}
+	if( image_values != NULL )
+	{
+		libphdi_image_values_free(
+		 &image_values,
 		 NULL );
 	}
 	return( 0 );

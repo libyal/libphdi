@@ -261,6 +261,25 @@ int phdi_test_extent_descriptor_initialize(
 	}
 #endif /* defined( HAVE_PHDI_TEST_MEMORY ) */
 
+	/* Clean up
+	 */
+	result = libphdi_extent_values_free(
+	          &extent_values,
+	          &error );
+
+	PHDI_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	PHDI_TEST_ASSERT_IS_NULL(
+	 "extent_values",
+	 extent_values );
+
+	PHDI_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
 	return( 1 );
 
 on_error:
@@ -273,6 +292,12 @@ on_error:
 	{
 		libphdi_extent_descriptor_free(
 		 &extent_descriptor,
+		 NULL );
+	}
+	if( extent_values != NULL )
+	{
+		libphdi_extent_values_free(
+		 &extent_values,
 		 NULL );
 	}
 	return( 0 );
