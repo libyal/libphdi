@@ -37,7 +37,7 @@
 #include "libphdi_xml_parser.h"
 
 extern \
-int xml_parser_parse_buffer(
+int libphdi_xml_parser_parse_buffer(
      libphdi_disk_descriptor_xml_file_t *disk_descriptor_xml_file,
      const uint8_t *buffer,
      size_t buffer_size,
@@ -258,7 +258,7 @@ int libphdi_disk_descriptor_xml_file_read_data(
 
 	/* Lex wants a buffer it can write to
 	 */
-	result = xml_parser_parse_buffer(
+	result = libphdi_xml_parser_parse_buffer(
 	          disk_descriptor_xml_file,
 	          data,
 	          data_size,

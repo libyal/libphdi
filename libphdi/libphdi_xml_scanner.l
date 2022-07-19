@@ -1,4 +1,4 @@
-%option prefix="xml_scanner_" outfile="lex.yy.c"
+%option prefix="libphdi_xml_scanner_" outfile="lex.yy.c"
 %option never-interactive 8bit
 %option noinput nounput noyylineno nounistd
 %option noyyalloc noyyrealloc noyyfree
@@ -7,7 +7,7 @@
 /*
  * XML scanner functions
  *
- * Copyright (C) 2015-2022, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2016-2022, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -35,17 +35,17 @@
 
 #define YYLEX_PARAM	NULL
 
-int xml_scanner_suppress_error   = 1;
-size_t xml_scanner_buffer_offset = 0;
-size_t xml_scanner_index         = 0;
+int libphdi_xml_scanner_suppress_error   = 1;
+size_t libphdi_xml_scanner_buffer_offset = 0;
+size_t libphdi_xml_scanner_index         = 0;
 
-#define YY_USER_ACTION	xml_scanner_buffer_offset += (size_t) xml_scanner_leng;
+#define YY_USER_ACTION	libphdi_xml_scanner_buffer_offset += (size_t) libphdi_xml_scanner_leng;
 
 #if defined( HAVE_DEBUG_OUTPUT )
-#define xml_scanner_token_print( string ) \
-	if( libcnotify_verbose != 0 ) libcnotify_printf( "xml_scanner: offset: %" PRIzd " token: %s\n", xml_scanner_buffer_offset, string )
+#define libphdi_xml_scanner_token_print( string ) \
+	if( libcnotify_verbose != 0 ) libcnotify_printf( "libphdi_xml_scanner: offset: %" PRIzd " token: %s\n", libphdi_xml_scanner_buffer_offset, string )
 #else
-#define xml_scanner_token_print( string )
+#define libphdi_xml_scanner_token_print( string )
 #endif
 
 %}
@@ -66,55 +66,55 @@ white_space             [\t ]+
 %%
 
 {white_space}*"<"{name} {
-        xml_scanner_token_print(
+        libphdi_xml_scanner_token_print(
          "XML_TAG_OPEN_START" );
 
 	BEGIN( XML_TAG );
 
-	xml_scanner_index = 0;
+	libphdi_xml_scanner_index = 0;
 
-	while( xml_scanner_index < (size_t) xml_scanner_leng )
+	while( libphdi_xml_scanner_index < (size_t) libphdi_xml_scanner_leng )
 	{
-		if( xml_scanner_text[ xml_scanner_index++ ] == '<' )
+		if( libphdi_xml_scanner_text[ libphdi_xml_scanner_index++ ] == '<' )
 		{
 			break;
 		}
 	}
-        xml_scanner_lval.string_value.data   = &( xml_scanner_text[ xml_scanner_index ] );
-        xml_scanner_lval.string_value.length = (size_t) xml_scanner_leng - xml_scanner_index;
+        libphdi_xml_scanner_lval.string_value.data   = &( libphdi_xml_scanner_text[ libphdi_xml_scanner_index ] );
+        libphdi_xml_scanner_lval.string_value.length = (size_t) libphdi_xml_scanner_leng - libphdi_xml_scanner_index;
 
 	return( XML_TAG_OPEN_START );
 }
 
 <XML_TAG>{name} {
-        xml_scanner_token_print(
+        libphdi_xml_scanner_token_print(
          "XML_ATTRIBUTE_NAME" );
 
-        xml_scanner_lval.string_value.data   = xml_scanner_text;
-        xml_scanner_lval.string_value.length = (size_t) xml_scanner_leng;
+        libphdi_xml_scanner_lval.string_value.data   = libphdi_xml_scanner_text;
+        libphdi_xml_scanner_lval.string_value.length = (size_t) libphdi_xml_scanner_leng;
 
         return( XML_ATTRIBUTE_NAME );
 }
 
 <XML_TAG>"=" {
-        xml_scanner_token_print(
+        libphdi_xml_scanner_token_print(
          "XML_ATTRIBUTE_ASSIGN" );
 
         return( XML_ATTRIBUTE_ASSIGN );
 }
 
 <XML_TAG>{xml_attribute_value} {
-        xml_scanner_token_print(
+        libphdi_xml_scanner_token_print(
          "XML_ATTRIBUTE_VALUE" );
 
-        xml_scanner_lval.string_value.data   = &( xml_scanner_text[ 1 ] );
-        xml_scanner_lval.string_value.length = (size_t) xml_scanner_leng - 2;
+        libphdi_xml_scanner_lval.string_value.data   = &( libphdi_xml_scanner_text[ 1 ] );
+        libphdi_xml_scanner_lval.string_value.length = (size_t) libphdi_xml_scanner_leng - 2;
 
         return( XML_ATTRIBUTE_VALUE );
 }
 
 <XML_TAG>"/>"{end_of_line}? {
-        xml_scanner_token_print(
+        libphdi_xml_scanner_token_print(
          "XML_TAG_END_SINGLE" );
 
 	BEGIN( INITIAL );
@@ -123,7 +123,7 @@ white_space             [\t ]+
 }
 
 <XML_TAG>">"{end_of_line}? {
-        xml_scanner_token_print(
+        libphdi_xml_scanner_token_print(
          "XML_TAG_END" );
 
 	BEGIN( XML_CONTENT );
@@ -132,61 +132,61 @@ white_space             [\t ]+
 }
 
 <XML_CONTENT>{xml_tag_content} {
-        xml_scanner_token_print(
+        libphdi_xml_scanner_token_print(
          "XML_TAG_CONTENT" );
 
 	BEGIN( INITIAL );
 
-        xml_scanner_lval.string_value.data   = xml_scanner_text;
-        xml_scanner_lval.string_value.length = (size_t) xml_scanner_leng;
+        libphdi_xml_scanner_lval.string_value.data   = libphdi_xml_scanner_text;
+        libphdi_xml_scanner_lval.string_value.length = (size_t) libphdi_xml_scanner_leng;
 
         return( XML_TAG_CONTENT );
 }
 
 {white_space}*"</"{name}">"{end_of_line}? {
-        xml_scanner_token_print(
+        libphdi_xml_scanner_token_print(
          "XML_TAG_CLOSE" );
 
 	BEGIN( INITIAL );
 
-	xml_scanner_index = 0;
+	libphdi_xml_scanner_index = 0;
 
-	while( xml_scanner_index < (size_t) xml_scanner_leng )
+	while( libphdi_xml_scanner_index < (size_t) libphdi_xml_scanner_leng )
 	{
-		if( xml_scanner_text[ xml_scanner_index++ ] == '/' )
+		if( libphdi_xml_scanner_text[ libphdi_xml_scanner_index++ ] == '/' )
 		{
 			break;
 		}
 	}
-	while( (size_t) xml_scanner_leng > xml_scanner_index )
+	while( (size_t) libphdi_xml_scanner_leng > libphdi_xml_scanner_index )
 	{
-		if( xml_scanner_text[ --xml_scanner_leng ] == '>' )
+		if( libphdi_xml_scanner_text[ --libphdi_xml_scanner_leng ] == '>' )
 		{
 			break;
 		}
 	}
-        xml_scanner_lval.string_value.data   = &( xml_scanner_text[ xml_scanner_index ] );
-        xml_scanner_lval.string_value.length = (size_t) xml_scanner_leng - xml_scanner_index;
+        libphdi_xml_scanner_lval.string_value.data   = &( libphdi_xml_scanner_text[ libphdi_xml_scanner_index ] );
+        libphdi_xml_scanner_lval.string_value.length = (size_t) libphdi_xml_scanner_leng - libphdi_xml_scanner_index;
 
 	return( XML_TAG_CLOSE );
 }
 
 <INITIAL>"<?xml"[^>\x00-\x1f\x7f]{0,256}">"{end_of_line}? {
-        xml_scanner_token_print(
+        libphdi_xml_scanner_token_print(
          "XML_PROLOGUE" );
 
 	return( XML_PROLOGUE );
 }
 
 <INITIAL>"<!--"([^-\x00-\x1f\x7f]|"-"[^-\x00-\x1f\x7f]){0,256}"-->"{end_of_line}? {
-        xml_scanner_token_print(
+        libphdi_xml_scanner_token_print(
          "XML_COMMENT" );
 
 	return( XML_COMMENT );
 }
 
 <INITIAL>"<!DOCTYPE"[^>\x00-\x1f\x7f]{0,256}">"{end_of_line}? {
-        xml_scanner_token_print(
+        libphdi_xml_scanner_token_print(
          "XML_DOCTYPE" );
 
 	return( XML_DOCTYPE );
@@ -197,7 +197,7 @@ white_space             [\t ]+
 {white_space} ;
 
 . {
-        xml_scanner_token_print(
+        libphdi_xml_scanner_token_print(
          "XML_UNDEFINED" );
 
 	return( XML_UNDEFINED );
@@ -205,14 +205,14 @@ white_space             [\t ]+
 
 %%
 
-void *xml_scanner_alloc(
+void *libphdi_xml_scanner_alloc(
        yy_size_t size )
 {
 	return( memory_allocate(
 	         size ) );
 }
 
-void *xml_scanner_realloc(
+void *libphdi_xml_scanner_realloc(
        void *buffer,
        yy_size_t size )
 {
@@ -221,34 +221,34 @@ void *xml_scanner_realloc(
 	         size ) );
 }
 
-void xml_scanner_free(
+void libphdi_xml_scanner_free(
       void *buffer )
 {
 	memory_free(
 	 buffer );
 }
 
-int xml_scanner_wrap(
+int libphdi_xml_scanner_wrap(
      void )
 {
 	return( 1 );
 }
 
-void xml_scanner_error(
+void libphdi_xml_scanner_error(
       void *parser_state LIBPHDI_ATTRIBUTE_UNUSED,
       const char *error_string )
 {
 	LIBPHDI_UNREFERENCED_PARAMETER( parser_state )
 
-	if( xml_scanner_suppress_error == 0 )
+	if( libphdi_xml_scanner_suppress_error == 0 )
 	{
 	        fprintf(
         	 stderr,
 	         "%s at token: %s (offset: %" PRIzd " size: %" PRIzd ")\n",
         	 error_string,
-	         xml_scanner_text,
-	         xml_scanner_buffer_offset - (size_t) xml_scanner_leng,
-	         (size_t) xml_scanner_leng );
+	         libphdi_xml_scanner_text,
+	         libphdi_xml_scanner_buffer_offset - (size_t) libphdi_xml_scanner_leng,
+	         (size_t) libphdi_xml_scanner_leng );
 	}
 }
 

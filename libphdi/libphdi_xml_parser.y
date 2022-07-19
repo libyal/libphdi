@@ -2,7 +2,7 @@
 /*
  * XML parser functions
  *
- * Copyright (C) 2015-2022, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2016-2022, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -35,29 +35,29 @@
 #include "libphdi_types.h"
 #include "libphdi_xml_tag.h"
 
-#define YYMALLOC	xml_scanner_alloc
-#define YYREALLOC	xml_scanner_realloc
-#define YYFREE		xml_scanner_free
+#define YYMALLOC	libphdi_xml_scanner_alloc
+#define YYREALLOC	libphdi_xml_scanner_realloc
+#define YYFREE		libphdi_xml_scanner_free
 
 #define YYLEX_PARAM	NULL
 #define YYPARSE_PARAM	parser_state
 
 #if defined( HAVE_DEBUG_OUTPUT )
-#define xml_parser_rule_print( string ) \
-	if( libcnotify_verbose != 0 ) libcnotify_printf( "xml_parser: rule: %s\n", string )
+#define libphdi_xml_parser_rule_print( string ) \
+	if( libcnotify_verbose != 0 ) libcnotify_printf( "libphdi_xml_parser: rule: %s\n", string )
 #else
-#define xml_parser_rule_print( string )
+#define libphdi_xml_parser_rule_print( string )
 #endif
 
 %}
 
-/* %name-prefix="xml_scanner_" replaced by -p xml_scanner_ */
+/* %name-prefix="libphdi_xml_scanner_" replaced by -p libphdi_xml_scanner_ */
 /* %no-lines replaced by -l */
 
 %lex-param { (void *) NULL }
 %parse-param { void *parser_state }
 
-%start xml_document_main
+%start xml_plist_main
 
 %union
 {
@@ -67,7 +67,7 @@
 
         /* The string value
          */
-	struct xml_document_string_value
+	struct xml_plist_string_value
 	{
 		/* The string data
 		 */
@@ -82,9 +82,9 @@
 
 %{
 
-typedef struct xml_parser_state xml_parser_state_t;
+typedef struct libphdi_xml_parser_state libphdi_xml_parser_state_t;
 
-struct xml_parser_state
+struct libphdi_xml_parser_state
 {
 	/* The disk descriptor XML file
 	 */
@@ -111,49 +111,49 @@ typedef size_t yy_size_t;
 typedef struct yy_buffer_state* YY_BUFFER_STATE;
 
 extern \
-int xml_scanner_suppress_error;
+int libphdi_xml_scanner_suppress_error;
 
 extern \
-int xml_scanner_lex_destroy(
+int libphdi_xml_scanner_lex_destroy(
      void );
 
 extern \
-void *xml_scanner_alloc(
+void *libphdi_xml_scanner_alloc(
        yy_size_t size );
 
 extern \
-void *xml_scanner_realloc(
+void *libphdi_xml_scanner_realloc(
        void *buffer,
        yy_size_t size );
 
 extern \
-void *xml_scanner_free(
+void *libphdi_xml_scanner_free(
        void *buffer );
 
 extern \
-int xml_scanner_lex(
+int libphdi_xml_scanner_lex(
      void *user_data );
 
 extern \
-void xml_scanner_error(
+void libphdi_xml_scanner_error(
       void *parser_state,
       const char *error_string );
 
 extern \
-YY_BUFFER_STATE xml_scanner__scan_buffer(
+YY_BUFFER_STATE libphdi_xml_scanner__scan_buffer(
                  char *buffer,
                  yy_size_t buffer_size );
 
 extern \
-void xml_scanner__delete_buffer(
+void libphdi_xml_scanner__delete_buffer(
       YY_BUFFER_STATE buffer_state );
 
 extern \
-size_t xml_scanner_buffer_offset;
+size_t libphdi_xml_scanner_buffer_offset;
 
-static char *xml_parser_function = "xml_parser";
+static char *libphdi_xml_parser_function = "libphdi_xml_parser";
 
-int xml_parser_parse_buffer(
+int libphdi_xml_parser_parse_buffer(
      libphdi_disk_descriptor_xml_file_t *disk_descriptor_xml_file,
      uint8_t *buffer,
      size_t buffer_size,
@@ -185,7 +185,7 @@ int xml_parser_parse_buffer(
 /* Parser rules
  */
 
-xml_document_main
+xml_plist_main
 	: xml_prologue xml_doctype xml_tag_open xml_tags xml_tag_close
 	;
 
@@ -213,59 +213,59 @@ xml_tag
 xml_tag_open_start
 	: XML_TAG_OPEN_START
 	{
-		xml_parser_rule_print(
+		libphdi_xml_parser_rule_print(
 		 "xml_tag_open_start" );
 
 		if( $1.data == NULL )
 		{
 			libcerror_error_set(
-			 ( (xml_parser_state_t *) parser_state )->error,
+			 ( (libphdi_xml_parser_state_t *) parser_state )->error,
 			 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
 			 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 			 "%s: invalid tag name.",
-			 xml_parser_function );
+			 libphdi_xml_parser_function );
 
 			YYABORT;
 		}
-		( (xml_parser_state_t *) parser_state )->current_tag = NULL;
+		( (libphdi_xml_parser_state_t *) parser_state )->current_tag = NULL;
 
 		if( libphdi_xml_tag_initialize(
-		     &( ( (xml_parser_state_t *) parser_state )->current_tag ),
+		     &( ( (libphdi_xml_parser_state_t *) parser_state )->current_tag ),
 		     (uint8_t *) $1.data,
 		     $1.length,
-		     ( (xml_parser_state_t *) parser_state )->error ) != 1 )
+		     ( (libphdi_xml_parser_state_t *) parser_state )->error ) != 1 )
 		{
 			libcerror_error_set(
-			 ( (xml_parser_state_t *) parser_state )->error,
+			 ( (libphdi_xml_parser_state_t *) parser_state )->error,
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
 			 "%s: unable to create XML tag.",
-			 xml_parser_function );
+			 libphdi_xml_parser_function );
 
 			YYABORT;
 		}
-		if( ( (xml_parser_state_t *) parser_state )->root_tag == NULL )
+		if( ( (libphdi_xml_parser_state_t *) parser_state )->root_tag == NULL )
 		{
-			( (xml_parser_state_t *) parser_state )->root_tag = ( (xml_parser_state_t *) parser_state )->current_tag;
+			( (libphdi_xml_parser_state_t *) parser_state )->root_tag = ( (libphdi_xml_parser_state_t *) parser_state )->current_tag;
 		}
 		else
 		{
 			if( libphdi_xml_tag_append_element(
-			     ( (xml_parser_state_t *) parser_state )->parent_tag,
-			     ( (xml_parser_state_t *) parser_state )->current_tag,
-			     ( (xml_parser_state_t *) parser_state )->error ) != 1 )
+			     ( (libphdi_xml_parser_state_t *) parser_state )->parent_tag,
+			     ( (libphdi_xml_parser_state_t *) parser_state )->current_tag,
+			     ( (libphdi_xml_parser_state_t *) parser_state )->error ) != 1 )
 			{
 				libcerror_error_set(
-				 ( (xml_parser_state_t *) parser_state )->error,
+				 ( (libphdi_xml_parser_state_t *) parser_state )->error,
 				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 				 LIBCERROR_RUNTIME_ERROR_APPEND_FAILED,
 				 "%s: unable to append attribute.",
-				 xml_parser_function );
+				 libphdi_xml_parser_function );
 
 				YYABORT;
 			}
 		}
-		( (xml_parser_state_t *) parser_state )->parent_tag = ( (xml_parser_state_t *) parser_state )->current_tag;
+		( (libphdi_xml_parser_state_t *) parser_state )->parent_tag = ( (libphdi_xml_parser_state_t *) parser_state )->current_tag;
 	}
 	;
 
@@ -276,104 +276,104 @@ xml_tag_open
 xml_tag_single
 	: xml_tag_open_start xml_attributes XML_TAG_END_SINGLE
 	{
-		xml_parser_rule_print(
+		libphdi_xml_parser_rule_print(
 		 "xml_tag_single" );
 
-		if( ( (xml_parser_state_t *) parser_state )->current_tag == NULL )
+		if( ( (libphdi_xml_parser_state_t *) parser_state )->current_tag == NULL )
 		{
 			libcerror_error_set(
-			 ( (xml_parser_state_t *) parser_state )->error,
+			 ( (libphdi_xml_parser_state_t *) parser_state )->error,
 			 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
 			 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 			 "%s: invalid current tag.",
-			 xml_parser_function );
+			 libphdi_xml_parser_function );
 
 			YYABORT;
 		}
-		( (xml_parser_state_t *) parser_state )->parent_tag  = ( (xml_parser_state_t *) parser_state )->current_tag->parent_tag;
-		( (xml_parser_state_t *) parser_state )->current_tag = ( (xml_parser_state_t *) parser_state )->parent_tag;
+		( (libphdi_xml_parser_state_t *) parser_state )->parent_tag  = ( (libphdi_xml_parser_state_t *) parser_state )->current_tag->parent_tag;
+		( (libphdi_xml_parser_state_t *) parser_state )->current_tag = ( (libphdi_xml_parser_state_t *) parser_state )->parent_tag;
 	}
 	;
 
 xml_tag_close
 	: XML_TAG_CLOSE
 	{
-		xml_parser_rule_print(
+		libphdi_xml_parser_rule_print(
 		 "xml_tag_close" );
 
 		if( $1.data == NULL )
 		{
 			libcerror_error_set(
-			 ( (xml_parser_state_t *) parser_state )->error,
+			 ( (libphdi_xml_parser_state_t *) parser_state )->error,
 			 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
 			 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 			 "%s: invalid tag name.",
-			 xml_parser_function );
+			 libphdi_xml_parser_function );
 
 			YYABORT;
 		}
-		if( ( (xml_parser_state_t *) parser_state )->current_tag == NULL )
+		if( ( (libphdi_xml_parser_state_t *) parser_state )->current_tag == NULL )
 		{
 			libcerror_error_set(
-			 ( (xml_parser_state_t *) parser_state )->error,
+			 ( (libphdi_xml_parser_state_t *) parser_state )->error,
 			 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
 			 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 			 "%s: invalid current tag.",
-			 xml_parser_function );
+			 libphdi_xml_parser_function );
 
 			YYABORT;
 		}
-		if( ( ( (xml_parser_state_t *) parser_state )->current_tag->name_size != ( $1.length + 1 ) )
+		if( ( ( (libphdi_xml_parser_state_t *) parser_state )->current_tag->name_size != ( $1.length + 1 ) )
 		 || ( narrow_string_compare(
-		       ( (xml_parser_state_t *) parser_state )->current_tag->name,
+		       ( (libphdi_xml_parser_state_t *) parser_state )->current_tag->name,
 		       $1.data,
 		       $1.length ) != 0 ) )
 		{
 			libcerror_error_set(
-			 ( (xml_parser_state_t *) parser_state )->error,
+			 ( (libphdi_xml_parser_state_t *) parser_state )->error,
 			 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
 			 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 			 "%s: mismatch in tag name (%s != %s).",
-			 xml_parser_function,
-			 ( (xml_parser_state_t *) parser_state )->current_tag->name,
+			 libphdi_xml_parser_function,
+			 ( (libphdi_xml_parser_state_t *) parser_state )->current_tag->name,
 			 $1.data );
 
 			YYABORT;
 		}
-		( (xml_parser_state_t *) parser_state )->parent_tag  = ( (xml_parser_state_t *) parser_state )->current_tag->parent_tag;
-		( (xml_parser_state_t *) parser_state )->current_tag = ( (xml_parser_state_t *) parser_state )->parent_tag;
+		( (libphdi_xml_parser_state_t *) parser_state )->parent_tag  = ( (libphdi_xml_parser_state_t *) parser_state )->current_tag->parent_tag;
+		( (libphdi_xml_parser_state_t *) parser_state )->current_tag = ( (libphdi_xml_parser_state_t *) parser_state )->parent_tag;
 	}
 	;
 
 xml_tag_content
 	: XML_TAG_CONTENT
 	{
-		xml_parser_rule_print(
+		libphdi_xml_parser_rule_print(
 		 "xml_tag_content" );
 
 		if( $1.data == NULL )
 		{
 			libcerror_error_set(
-			 ( (xml_parser_state_t *) parser_state )->error,
+			 ( (libphdi_xml_parser_state_t *) parser_state )->error,
 			 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
 			 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 			 "%s: invalid attribute value.",
-			 xml_parser_function );
+			 libphdi_xml_parser_function );
 
 			YYABORT;
 		}
 		if( libphdi_xml_tag_set_value(
-		     ( (xml_parser_state_t *) parser_state )->current_tag,
+		     ( (libphdi_xml_parser_state_t *) parser_state )->current_tag,
 		     (uint8_t *) $1.data,
 		     $1.length,
-		     ( (xml_parser_state_t *) parser_state )->error ) != 1 )
+		     ( (libphdi_xml_parser_state_t *) parser_state )->error ) != 1 )
 		{
 			libcerror_error_set(
-			 ( (xml_parser_state_t *) parser_state )->error,
+			 ( (libphdi_xml_parser_state_t *) parser_state )->error,
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
 			 "%s: unable to set value.",
-			 xml_parser_function );
+			 libphdi_xml_parser_function );
 
 			YYABORT;
 		}
@@ -388,45 +388,45 @@ xml_attributes
 xml_attribute
 	: XML_ATTRIBUTE_NAME XML_ATTRIBUTE_ASSIGN XML_ATTRIBUTE_VALUE
 	{
-		xml_parser_rule_print(
+		libphdi_xml_parser_rule_print(
 		 "xml_attribute" );
 
 		if( $1.data == NULL )
 		{
 			libcerror_error_set(
-			 ( (xml_parser_state_t *) parser_state )->error,
+			 ( (libphdi_xml_parser_state_t *) parser_state )->error,
 			 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
 			 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 			 "%s: invalid attribute name.",
-			 xml_parser_function );
+			 libphdi_xml_parser_function );
 
 			YYABORT;
 		}
 		if( $3.data == NULL )
 		{
 			libcerror_error_set(
-			 ( (xml_parser_state_t *) parser_state )->error,
+			 ( (libphdi_xml_parser_state_t *) parser_state )->error,
 			 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
 			 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 			 "%s: invalid attribute value.",
-			 xml_parser_function );
+			 libphdi_xml_parser_function );
 
 			YYABORT;
 		}
 		if( libphdi_xml_tag_append_attribute(
-		     ( (xml_parser_state_t *) parser_state )->current_tag,
+		     ( (libphdi_xml_parser_state_t *) parser_state )->current_tag,
 		     (uint8_t *) $1.data,
 		     $1.length,
 		     (uint8_t *) $3.data,
 		     $3.length,
-		     ( (xml_parser_state_t *) parser_state )->error ) != 1 )
+		     ( (libphdi_xml_parser_state_t *) parser_state )->error ) != 1 )
 		{
 			libcerror_error_set(
-			 ( (xml_parser_state_t *) parser_state )->error,
+			 ( (libphdi_xml_parser_state_t *) parser_state )->error,
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_APPEND_FAILED,
 			 "%s: unable to append attribute.",
-			 xml_parser_function );
+			 libphdi_xml_parser_function );
 
 			YYABORT;
 		}
@@ -435,23 +435,23 @@ xml_attribute
 
 %%
 
-int xml_parser_parse_buffer(
+int libphdi_xml_parser_parse_buffer(
      libphdi_disk_descriptor_xml_file_t *disk_descriptor_xml_file,
      uint8_t *buffer,
      size_t buffer_size,
      libcerror_error_t **error )
 {
-	xml_parser_state_t parser_state;
+	libphdi_xml_parser_state_t parser_state;
 	
 	YY_BUFFER_STATE buffer_state = NULL;
-	static char *function        = "xml_parser_parse_buffer";
+	static char *function        = "libphdi_xml_parser_parse_buffer";
 	int result                   = -1;
 
-	buffer_state = xml_scanner__scan_buffer(
+	buffer_state = libphdi_xml_scanner__scan_buffer(
 	                (char *) buffer,
 	                buffer_size );
 
-	xml_scanner_buffer_offset = 0;
+	libphdi_xml_scanner_buffer_offset = 0;
 
 	if( buffer_state != NULL )
 	{
@@ -461,7 +461,7 @@ int xml_parser_parse_buffer(
 		parser_state.current_tag              = NULL;
 		parser_state.parent_tag               = NULL;
 
-		if( xml_scanner_parse(
+		if( libphdi_xml_scanner_parse(
 		     &parser_state ) == 0 )
 		{
 			if( libphdi_disk_descriptor_xml_file_set_root_tag(
@@ -485,10 +485,10 @@ int xml_parser_parse_buffer(
 				result = 1;
 			}
 		}
-		xml_scanner__delete_buffer(
+		libphdi_xml_scanner__delete_buffer(
 		 buffer_state );
 	}
-	xml_scanner_lex_destroy();
+	libphdi_xml_scanner_lex_destroy();
 
 	if( parser_state.root_tag != NULL )
 	{

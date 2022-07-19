@@ -1,5 +1,5 @@
 AM_LFLAGS = -Cf
-AM_YFLAGS = -d -v -l -p xml_scanner_
+AM_YFLAGS = -d -v -l -p libphdi_xml_scanner_
 
 AM_CPPFLAGS = \
 	-DLOCALEDIR=\"$(datadir)/locale\" \
