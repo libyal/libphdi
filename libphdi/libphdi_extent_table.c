@@ -179,6 +179,22 @@ int libphdi_extent_table_clear(
 
 		return( -1 );
 	}
+	if( extent_table->extent_files_stream != NULL )
+	{
+		if( libfdata_stream_free(
+		     &( extent_table->extent_files_stream ),
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 "%s: unable to free extent files stream.",
+			 function );
+
+			result = -1;
+		}
+	}
 	if( extent_table->extent_files_list != NULL )
 	{
 		if( libfdata_list_free(
