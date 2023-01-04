@@ -558,7 +558,7 @@ int libphdi_disk_descriptor_xml_file_read_file_io_handle(
 	if( libphdi_disk_descriptor_xml_file_read_data(
 	     disk_descriptor_xml_file,
 	     data,
-	     file_size,
+	     (size_t) file_size,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
@@ -715,7 +715,7 @@ int libphdi_disk_descriptor_xml_file_get_disk_parameters(
 
 				return( -1 );
 			}
-			disk_parameters->number_of_cylinders = value_64bit;
+			disk_parameters->number_of_cylinders = (uint32_t) value_64bit;
 
 			continue;
 		}
@@ -843,7 +843,7 @@ int libphdi_disk_descriptor_xml_file_get_disk_parameters(
 
 				return( -1 );
 			}
-			disk_parameters->number_of_heads = value_64bit;
+			disk_parameters->number_of_heads = (uint32_t) value_64bit;
 
 			continue;
 		}

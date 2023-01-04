@@ -2839,7 +2839,7 @@ ssize_t libphdi_internal_handle_read_block_from_file_io_pool(
 	{
 		block_offset = storage_image_data_offset % block_size;
 	}
-	read_size = (size_t) block_size - block_offset;
+	read_size = (size_t) ( block_size - block_offset );
 
 	if( read_size > buffer_size )
 	{
