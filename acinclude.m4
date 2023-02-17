@@ -1,6 +1,6 @@
 dnl Checks for required headers and functions
 dnl
-dnl Version: 20200713
+dnl Version: 20230217
 
 dnl Function to detect if libphdi dependencies are available
 AC_DEFUN([AX_LIBPHDI_CHECK_LOCAL],
@@ -25,9 +25,7 @@ AC_DEFUN([AX_PHDITOOLS_CHECK_LOCAL],
   ])
 
   dnl Headers included in phditools/phdimount.c
-  AC_CHECK_HEADERS([errno.h])
-
-  AC_HEADER_TIME
+  AC_CHECK_HEADERS([errno.h sys/time.h])
 
   dnl Functions included in phditools/mount_file_system.c and phditools/mount_file_entry.c
   AS_IF(
