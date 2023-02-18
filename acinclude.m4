@@ -1,10 +1,10 @@
 dnl Checks for required headers and functions
 dnl
-dnl Version: 20230217
+dnl Version: 20230218
 
 dnl Function to detect if libphdi dependencies are available
 AC_DEFUN([AX_LIBPHDI_CHECK_LOCAL],
-  [AM_PROG_LEX
+  [AC_PROG_LEX(noyywrap)
   AC_PROG_YACC
 
   dnl Check for internationalization functions in libphdi/libphdi_i18n.c
