@@ -609,7 +609,6 @@ PyObject *pyphdi_extent_descriptor_get_filename(
 	libcerror_error_t *error                     = NULL;
 	libphdi_image_descriptor_t *image_descriptor = NULL;
 	uint8_t *filename                            = NULL;
-	const char *errors                           = NULL;
 	static char *function                        = "pyphdi_extent_descriptor_get_filename";
 	size_t filename_size                         = 0;
 	int result                                   = 0;
@@ -691,7 +690,7 @@ PyObject *pyphdi_extent_descriptor_get_filename(
 	if( filename == NULL )
 	{
 		PyErr_Format(
-		 PyExc_IOError,
+		 PyExc_MemoryError,
 		 "%s: unable to create filename.",
 		 function );
 
@@ -748,7 +747,7 @@ PyObject *pyphdi_extent_descriptor_get_filename(
 	string_object = PyUnicode_DecodeUTF8(
 			 (char *) filename,
 			 (Py_ssize_t) filename_size - 1,
-			 errors );
+			 NULL );
 
 	PyMem_Free(
 	 filename );
