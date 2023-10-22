@@ -23,7 +23,10 @@ AM_CPPFLAGS = \
 	@PTHREAD_CPPFLAGS@ \
 	@LIBPHDI_DLL_EXPORT@
 
-BUILT_SOURCES = libphdi_xml_parser.h
+BUILT_SOURCES = \
+	libphdi_xml_scanner.c \
+	libphdi_xml_parser.c \
+	libphdi_xml_parser.h
 
 lib_LTLIBRARIES = libphdi.la
 
@@ -108,15 +111,17 @@ MAINTAINERCLEANFILES = \
 	Makefile.in
 
 distclean: clean
-	/bin/rm -f libphdi_definitions.h
-	/bin/rm -f libphdi.rc
-	/bin/rm -f libphdi_xml_parser.c
-	/bin/rm -f libphdi_xml_parser.h
-	/bin/rm -f libphdi_xml_parser.output
-	/bin/rm -f libphdi_xml_scanner.c
-	/bin/rm -f Makefile
+	-rm -f libphdi_definitions.h
+	-rm -f libphdi.rc
+	-rm -f libphdi_xml_parser.c
+	-rm -f libphdi_xml_parser.h
+	-rm -f libphdi_xml_parser.output
+	-rm -f libphdi_xml_scanner.c
+	-rm -f Makefile
 
-splint:
+sources-local: $(BUILT_SOURCES)
+
+splint-local:
 	@echo "Running splint on libphdi ..."
 	-splint -preproc -redef $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(libphdi_la_SOURCES)
 

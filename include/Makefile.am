@@ -19,9 +19,9 @@ MAINTAINERCLEANFILES = \
 	Makefile.in
 
 distclean: clean
-	/bin/rm -f libphdi.h
-	/bin/rm -f libphdi/definitions.h
-	/bin/rm -f libphdi/features.h
-	/bin/rm -f libphdi/types.h
-	/bin/rm -f Makefile
+	-rm -f libphdi.h
+	-rm -f libphdi/definitions.h
+	-rm -f libphdi/features.h
+	-rm -f libphdi/types.h
+	-rm -f Makefile
 
