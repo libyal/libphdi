@@ -37,16 +37,19 @@ class SupportFunctionsTests(unittest.TestCase):
 
   def test_check_file_signature(self):
     """Tests the check_file_signature function."""
-    test_source = unittest.source
+    test_source = getattr(unittest, "source", None)
     if not test_source:
       raise unittest.SkipTest("missing source")
+
+    if not os.path.isfile(test_source):
+      raise unittest.SkipTest("source not a regular file")
 
     result = pyphdi.check_file_signature(test_source)
     self.assertTrue(result)
 
   def test_check_file_signature_file_object(self):
     """Tests the check_file_signature_file_object function."""
-    test_source = unittest.source
+    test_source = getattr(unittest, "source", None)
     if not test_source:
       raise unittest.SkipTest("missing source")
 
@@ -56,9 +59,12 @@ class SupportFunctionsTests(unittest.TestCase):
 
   def test_check_file_signature_file_object(self):
     """Tests the check_file_signature_file_object function."""
-    test_source = unittest.source
+    test_source = getattr(unittest, "source", None)
     if not test_source:
       raise unittest.SkipTest("missing source")
+
+    if not os.path.isfile(test_source):
+      raise unittest.SkipTest("source not a regular file")
 
     with open(test_source, "rb") as file_object:
       result = pyphdi.check_file_signature_file_object(file_object)
@@ -66,11 +72,11 @@ class SupportFunctionsTests(unittest.TestCase):
 
   def test_open(self):
     """Tests the open function."""
-    test_source = unittest.source
+    test_source = getattr(unittest, "source", None)
     if not test_source:
       raise unittest.SkipTest("missing source")
 
-    phdi_handle = pylnk.open(test_source)
+    phdi_handle = pyphdi.open(test_source)
     self.assertIsNotNone(phdi_handle)
 
     phdi_handle.close()
@@ -83,7 +89,7 @@ class SupportFunctionsTests(unittest.TestCase):
 
   def test_open_file_object(self):
     """Tests the open_file_object function."""
-    test_source = unittest.source
+    test_source = getattr(unittest, "source", None)
     if not test_source:
       raise unittest.SkipTest("missing source")
 
@@ -91,7 +97,7 @@ class SupportFunctionsTests(unittest.TestCase):
       raise unittest.SkipTest("source not a regular file")
 
     with open(test_source, "rb") as file_object:
-      phdi_handle = pylnk.open_file_object(file_object)
+      phdi_handle = pyphdi.open_file_object(file_object)
       self.assertIsNotNone(phdi_handle)
 
       phdi_handle.close()
