@@ -32,7 +32,7 @@ Header files and libraries for developing applications for libphdi.
 Summary: Python 3 bindings for libphdi
 Group: System Environment/Libraries
 Requires: libphdi = %{version}-%{release} python3
-BuildRequires: python3-devel
+BuildRequires: python3-devel python3-setuptools
 
 %description -n libphdi-python3
 Python 3 bindings for libphdi
@@ -50,7 +50,7 @@ Several tools for reading Parallels Hard Disk image (PHDI) files
 %setup -q
 
 %build
-%configure --prefix=/usr --libdir=%{_libdir} --mandir=%{_mandir} --enable-python3
+%configure --prefix=/usr --libdir=%{_libdir} --mandir=%{_mandir} --enable-python
 make %{?_smp_mflags}
 
 %install

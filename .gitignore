@@ -1,6 +1,6 @@
 # Files to ignore by git
 #
-# Version: 20230926
+# Version: 20231119
 
 # Generic auto-generated build files
 *~
@@ -131,7 +131,6 @@ stamp-h[1-9]
 /libphdi/libphdi_xml_parser.h
 /libphdi/libphdi_xml_parser.output
 /libphdi/libphdi_xml_scanner.c
-/pyphdi-python[23]/*.[ch]
 /setup.cfg
 /phditools/*.exe
 /phditools/phdiinfo

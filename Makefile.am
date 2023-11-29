@@ -21,8 +21,6 @@ SUBDIRS = \
 	libphdi \
 	phditools \
 	pyphdi \
-	pyphdi-python2 \
-	pyphdi-python3 \
 	po \
 	manuals \
 	tests \

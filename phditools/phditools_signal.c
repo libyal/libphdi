@@ -40,7 +40,7 @@ void (*phditools_signal_signal_handler)( phditools_signal_t ) = NULL;
 /* Signal handler for Ctrl+C or Ctrl+Break signals
  */
 BOOL WINAPI phditools_signal_handler(
-             unsigned long signal )
+             phditools_signal_t signal )
 {
 	static char *function = "phditools_signal_handler";
 
@@ -112,7 +112,7 @@ int phditools_signal_attach(
 	phditools_signal_signal_handler = signal_handler;
 
 	if( SetConsoleCtrlHandler(
-	     phditools_signal_handler,
+	     (PHANDLER_ROUTINE) phditools_signal_handler,
 	     TRUE ) == 0 )
 	{
 		libcerror_error_set(
@@ -179,7 +179,7 @@ int phditools_signal_detach(
 	static char *function = "phditools_signal_detach";
 
 	if( SetConsoleCtrlHandler(
-	     phditools_signal_handler,
+	     (PHANDLER_ROUTINE) phditools_signal_handler,
 	     FALSE ) == 0 )
 	{
 		libcerror_error_set(
