@@ -27,3 +27,6 @@ echo "hfsplus.hdd/DiskDescriptor.xml" > "${TEST_INPUT_DIRECTORY}/.libphdi/${TEST
 mkdir -p "${TEST_INPUT_DIRECTORY}/.pyphdi/${TEST_SET}";
 echo "hfsplus.hdd/DiskDescriptor.xml" > "${TEST_INPUT_DIRECTORY}/.pyphdi/${TEST_SET}/files";
 
+mkdir -p "${TEST_INPUT_DIRECTORY}/.phditools/${TEST_SET}";
+echo "hfsplus.hdd/DiskDescriptor.xml" > "${TEST_INPUT_DIRECTORY}/.pyphdi/${TEST_SET}/files";
+
