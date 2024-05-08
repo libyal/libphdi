@@ -103,14 +103,14 @@ PyMethodDef pyphdi_handle_object_methods[] = {
 	{ "read_buffer",
 	  (PyCFunction) pyphdi_handle_read_buffer,
 	  METH_VARARGS | METH_KEYWORDS,
-	  "read_buffer(size) -> Binary string or None\n"
+	  "read_buffer(size)-> Bytes or None\n"
 	  "\n"
 	  "Reads a buffer of data." },
 
 	{ "read_buffer_at_offset",
 	  (PyCFunction) pyphdi_handle_read_buffer_at_offset,
 	  METH_VARARGS | METH_KEYWORDS,
-	  "read_buffer_at_offset(size, offset) -> Binary string or None\n"
+	  "read_buffer_at_offset(size, offset)-> Bytes or None\n"
 	  "\n"
 	  "Reads a buffer of data at a specific offset." },
 
