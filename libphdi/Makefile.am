@@ -3,8 +3,8 @@ AM_YFLAGS = -d -v -l -p libphdi_xml_scanner_
 
 AM_CPPFLAGS = \
 	-DLOCALEDIR=\"$(datadir)/locale\" \
-	-I$(top_srcdir)/include \
-	-I$(top_srcdir)/common \
+	-I../include -I$(top_srcdir)/include \
+	-I../common -I$(top_srcdir)/common \
 	@LIBCERROR_CPPFLAGS@ \
 	@LIBCTHREADS_CPPFLAGS@ \
 	@LIBCDATA_CPPFLAGS@ \
@@ -107,17 +107,15 @@ EXTRA_DIST = \
 	libphdi.rc \
 	libphdi.rc.in
 
-MAINTAINERCLEANFILES = \
+DISTCLEANFILES = \
+	libphdi_definitions.h \
+	libphdi.rc \
+	libphdi_xml_parser.c \
+	libphdi_xml_parser.h \
+	libphdi_xml_parser.output \
+	libphdi_xml_scanner.c \
+	Makefile \
 	Makefile.in
-
-distclean: clean
-	-rm -f libphdi_definitions.h
-	-rm -f libphdi.rc
-	-rm -f libphdi_xml_parser.c
-	-rm -f libphdi_xml_parser.h
-	-rm -f libphdi_xml_parser.output
-	-rm -f libphdi_xml_scanner.c
-	-rm -f Makefile
 
 sources-local: $(BUILT_SOURCES)
 
