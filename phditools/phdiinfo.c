@@ -52,7 +52,7 @@
 info_handle_t *phdiinfo_info_handle = NULL;
 int phdiinfo_abort                  = 0;
 
-/* Prints the executable usage information
+/* Prints usage information
  */
 void usage_fprint(
       FILE *stream )
@@ -138,7 +138,7 @@ int main( int argc, char * const argv[] )
 	 1 );
 
 	if( libclocale_initialize(
-             "phditools",
+	     "phditools",
 	     &error ) != 1 )
 	{
 		fprintf(
@@ -148,8 +148,8 @@ int main( int argc, char * const argv[] )
 		goto on_error;
 	}
         if( phditools_output_initialize(
-             _IONBF,
-             &error ) != 1 )
+	     _IONBF,
+	     &error ) != 1 )
 	{
 		fprintf(
 		 stderr,
