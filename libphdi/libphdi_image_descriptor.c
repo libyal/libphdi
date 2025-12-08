@@ -1,7 +1,7 @@
 /*
  * Image descriptor functions
  *
- * Copyright (C) 2015-2024, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2015-2025, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
