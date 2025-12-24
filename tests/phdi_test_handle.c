@@ -40,6 +40,7 @@
 #include "phdi_test_getopt.h"
 #include "phdi_test_libbfio.h"
 #include "phdi_test_libcerror.h"
+#include "phdi_test_libcpath.h"
 #include "phdi_test_libphdi.h"
 #include "phdi_test_macros.h"
 #include "phdi_test_memory.h"
@@ -142,14 +143,14 @@ int phdi_test_handle_open_source(
 
 	while( string_length > 0 )
 	{
-		if( source[ string_length - 1 ] == '/' )
+		if( source[ string_length - 1 ] == LIBCPATH_SEPARATOR )
 		{
 			break;
 		}
 		string_length--;
 	}
 #if defined( HAVE_WIDE_SYSTEM_CHARACTER )
-	result = libphdi_handle_set_extent_data_files_path(
+	result = libphdi_handle_set_extent_data_files_path_wide(
 	          *handle,
 	          source,
 	          string_length,
