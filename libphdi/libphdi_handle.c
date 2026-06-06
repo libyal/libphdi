@@ -444,7 +444,7 @@ int libphdi_handle_open(
 	libbfio_handle_t *file_io_handle           = NULL;
 	libcdirectory_directory_t *directory       = NULL;
 	libphdi_internal_handle_t *internal_handle = NULL;
-	char *data_files_path_end                  = NULL;
+	const char *data_files_path_end            = NULL;
 	char *disk_descriptor_xml_path             = NULL;
 	static char *function                      = "libphdi_handle_open";
 	size_t data_files_path_length              = 0;
@@ -598,8 +598,7 @@ int libphdi_handle_open(
 
 			goto on_error;
 		}
-		filename        = disk_descriptor_xml_path;
-		filename_length = disk_descriptor_xml_path_size - 1;
+		filename = disk_descriptor_xml_path;
 	}
 	else
 	{
@@ -744,7 +743,7 @@ int libphdi_handle_open_wide(
 	libbfio_handle_t *file_io_handle           = NULL;
 	libcdirectory_directory_t *directory       = NULL;
 	libphdi_internal_handle_t *internal_handle = NULL;
-	wchar_t *data_files_path_end               = NULL;
+	const wchar_t *data_files_path_end         = NULL;
 	wchar_t *disk_descriptor_xml_path          = NULL;
 	static char *function                      = "libphdi_handle_open_wide";
 	size_t data_files_path_length              = 0;
