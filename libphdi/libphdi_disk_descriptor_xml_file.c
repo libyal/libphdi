@@ -100,7 +100,7 @@ int libphdi_disk_descriptor_xml_file_initialize(
 		 LIBCERROR_MEMORY_ERROR_SET_FAILED,
 		 "%s: unable to clear disk descriptor XML file.",
 		 function );
-	
+
 		memory_free(
 		 *disk_descriptor_xml_file );
 
@@ -229,7 +229,7 @@ int libphdi_disk_descriptor_xml_file_read_data(
 	}
 #if defined( HAVE_DEBUG_OUTPUT )
 	if( libcnotify_verbose != 0 )
-	{                
+	{
 		if( ( data_size >= 6 )
 		 && ( data[ 0 ] == '<' )
 		 && ( data[ 1 ] == '?' )
@@ -242,9 +242,9 @@ int libphdi_disk_descriptor_xml_file_read_data(
 			 "%s: XML:\n%s\n",
 			 function,
 			 data );
-		}        
-		else     
-		{       
+		}
+		else
+		{
 			libcnotify_printf(
 			 "%s: XML data:\n",
 			 function );
@@ -253,7 +253,7 @@ int libphdi_disk_descriptor_xml_file_read_data(
 			 data_size,
 			 0 );
 		}
-	}                
+	}
 #endif /* defined( HAVE_DEBUG_OUTPUT ) */
 
 	/* Lex wants a buffer it can write to

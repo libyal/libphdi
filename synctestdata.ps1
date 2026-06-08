@@ -1,6 +1,6 @@
 # Script that synchronizes the local test data
 #
-# Version: 20260531
+# Version: 20260608
  
 $Repository = "log2timeline/dfvfs"
 $TestDataPath = "test_data/hfsplus.hdd"
@@ -20,12 +20,10 @@ New-Item -Name "${TestInputDirectory}\${TestSet}\hfsplus.hdd" -ItemType "directo
 
 ForEach ($TestFile in ${TestFiles} -split " ")
 {
-	$Url = "https://raw.githubusercontent.com/${Repository}/refs/heads/main/${TestDataPath}/${TestFile}"
+	$UrlTestFile = [System.Uri]::EscapeDataString("${TestFile}")
+	$Url = "https://raw.githubusercontent.com/${Repository}/refs/heads/main/${TestDataPath}/${UrlTestFile}"
 
-	# URL escape the { and } characters in the name of a test file.
-	$Url = $Url -replace "{","%7B"
-	$Url = $Url -replace "}","%7D"
-
+	$ProgressPreference = 'SilentlyContinue'
 	Invoke-WebRequest -Uri ${Url} -OutFile "${TestInputDirectory}\${TestSet}\hfsplus.hdd\${TestFile}"
 }
 
