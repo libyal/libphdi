@@ -1,6 +1,6 @@
-.Dd June  6, 2026
-.Dt libphdi 3
-.Os libphdi
+.Dd June 15, 2026
+.Dt LIBPHDI 3
+.Os
 .Sh NAME
 .Nm libphdi.h
 .Nd Library to access the Parallels Hard Disk image (PHDI) format
@@ -8,145 +8,471 @@
 .In libphdi.h
 .Pp
 Support functions
+.nf
 .Ft const char *
-.Fn libphdi_get_version "void"
+.Fo libphdi_get_version
+.Fa "void"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libphdi_get_access_flags_read "void"
+.Fo libphdi_get_access_flags_read
+.Fa "void"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libphdi_get_access_flags_read_write "void"
+.Fo libphdi_get_access_flags_read_write
+.Fa "void"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libphdi_get_access_flags_write "void"
+.Fo libphdi_get_access_flags_write
+.Fa "void"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libphdi_get_codepage "int *codepage" "libphdi_error_t **error"
+.Fo libphdi_get_codepage
+.Fa "int *codepage"
+.Fa "libphdi_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libphdi_set_codepage "int codepage" "libphdi_error_t **error"
+.Fo libphdi_set_codepage
+.Fa "int codepage"
+.Fa "libphdi_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libphdi_check_file_signature "const char *filename" "libphdi_error_t **error"
+.Fo libphdi_check_file_signature
+.Fa "const char *filename"
+.Fa "libphdi_error_t **error"
+.Fc
+.fi
 .Pp
 Available when compiled with wide character string support:
+.nf
 .Ft int
-.Fn libphdi_check_file_signature_wide "const wchar_t *filename" "libphdi_error_t **error"
+.Fo libphdi_check_file_signature_wide
+.Fa "const wchar_t *filename"
+.Fa "libphdi_error_t **error"
+.Fc
+.fi
 .Pp
 Available when compiled with libbfio support:
+.nf
 .Ft int
-.Fn libphdi_check_file_signature_file_io_handle "libbfio_handle_t *file_io_handle" "libphdi_error_t **error"
+.Fo libphdi_check_file_signature_file_io_handle
+.Fa "libbfio_handle_t *file_io_handle"
+.Fa "libphdi_error_t **error"
+.Fc
+.fi
 .Pp
 Notify functions
+.nf
 .Ft void
-.Fn libphdi_notify_set_verbose "int verbose"
+.Fo libphdi_notify_set_verbose
+.Fa "int verbose"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libphdi_notify_set_stream "FILE *stream" "libphdi_error_t **error"
+.Fo libphdi_notify_set_stream
+.Fa "FILE *stream"
+.Fa "libphdi_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libphdi_notify_stream_open "const char *filename" "libphdi_error_t **error"
+.Fo libphdi_notify_stream_open
+.Fa "const char *filename"
+.Fa "libphdi_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libphdi_notify_stream_close "libphdi_error_t **error"
+.Fo libphdi_notify_stream_close
+.Fa "libphdi_error_t **error"
+.Fc
+.fi
 .Pp
 Error functions
+.nf
 .Ft void
-.Fn libphdi_error_free "libphdi_error_t **error"
+.Fo libphdi_error_free
+.Fa "libphdi_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libphdi_error_fprint "libphdi_error_t *error" "FILE *stream"
+.Fo libphdi_error_fprint
+.Fa "libphdi_error_t *error"
+.Fa "FILE *stream"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libphdi_error_sprint "libphdi_error_t *error" "char *string" "size_t size"
+.Fo libphdi_error_sprint
+.Fa "libphdi_error_t *error"
+.Fa "char *string"
+.Fa "size_t size"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libphdi_error_backtrace_fprint "libphdi_error_t *error" "FILE *stream"
+.Fo libphdi_error_backtrace_fprint
+.Fa "libphdi_error_t *error"
+.Fa "FILE *stream"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libphdi_error_backtrace_sprint "libphdi_error_t *error" "char *string" "size_t size"
+.Fo libphdi_error_backtrace_sprint
+.Fa "libphdi_error_t *error"
+.Fa "char *string"
+.Fa "size_t size"
+.Fc
+.fi
 .Pp
 Handle functions
+.nf
 .Ft int
-.Fn libphdi_handle_initialize "libphdi_handle_t **handle" "libphdi_error_t **error"
+.Fo libphdi_handle_initialize
+.Fa "libphdi_handle_t **handle"
+.Fa "libphdi_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libphdi_handle_free "libphdi_handle_t **handle" "libphdi_error_t **error"
+.Fo libphdi_handle_free
+.Fa "libphdi_handle_t **handle"
+.Fa "libphdi_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libphdi_handle_signal_abort "libphdi_handle_t *handle" "libphdi_error_t **error"
+.Fo libphdi_handle_signal_abort
+.Fa "libphdi_handle_t *handle"
+.Fa "libphdi_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libphdi_handle_open "libphdi_handle_t *handle" "const char *filename" "int access_flags" "libphdi_error_t **error"
+.Fo libphdi_handle_open
+.Fa "libphdi_handle_t *handle"
+.Fa "const char *filename"
+.Fa "int access_flags"
+.Fa "libphdi_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libphdi_handle_open_extent_data_files "libphdi_handle_t *handle" "libphdi_error_t **error"
+.Fo libphdi_handle_open_extent_data_files
+.Fa "libphdi_handle_t *handle"
+.Fa "libphdi_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libphdi_handle_close "libphdi_handle_t *handle" "libphdi_error_t **error"
+.Fo libphdi_handle_close
+.Fa "libphdi_handle_t *handle"
+.Fa "libphdi_error_t **error"
+.Fc
+.fi
+.nf
 .Ft ssize_t
-.Fn libphdi_handle_read_buffer "libphdi_handle_t *handle" "void *buffer" "size_t buffer_size" "libphdi_error_t **error"
+.Fo libphdi_handle_read_buffer
+.Fa "libphdi_handle_t *handle"
+.Fa "void *buffer"
+.Fa "size_t buffer_size"
+.Fa "libphdi_error_t **error"
+.Fc
+.fi
+.nf
 .Ft ssize_t
-.Fn libphdi_handle_read_buffer_at_offset "libphdi_handle_t *handle" "void *buffer" "size_t buffer_size" "off64_t offset" "libphdi_error_t **error"
+.Fo libphdi_handle_read_buffer_at_offset
+.Fa "libphdi_handle_t *handle"
+.Fa "void *buffer"
+.Fa "size_t buffer_size"
+.Fa "off64_t offset"
+.Fa "libphdi_error_t **error"
+.Fc
+.fi
+.nf
 .Ft off64_t
-.Fn libphdi_handle_seek_offset "libphdi_handle_t *handle" "off64_t offset" "int whence" "libphdi_error_t **error"
+.Fo libphdi_handle_seek_offset
+.Fa "libphdi_handle_t *handle"
+.Fa "off64_t offset"
+.Fa "int whence"
+.Fa "libphdi_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libphdi_handle_get_offset "libphdi_handle_t *handle" "off64_t *offset" "libphdi_error_t **error"
+.Fo libphdi_handle_get_offset
+.Fa "libphdi_handle_t *handle"
+.Fa "off64_t *offset"
+.Fa "libphdi_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libphdi_handle_set_maximum_number_of_open_handles "libphdi_handle_t *handle" "int maximum_number_of_open_handles" "libphdi_error_t **error"
+.Fo libphdi_handle_set_maximum_number_of_open_handles
+.Fa "libphdi_handle_t *handle"
+.Fa "int maximum_number_of_open_handles"
+.Fa "libphdi_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libphdi_handle_set_extent_data_files_path "libphdi_handle_t *handle" "const char *path" "size_t path_length" "libphdi_error_t **error"
+.Fo libphdi_handle_set_extent_data_files_path
+.Fa "libphdi_handle_t *handle"
+.Fa "const char *path"
+.Fa "size_t path_length"
+.Fa "libphdi_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libphdi_handle_get_media_size "libphdi_handle_t *handle" "size64_t *media_size" "libphdi_error_t **error"
+.Fo libphdi_handle_set_extent_data_files_path_wide
+.Fa "libphdi_handle_t *handle"
+.Fa "const wchar_t *path"
+.Fa "size_t path_length"
+.Fa "libphdi_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libphdi_handle_get_utf8_name_size "libphdi_handle_t *handle" "size_t *utf8_string_size" "libphdi_error_t **error"
+.Fo libphdi_handle_get_media_size
+.Fa "libphdi_handle_t *handle"
+.Fa "size64_t *media_size"
+.Fa "libphdi_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libphdi_handle_get_utf8_name "libphdi_handle_t *handle" "uint8_t *utf8_string" "size_t utf8_string_size" "libphdi_error_t **error"
+.Fo libphdi_handle_get_utf8_name_size
+.Fa "libphdi_handle_t *handle"
+.Fa "size_t *utf8_string_size"
+.Fa "libphdi_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libphdi_handle_get_utf16_name_size "libphdi_handle_t *handle" "size_t *utf16_string_size" "libphdi_error_t **error"
+.Fo libphdi_handle_get_utf8_name
+.Fa "libphdi_handle_t *handle"
+.Fa "uint8_t *utf8_string"
+.Fa "size_t utf8_string_size"
+.Fa "libphdi_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libphdi_handle_get_utf16_name "libphdi_handle_t *handle" "uint16_t *utf16_string" "size_t utf16_string_size" "libphdi_error_t **error"
+.Fo libphdi_handle_get_utf16_name_size
+.Fa "libphdi_handle_t *handle"
+.Fa "size_t *utf16_string_size"
+.Fa "libphdi_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libphdi_handle_get_number_of_extents "libphdi_handle_t *handle" "int *number_of_extents" "libphdi_error_t **error"
+.Fo libphdi_handle_get_utf16_name
+.Fa "libphdi_handle_t *handle"
+.Fa "uint16_t *utf16_string"
+.Fa "size_t utf16_string_size"
+.Fa "libphdi_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libphdi_handle_get_extent_descriptor_by_index "libphdi_handle_t *handle" "int extent_index" "libphdi_extent_descriptor_t **extent_descriptor" "libphdi_error_t **error"
+.Fo libphdi_handle_get_number_of_extents
+.Fa "libphdi_handle_t *handle"
+.Fa "int *number_of_extents"
+.Fa "libphdi_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libphdi_handle_get_number_of_snapshots "libphdi_handle_t *handle" "int *number_of_snapshots" "libphdi_error_t **error"
+.Fo libphdi_handle_get_extent_descriptor_by_index
+.Fa "libphdi_handle_t *handle"
+.Fa "int extent_index"
+.Fa "libphdi_extent_descriptor_t **extent_descriptor"
+.Fa "libphdi_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libphdi_handle_get_snapshot_by_index "libphdi_handle_t *handle" "int snapshot_index" "libphdi_snapshot_t **snapshot" "libphdi_error_t **error"
+.Fo libphdi_handle_get_number_of_snapshots
+.Fa "libphdi_handle_t *handle"
+.Fa "int *number_of_snapshots"
+.Fa "libphdi_error_t **error"
+.Fc
+.fi
+.nf
+.Ft int
+.Fo libphdi_handle_get_snapshot_by_index
+.Fa "libphdi_handle_t *handle"
+.Fa "int snapshot_index"
+.Fa "libphdi_snapshot_t **snapshot"
+.Fa "libphdi_error_t **error"
+.Fc
+.fi
 .Pp
 Available when compiled with wide character string support:
+.nf
 .Ft int
-.Fn libphdi_handle_open_wide "libphdi_handle_t *handle" "const wchar_t *filename" "int access_flags" "libphdi_error_t **error"
-.Ft int
-.Fn libphdi_handle_set_extent_data_files_path_wide "libphdi_handle_t *handle" "const wchar_t *path" "size_t path_length" "libphdi_error_t **error"
+.Fo libphdi_handle_open_wide
+.Fa "libphdi_handle_t *handle"
+.Fa "const wchar_t *filename"
+.Fa "int access_flags"
+.Fa "libphdi_error_t **error"
+.Fc
+.fi
 .Pp
 Available when compiled with libbfio support:
+.nf
 .Ft int
-.Fn libphdi_handle_open_file_io_handle "libphdi_handle_t *handle" "libbfio_handle_t *file_io_handle" "int access_flags" "libphdi_error_t **error"
+.Fo libphdi_handle_open_file_io_handle
+.Fa "libphdi_handle_t *handle"
+.Fa "libbfio_handle_t *file_io_handle"
+.Fa "int access_flags"
+.Fa "libphdi_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libphdi_handle_open_extent_data_files_file_io_pool "libphdi_handle_t *handle" "libbfio_pool_t *file_io_pool" "libphdi_error_t **error"
+.Fo libphdi_handle_open_extent_data_files_file_io_pool
+.Fa "libphdi_handle_t *handle"
+.Fa "libbfio_pool_t *file_io_pool"
+.Fa "libphdi_error_t **error"
+.Fc
+.fi
 .Pp
 Extent descriptor functions
+.nf
 .Ft int
-.Fn libphdi_extent_descriptor_free "libphdi_extent_descriptor_t **extent_descriptor" "libphdi_error_t **error"
+.Fo libphdi_extent_descriptor_free
+.Fa "libphdi_extent_descriptor_t **extent_descriptor"
+.Fa "libphdi_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libphdi_extent_descriptor_get_range "libphdi_extent_descriptor_t *extent_descriptor" "off64_t *offset" "size64_t *size" "libphdi_error_t **error"
+.Fo libphdi_extent_descriptor_get_range
+.Fa "libphdi_extent_descriptor_t *extent_descriptor"
+.Fa "off64_t *offset"
+.Fa "size64_t *size"
+.Fa "libphdi_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libphdi_extent_descriptor_get_number_of_images "libphdi_extent_descriptor_t *extent_descriptor" "int *number_of_images" "libphdi_error_t **error"
+.Fo libphdi_extent_descriptor_get_number_of_images
+.Fa "libphdi_extent_descriptor_t *extent_descriptor"
+.Fa "int *number_of_images"
+.Fa "libphdi_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libphdi_extent_descriptor_get_image_descriptor_by_index "libphdi_extent_descriptor_t *extent_descriptor" "int image_index" "libphdi_image_descriptor_t **image_descriptor" "libphdi_error_t **error"
+.Fo libphdi_extent_descriptor_get_image_descriptor_by_index
+.Fa "libphdi_extent_descriptor_t *extent_descriptor"
+.Fa "int image_index"
+.Fa "libphdi_image_descriptor_t **image_descriptor"
+.Fa "libphdi_error_t **error"
+.Fc
+.fi
 .Pp
 Image descriptor functions
+.nf
 .Ft int
-.Fn libphdi_image_descriptor_free "libphdi_image_descriptor_t **image_descriptor" "libphdi_error_t **error"
+.Fo libphdi_image_descriptor_free
+.Fa "libphdi_image_descriptor_t **image_descriptor"
+.Fa "libphdi_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libphdi_image_descriptor_get_type "libphdi_image_descriptor_t *image_descriptor" "int *type" "libphdi_error_t **error"
+.Fo libphdi_image_descriptor_get_type
+.Fa "libphdi_image_descriptor_t *image_descriptor"
+.Fa "int *type"
+.Fa "libphdi_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libphdi_image_descriptor_get_utf8_filename_size "libphdi_image_descriptor_t *image_descriptor" "size_t *utf8_string_size" "libphdi_error_t **error"
+.Fo libphdi_image_descriptor_get_utf8_filename_size
+.Fa "libphdi_image_descriptor_t *image_descriptor"
+.Fa "size_t *utf8_string_size"
+.Fa "libphdi_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libphdi_image_descriptor_get_utf8_filename "libphdi_image_descriptor_t *image_descriptor" "uint8_t *utf8_string" "size_t utf8_string_size" "libphdi_error_t **error"
+.Fo libphdi_image_descriptor_get_utf8_filename
+.Fa "libphdi_image_descriptor_t *image_descriptor"
+.Fa "uint8_t *utf8_string"
+.Fa "size_t utf8_string_size"
+.Fa "libphdi_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libphdi_image_descriptor_get_utf16_filename_size "libphdi_image_descriptor_t *image_descriptor" "size_t *utf16_string_size" "libphdi_error_t **error"
+.Fo libphdi_image_descriptor_get_utf16_filename_size
+.Fa "libphdi_image_descriptor_t *image_descriptor"
+.Fa "size_t *utf16_string_size"
+.Fa "libphdi_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libphdi_image_descriptor_get_utf16_filename "libphdi_image_descriptor_t *image_descriptor" "uint16_t *utf16_string" "size_t utf16_string_size" "libphdi_error_t **error"
+.Fo libphdi_image_descriptor_get_utf16_filename
+.Fa "libphdi_image_descriptor_t *image_descriptor"
+.Fa "uint16_t *utf16_string"
+.Fa "size_t utf16_string_size"
+.Fa "libphdi_error_t **error"
+.Fc
+.fi
 .Pp
 Snapshot functions
+.nf
 .Ft int
-.Fn libphdi_snapshot_free "libphdi_snapshot_t **snapshot" "libphdi_error_t **error"
+.Fo libphdi_snapshot_free
+.Fa "libphdi_snapshot_t **snapshot"
+.Fa "libphdi_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libphdi_snapshot_get_identifier "libphdi_snapshot_t *snapshot" "uint8_t *guid_data" "size_t guid_data_size" "libphdi_error_t **error"
+.Fo libphdi_snapshot_get_identifier
+.Fa "libphdi_snapshot_t *snapshot"
+.Fa "uint8_t *guid_data"
+.Fa "size_t guid_data_size"
+.Fa "libphdi_error_t **error"
+.Fc
+.fi
+.nf
 .Ft int
-.Fn libphdi_snapshot_get_parent_identifier "libphdi_snapshot_t *snapshot" "uint8_t *guid_data" "size_t guid_data_size" "libphdi_error_t **error"
+.Fo libphdi_snapshot_get_parent_identifier
+.Fa "libphdi_snapshot_t *snapshot"
+.Fa "uint8_t *guid_data"
+.Fa "size_t guid_data_size"
+.Fa "libphdi_error_t **error"
+.Fc
+.fi
 .Sh DESCRIPTION
 The
 .Fn libphdi_get_version
 function is used to retrieve the library version.
 .Sh RETURN VALUES
-Most of the functions return NULL or \-1 on error, dependent on the return type.
-For the actual return values see "libphdi.h".
+Most of the functions return NULL or \-1 on error, dependent on the return \
+type.
+For the actual return values see
+.In libphdi.h .
 .Sh ENVIRONMENT
 None
 .Sh FILES
@@ -164,14 +490,16 @@ To compile libphdi with wide character support use:
 .sp
 .Ar LIBPHDI_WIDE_CHARACTER_TYPE
  in libphdi/features.h can be used to determine if libphdi was compiled with wide character support.
+.Sh SEE ALSO
+.In libphdi.h
+.Sh AUTHORS
+.An Joachim Metz <joachim.metz@gmail.com>
 .Sh BUGS
-Please report bugs of any kind on the project issue tracker: https://github.com/libyal/libphdi/issues
-.Sh AUTHOR
-These man pages are generated from "libphdi.h".
+Please report bugs of any kind on the project issue tracker: \
+https://github.com/libyal/libphdi/issues
 .Sh COPYRIGHT
 Copyright (C) 2015-2026, Joachim Metz <joachim.metz@gmail.com>.
 .sp
 This is free software; see the source for copying conditions.
-There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-.Sh SEE ALSO
-the libphdi.h include file
+There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A \
+PARTICULAR PURPOSE.

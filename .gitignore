@@ -1,6 +1,6 @@
 # Files to ignore by git
 #
-# Version: 20251129
+# Version: 20260604
 
 # Generic auto-generated build files
 *~
@@ -135,9 +135,15 @@ stamp-h[1-9]
 /phditools/*.exe
 /phditools/phdiinfo
 /phditools/phdimount
+/tests/*.dir
 /tests/*.exe
+/tests/*.log
+/tests/*.tmp
+/tests/atconfig
+/tests/atlocal
 /tests/input
 /tests/notify_stream.log
+/tests/package.m4
 /tests/phdi_test_block_descriptor
 /tests/phdi_test_block_tree
 /tests/phdi_test_block_tree_node
@@ -161,6 +167,11 @@ stamp-h[1-9]
 /tests/phdi_test_system_string
 /tests/phdi_test_xml_attribute
 /tests/phdi_test_xml_tag
+/tests/test_inputs_*.at
+/tests/test_library
+/tests/test_manpages
+/tests/test_python_module
+/tests/test_tools
 /tests/tmp*
 
 # Local library dependencies specific files
