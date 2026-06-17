@@ -2,7 +2,7 @@ AC_PREREQ([2.71])
 
 AC_INIT(
   [libphdi],
-  [20260615],
+  [20260617],
   [https://github.com/libyal/libphdi/issues])
 
 AC_CONFIG_SRCDIR(
