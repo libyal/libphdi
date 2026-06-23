@@ -1,6 +1,6 @@
 # Tests library functions and types.
 
-$LibraryTests = "block_descriptor block_tree block_tree_node data_files disk_descriptor_xml_file disk_parameters error extent_descriptor extent_table extent_values image_descriptor image_values io_handle notify snapshot_values system_string xml_tag"
+$LibraryTests = "block_descriptor block_tree block_tree_node data_files disk_descriptor_xml_file disk_parameters error extent_descriptor extent_table extent_values image_descriptor image_values io_handle notify snapshot_values sparse_image_header storage_image system_string xml_attribute xml_tag"
 $LibraryTestsWithInput = "handle support"
 $OptionSets = "" -split " "
 

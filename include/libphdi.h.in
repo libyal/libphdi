@@ -370,7 +370,7 @@ int libphdi_handle_set_extent_data_files_path_wide(
 #endif /* defined( HAVE_WIDE_CHARACTER_TYPE ) */
 
 /* Retrieves the media size
- * Returns the 1 if succesful or -1 on error
+ * Returns the 1 if successful or -1 on error
  */
 LIBPHDI_EXTERN \
 int libphdi_handle_get_media_size(

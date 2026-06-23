@@ -51,8 +51,11 @@ check_PROGRAMS = \
 	phdi_test_io_handle \
 	phdi_test_notify \
 	phdi_test_snapshot_values \
+	phdi_test_sparse_image_header \
+	phdi_test_storage_image \
 	phdi_test_support \
 	phdi_test_system_string \
+	phdi_test_xml_attribute \
 	phdi_test_xml_tag
 
 phdi_test_block_descriptor_SOURCES = \
@@ -273,6 +276,30 @@ phdi_test_snapshot_values_LDADD = \
 	../libphdi/libphdi.la \
 	@LIBCERROR_LIBADD@
 
+phdi_test_sparse_image_header_SOURCES = \
+	phdi_test_libcerror.h \
+	phdi_test_libphdi.h \
+	phdi_test_macros.h \
+	phdi_test_memory.c phdi_test_memory.h \
+	phdi_test_sparse_image_header.c \
+	phdi_test_unused.h
+
+phdi_test_sparse_image_header_LDADD = \
+	../libphdi/libphdi.la \
+	@LIBCERROR_LIBADD@
+
+phdi_test_storage_image_SOURCES = \
+	phdi_test_libcerror.h \
+	phdi_test_libphdi.h \
+	phdi_test_macros.h \
+	phdi_test_memory.c phdi_test_memory.h \
+	phdi_test_storage_image.c \
+	phdi_test_unused.h
+
+phdi_test_storage_image_LDADD = \
+	../libphdi/libphdi.la \
+	@LIBCERROR_LIBADD@
+
 phdi_test_support_SOURCES = \
 	phdi_test_functions.c phdi_test_functions.h \
 	phdi_test_getopt.c phdi_test_getopt.h \
@@ -307,6 +334,18 @@ phdi_test_system_string_SOURCES = \
 	phdi_test_unused.h
 
 phdi_test_system_string_LDADD = \
+	../libphdi/libphdi.la \
+	@LIBCERROR_LIBADD@
+
+phdi_test_xml_attribute_SOURCES = \
+	phdi_test_libcerror.h \
+	phdi_test_libphdi.h \
+	phdi_test_macros.h \
+	phdi_test_memory.c phdi_test_memory.h \
+	phdi_test_unused.h \
+	phdi_test_xml_attribute.c
+
+phdi_test_xml_attribute_LDADD = \
 	../libphdi/libphdi.la \
 	@LIBCERROR_LIBADD@
 
@@ -382,6 +421,7 @@ test_manpages: \
 test_python_module: \
 	package.m4 \
 	test_inputs_pyphdi.at \
+	test_macros.at \
 	test_python_module.at
 
 test_tools: \

@@ -1,6 +1,6 @@
-.Dd March  7, 2019
-.Dt phdiinfo
-.Os libphdi
+.Dd June 23, 2026
+.Dt PHDIINFO 1
+.Os
 .Sh NAME
 .Nm phdiinfo
 .Nd determines information about a Parallels Hard Disk image file
@@ -17,10 +17,10 @@ is part of the
 .Nm libphdi
 package.
 .Nm libphdi
-is a library to access the Parallels Hard Disk image format
+is a library to access the Parallels Hard Disk image (PHDI) format
 .Pp
 .Ar source
-is the source file.
+is the source image disk descriptor file.
 .Pp
 The options are as follows:
 .Bl -tag -width Ds
@@ -39,19 +39,23 @@ None
 .Bd -literal
 # phdiinfo DiskDescriptor.xml
 phdiinfo 20151220
-
+.sp
 Parallels Hard Disk image information:
 	Media size:		536870912 bytes
-
+.sp
 .Ed
 .Sh DIAGNOSTICS
-Errors, verbose and debug output are printed to stderr when verbose output \-v is enabled.
+Errors, verbose and debug output are printed to stderr when verbose output \
+\-v is enabled.
 Verbose and debug output are only printed when enabled at compilation.
+.Sh AUTHORS
+.An Joachim Metz <joachim.metz@gmail.com>
 .Sh BUGS
-Please report bugs of any kind to <joachim.metz@gmail.com> or on the project website:
-https://github.com/libyal/libphdi/
-.Sh AUTHOR
-These man pages were written by Joachim Metz.
+Please report bugs of any kind on the project issue tracker: \
+https://github.com/libyal/libphdi/issues
 .Sh COPYRIGHT
 Copyright (C) 2015-2026, Joachim Metz <joachim.metz@gmail.com>.
-.Sh SEE ALSO
+.sp
+This is free software; see the source for copying conditions.
+There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A \
+PARTICULAR PURPOSE.

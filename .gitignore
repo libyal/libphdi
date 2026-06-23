@@ -162,7 +162,6 @@ stamp-h[1-9]
 /tests/phdi_test_snapshot_values
 /tests/phdi_test_sparse_image_header
 /tests/phdi_test_storage_image
-/tests/phdi_test_storage_table
 /tests/phdi_test_support
 /tests/phdi_test_system_string
 /tests/phdi_test_xml_attribute
