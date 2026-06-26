@@ -295,10 +295,10 @@ int info_handle_close(
 	return( 0 );
 }
 
-/* Prints the file information to a stream
+/* Prints the image information to a stream
  * Returns 1 if successful or -1 on error
  */
-int info_handle_file_fprint(
+int info_handle_image_fprint(
      info_handle_t *info_handle,
      libcerror_error_t **error )
 {
@@ -311,7 +311,7 @@ int info_handle_file_fprint(
 	libphdi_image_descriptor_t *image_descriptor   = NULL;
 	libphdi_snapshot_t *snapshot                   = NULL;
 	system_character_t *value_string               = NULL;
-	static char *function                          = "info_handle_file_fprint";
+	static char *function                          = "info_handle_image_fprint";
 	size64_t extent_size                           = 0;
 	size64_t media_size                            = 0;
 	size_t value_string_size                       = 0;

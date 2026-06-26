@@ -1,18 +1,20 @@
 .Dd June 26, 2026
-.Dt PHDIINFO 1
+.Dt PHDIMOUNT 1
 .Os
 .Sh NAME
-.Nm phdiinfo
-.Nd determines information about a Parallels Hard Disk image file
+.Nm phdimount
+.Nd mounts a Parallels Hard Disk image file
 .Sh SYNOPSIS
-.Nm phdiinfo
+.Nm phdimount
+.Op Fl X Ar extended_options
 .Op Fl hvV
 .Ar source
+.Ar mount_point
 .Sh DESCRIPTION
-.Nm phdiinfo
-is a utility to determine information about a Parallels Hard Disk image file
+.Nm phdimount
+is a utility to mount a Parallels Hard Disk image file
 .Pp
-.Nm phdiinfo
+.Nm phdimount
 is part of the
 .Nm libphdi
 package.
@@ -20,16 +22,20 @@ package.
 is a library to access the Parallels Hard Disk image (PHDI) format
 .Pp
 .Ar source
-is the source image disk descriptor file.
+a Parallels Hard Disk image file
+.Ar mount_point
+the directory to serve as mount point
 .Pp
 The options are as follows:
 .Bl -tag -width Ds
 .It Fl h
 shows this help
 .It Fl v
-verbose output to stderr
+verbose output to stderr, while phdimount will remain running in the foreground
 .It Fl V
 print version
+.It Fl X Ar extended_options
+extended options to pass to sub system
 .El
 .Sh ENVIRONMENT
 None
@@ -37,11 +43,8 @@ None
 None
 .Sh EXAMPLES
 .Bd -literal
-# phdiinfo DiskDescriptor.xml
-phdiinfo 20151220
-.sp
-Parallels Hard Disk image information:
-	Media size:		536870912 bytes
+# vhdimount image.vhd
+vhdimount 20260626
 .sp
 .Ed
 .Sh DIAGNOSTICS
@@ -49,7 +52,7 @@ Errors, verbose and debug output are printed to stderr when verbose output \
 \-v is enabled.
 Verbose and debug output are only printed when enabled at compilation.
 .Sh SEE ALSO
-.Xr phdimount 1
+.Xr phdiinfo 1
 .Sh AUTHORS
 .An Joachim Metz <joachim.metz@gmail.com>
 .Sh BUGS

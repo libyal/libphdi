@@ -35,3 +35,5 @@ Copy-Item files -Destination "${TestsInputDirectory}\.pyphdi\${TestSet}\files"
 
 New-Item -Name "${TestsInputDirectory}\.phdiinfo\${TestSet}" -ItemType "directory" | Out-Null
 Copy-Item files -Destination "${TestsInputDirectory}\.phdiinfo\${TestSet}\files"
+
+Remove-Item -Force -Path files

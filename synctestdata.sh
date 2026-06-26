@@ -5,12 +5,10 @@ TESTS_INPUT_DIRECTORY="tests/input"
 TEST_SET="public"
 TEST_FILES="DiskDescriptor.xml hfsplus.hdd hfsplus.hdd.0.{5fbaabe3-6958-40ff-92a7-860e329aab41}.hds"
 
-mkdir -p "${TESTS_INPUT_DIRECTORY}/${TEST_SET}"
+mkdir -p "${TESTS_INPUT_DIRECTORY}/${TEST_SET}/hfsplus.hdd"
 
 for TEST_FILE in ${TEST_FILES}
 do
-	mkdir -p "${TESTS_INPUT_DIRECTORY}/${TEST_SET}/hfsplus.hdd"
-
 	# URL escape the { and } characters in the name of a test file.
 	URL_TEST_FILE=`echo ${TEST_FILE} | sed 's/{/%7B/g;s/}/%7D/g'`
 
