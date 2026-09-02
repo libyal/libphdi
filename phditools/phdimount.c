@@ -486,9 +486,14 @@ int main( int argc, char * const argv[] )
 
 		goto on_error;
 	}
-	fuse_destroy(
+#if defined( HAVE_LIBFUSE3 )
+	fuse_unmount(
 	 phdimount_fuse_handle );
-
+#else
+	fuse_unmount(
+	 mount_point,
+	 phdimount_fuse_channel );
+#endif
 	fuse_opt_free_args(
 	 &phdimount_fuse_arguments );
 
