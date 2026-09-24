@@ -29,412 +29,417 @@ import pyphdi
 
 
 class HandleTypeTests(unittest.TestCase):
-  """Tests the handle type."""
+    """Tests the handle type."""
 
-  def test_signal_abort(self):
-    """Tests the signal_abort function."""
-    phdi_handle = pyphdi.handle()
+    def test_signal_abort(self):
+        """Tests the signal_abort function."""
+        phdi_handle = pyphdi.handle()
 
-    phdi_handle.signal_abort()
+        phdi_handle.signal_abort()
 
-  def test_open(self):
-    """Tests the open function."""
-    test_source = getattr(unittest, "source", None)
-    if not test_source:
-      raise unittest.SkipTest("missing source")
+    def test_open(self):
+        """Tests the open function."""
+        test_source = getattr(unittest, "source", None)
+        if not test_source:
+            raise unittest.SkipTest("missing source")
 
-    phdi_handle = pyphdi.handle()
+        phdi_handle = pyphdi.handle()
 
-    phdi_handle.open(test_source)
+        phdi_handle.open(test_source)
 
-    with self.assertRaises(IOError):
-      phdi_handle.open(test_source)
+        with self.assertRaises(IOError):
+            phdi_handle.open(test_source)
 
-    phdi_handle.close()
-
-    with self.assertRaises(TypeError):
-      phdi_handle.open(None)
-
-    with self.assertRaises(ValueError):
-      phdi_handle.open(test_source, mode="w")
-
-  def test_open_file_object(self):
-    """Tests the open_file_object function."""
-    test_source = getattr(unittest, "source", None)
-    if not test_source:
-      raise unittest.SkipTest("missing source")
-
-    if not os.path.isfile(test_source):
-      raise unittest.SkipTest("source not a regular file")
-
-    phdi_handle = pyphdi.handle()
-
-    with open(test_source, "rb") as file_object:
-
-      phdi_handle.open_file_object(file_object)
-
-      with self.assertRaises(IOError):
-        phdi_handle.open_file_object(file_object)
-
-      phdi_handle.close()
-
-      with self.assertRaises(TypeError):
-        phdi_handle.open_file_object(None)
-
-      with self.assertRaises(ValueError):
-        phdi_handle.open_file_object(file_object, mode="w")
-
-  def test_close(self):
-    """Tests the close function."""
-    test_source = getattr(unittest, "source", None)
-    if not test_source:
-      raise unittest.SkipTest("missing source")
-
-    phdi_handle = pyphdi.handle()
-
-    with self.assertRaises(IOError):
-      phdi_handle.close()
-
-  def test_open_close(self):
-    """Tests the open and close functions."""
-    test_source = getattr(unittest, "source", None)
-    if not test_source:
-      return
-
-    phdi_handle = pyphdi.handle()
-
-    # Test open and close.
-    phdi_handle.open(test_source)
-    phdi_handle.close()
-
-    # Test open and close a second time to validate clean up on close.
-    phdi_handle.open(test_source)
-    phdi_handle.close()
-
-    if os.path.isfile(test_source):
-      with open(test_source, "rb") as file_object:
-
-        # Test open_file_object and close.
-        phdi_handle.open_file_object(file_object)
         phdi_handle.close()
 
-        # Test open_file_object and close a second time to validate clean up on close.
-        phdi_handle.open_file_object(file_object)
+        with self.assertRaises(TypeError):
+            phdi_handle.open(None)
+
+        with self.assertRaises(ValueError):
+            phdi_handle.open(test_source, mode="w")
+
+    def test_open_file_object(self):
+        """Tests the open_file_object function."""
+        test_source = getattr(unittest, "source", None)
+        if not test_source:
+            raise unittest.SkipTest("missing source")
+
+        if not os.path.isfile(test_source):
+            raise unittest.SkipTest("source not a regular file")
+
+        phdi_handle = pyphdi.handle()
+
+        with open(test_source, "rb") as file_object:
+
+            phdi_handle.open_file_object(file_object)
+
+            with self.assertRaises(IOError):
+                phdi_handle.open_file_object(file_object)
+
+            phdi_handle.close()
+
+            with self.assertRaises(TypeError):
+                phdi_handle.open_file_object(None)
+
+            with self.assertRaises(ValueError):
+                phdi_handle.open_file_object(file_object, mode="w")
+
+    def test_close(self):
+        """Tests the close function."""
+        test_source = getattr(unittest, "source", None)
+        if not test_source:
+            raise unittest.SkipTest("missing source")
+
+        phdi_handle = pyphdi.handle()
+
+        with self.assertRaises(IOError):
+            phdi_handle.close()
+
+    def test_open_close(self):
+        """Tests the open and close functions."""
+        test_source = getattr(unittest, "source", None)
+        if not test_source:
+            return
+
+        phdi_handle = pyphdi.handle()
+
+        # Test open and close.
+        phdi_handle.open(test_source)
         phdi_handle.close()
 
-        # Test open_file_object and close and dereferencing file_object.
-        phdi_handle.open_file_object(file_object)
-        del file_object
+        # Test open and close a second time to validate clean up on close.
+        phdi_handle.open(test_source)
         phdi_handle.close()
 
-  def test_read_buffer(self):
-    """Tests the read_buffer function."""
-    test_source = getattr(unittest, "source", None)
-    if not test_source:
-      raise unittest.SkipTest("missing source")
+        if os.path.isfile(test_source):
+            with open(test_source, "rb") as file_object:
 
-    phdi_handle = pyphdi.handle()
+                # Test open_file_object and close.
+                phdi_handle.open_file_object(file_object)
+                phdi_handle.close()
 
-    phdi_handle.open(test_source)
-    phdi_handle.open_extent_data_files()
+                # Test open_file_object and close a second time to validate clean up on close.
+                phdi_handle.open_file_object(file_object)
+                phdi_handle.close()
 
-    media_size = phdi_handle.get_media_size()
+                # Test open_file_object and close and dereferencing file_object.
+                phdi_handle.open_file_object(file_object)
+                del file_object
+                phdi_handle.close()
 
-    if media_size < 4096:
-      # Test read without maximum size.
-      phdi_handle.seek_offset(0, os.SEEK_SET)
+    def test_read_buffer(self):
+        """Tests the read_buffer function."""
+        test_source = getattr(unittest, "source", None)
+        if not test_source:
+            raise unittest.SkipTest("missing source")
 
-      data = phdi_handle.read_buffer()
+        phdi_handle = pyphdi.handle()
 
-      self.assertIsNotNone(data)
-      self.assertEqual(len(data), media_size)
+        phdi_handle.open(test_source)
+        phdi_handle.open_extent_data_files()
 
-    # Test read with maximum size.
-    phdi_handle.seek_offset(0, os.SEEK_SET)
+        media_size = phdi_handle.get_media_size()
 
-    data = phdi_handle.read_buffer(size=4096)
+        if media_size < 4096:
+            # Test read without maximum size.
+            phdi_handle.seek_offset(0, os.SEEK_SET)
 
-    self.assertIsNotNone(data)
-    self.assertEqual(len(data), min(media_size, 4096))
+            data = phdi_handle.read_buffer()
 
-    if media_size > 8:
-      phdi_handle.seek_offset(-8, os.SEEK_END)
+            self.assertIsNotNone(data)
+            self.assertEqual(len(data), media_size)
 
-      # Read buffer on media_size boundary.
-      data = phdi_handle.read_buffer(size=4096)
+        # Test read with maximum size.
+        phdi_handle.seek_offset(0, os.SEEK_SET)
 
-      self.assertIsNotNone(data)
-      self.assertEqual(len(data), 8)
+        data = phdi_handle.read_buffer(size=4096)
 
-      # Read buffer beyond media_size boundary.
-      data = phdi_handle.read_buffer(size=4096)
+        self.assertIsNotNone(data)
+        self.assertEqual(len(data), min(media_size, 4096))
 
-      self.assertIsNotNone(data)
-      self.assertEqual(len(data), 0)
+        if media_size > 8:
+            phdi_handle.seek_offset(-8, os.SEEK_END)
 
-    # Stress test read buffer.
-    phdi_handle.seek_offset(0, os.SEEK_SET)
+            # Read buffer on media_size boundary.
+            data = phdi_handle.read_buffer(size=4096)
 
-    remaining_media_size = media_size
+            self.assertIsNotNone(data)
+            self.assertEqual(len(data), 8)
 
-    for _ in range(1024):
-      read_size = int(random.random() * 4096)
+            # Read buffer beyond media_size boundary.
+            data = phdi_handle.read_buffer(size=4096)
 
-      data = phdi_handle.read_buffer(size=read_size)
+            self.assertIsNotNone(data)
+            self.assertEqual(len(data), 0)
 
-      self.assertIsNotNone(data)
-
-      data_size = len(data)
-
-      if read_size > remaining_media_size:
-        read_size = remaining_media_size
-
-      self.assertEqual(data_size, read_size)
-
-      remaining_media_size -= data_size
-
-      if not remaining_media_size:
+        # Stress test read buffer.
         phdi_handle.seek_offset(0, os.SEEK_SET)
 
         remaining_media_size = media_size
 
-    with self.assertRaises(ValueError):
-      phdi_handle.read_buffer(size=-1)
+        for _ in range(1024):
+            read_size = int(random.random() * 4096)
 
-    phdi_handle.close()
+            data = phdi_handle.read_buffer(size=read_size)
 
-    # Test the read without open.
-    with self.assertRaises(IOError):
-      phdi_handle.read_buffer(size=4096)
+            self.assertIsNotNone(data)
 
-  def test_read_buffer_file_object(self):
-    """Tests the read_buffer function on a file-like object."""
-    test_source = getattr(unittest, "source", None)
-    if not test_source:
-      raise unittest.SkipTest("missing source")
+            data_size = len(data)
 
-    if not os.path.isfile(test_source):
-      raise unittest.SkipTest("source not a regular file")
+            if read_size > remaining_media_size:
+                read_size = remaining_media_size
 
-    with open(test_source, "rb") as file_object:
-      phdi_handle = pyphdi.handle()
+            self.assertEqual(data_size, read_size)
 
-      phdi_handle.open_file_object(file_object)
+            remaining_media_size -= data_size
 
-      extent_data_file_objects = []
-      for extent_descriptor in phdi_handle.extent_descriptors:
-        extend_data_file_path = os.path.join(
-          os.path.dirname(test_source), extent_descriptor.filename)
-        extend_data_file_object = open(extend_data_file_path, "rb")
-        extent_data_file_objects.append(extend_data_file_object)
+            if not remaining_media_size:
+                phdi_handle.seek_offset(0, os.SEEK_SET)
 
-      phdi_handle.open_extent_data_files_as_file_objects(
-          extent_data_file_objects)
+                remaining_media_size = media_size
 
-      media_size = phdi_handle.get_media_size()
+        with self.assertRaises(ValueError):
+            phdi_handle.read_buffer(size=-1)
 
-      # Test normal read.
-      data = phdi_handle.read_buffer(size=4096)
+        phdi_handle.close()
 
-      self.assertIsNotNone(data)
-      self.assertEqual(len(data), min(media_size, 4096))
+        # Test the read without open.
+        with self.assertRaises(IOError):
+            phdi_handle.read_buffer(size=4096)
 
-      phdi_handle.close()
+    def test_read_buffer_file_object(self):
+        """Tests the read_buffer function on a file-like object."""
+        test_source = getattr(unittest, "source", None)
+        if not test_source:
+            raise unittest.SkipTest("missing source")
 
-      for extend_data_file_object in extent_data_file_objects:
-        extend_data_file_object.close()
+        if not os.path.isfile(test_source):
+            raise unittest.SkipTest("source not a regular file")
 
-  def test_read_buffer_at_offset(self):
-    """Tests the read_buffer_at_offset function."""
-    test_source = getattr(unittest, "source", None)
-    if not test_source:
-      raise unittest.SkipTest("missing source")
+        with open(test_source, "rb") as file_object:
+            phdi_handle = pyphdi.handle()
 
-    phdi_handle = pyphdi.handle()
+            phdi_handle.open_file_object(file_object)
 
-    phdi_handle.open(test_source)
-    phdi_handle.open_extent_data_files()
+            extent_data_file_objects = []
+            for extent_descriptor in phdi_handle.extent_descriptors:
+                extend_data_file_path = os.path.join(
+                    os.path.dirname(test_source), extent_descriptor.filename
+                )
+                extend_data_file_object = open(extend_data_file_path, "rb")
+                extent_data_file_objects.append(extend_data_file_object)
 
-    media_size = phdi_handle.get_media_size()
+            phdi_handle.open_extent_data_files_as_file_objects(extent_data_file_objects)
 
-    # Test normal read.
-    data = phdi_handle.read_buffer_at_offset(4096, 0)
+            media_size = phdi_handle.get_media_size()
 
-    self.assertIsNotNone(data)
-    self.assertEqual(len(data), min(media_size, 4096))
+            # Test normal read.
+            data = phdi_handle.read_buffer(size=4096)
 
-    if media_size > 8:
-      # Read buffer on media_size boundary.
-      data = phdi_handle.read_buffer_at_offset(4096, media_size - 8)
+            self.assertIsNotNone(data)
+            self.assertEqual(len(data), min(media_size, 4096))
 
-      self.assertIsNotNone(data)
-      self.assertEqual(len(data), 8)
+            phdi_handle.close()
 
-      # Read buffer beyond media_size boundary.
-      data = phdi_handle.read_buffer_at_offset(4096, media_size + 8)
+            for extend_data_file_object in extent_data_file_objects:
+                extend_data_file_object.close()
 
-      self.assertIsNotNone(data)
-      self.assertEqual(len(data), 0)
+    def test_read_buffer_at_offset(self):
+        """Tests the read_buffer_at_offset function."""
+        test_source = getattr(unittest, "source", None)
+        if not test_source:
+            raise unittest.SkipTest("missing source")
 
-    # Stress test read buffer.
-    for _ in range(1024):
-      random_number = random.random()
+        phdi_handle = pyphdi.handle()
 
-      media_offset = int(random_number * media_size)
-      read_size = int(random_number * 4096)
+        phdi_handle.open(test_source)
+        phdi_handle.open_extent_data_files()
 
-      data = phdi_handle.read_buffer_at_offset(read_size, media_offset)
+        media_size = phdi_handle.get_media_size()
 
-      self.assertIsNotNone(data)
+        # Test normal read.
+        data = phdi_handle.read_buffer_at_offset(4096, 0)
 
-      remaining_media_size = media_size - media_offset
+        self.assertIsNotNone(data)
+        self.assertEqual(len(data), min(media_size, 4096))
 
-      data_size = len(data)
+        if media_size > 8:
+            # Read buffer on media_size boundary.
+            data = phdi_handle.read_buffer_at_offset(4096, media_size - 8)
 
-      if read_size > remaining_media_size:
-        read_size = remaining_media_size
+            self.assertIsNotNone(data)
+            self.assertEqual(len(data), 8)
 
-      self.assertEqual(data_size, read_size)
+            # Read buffer beyond media_size boundary.
+            data = phdi_handle.read_buffer_at_offset(4096, media_size + 8)
 
-      remaining_media_size -= data_size
+            self.assertIsNotNone(data)
+            self.assertEqual(len(data), 0)
 
-      if not remaining_media_size:
-        phdi_handle.seek_offset(0, os.SEEK_SET)
+        # Stress test read buffer.
+        for _ in range(1024):
+            random_number = random.random()
 
-    with self.assertRaises(ValueError):
-      phdi_handle.read_buffer_at_offset(-1, 0)
+            media_offset = int(random_number * media_size)
+            read_size = int(random_number * 4096)
 
-    with self.assertRaises(ValueError):
-      phdi_handle.read_buffer_at_offset(4096, -1)
+            data = phdi_handle.read_buffer_at_offset(read_size, media_offset)
 
-    phdi_handle.close()
+            self.assertIsNotNone(data)
 
-    # Test the read without open.
-    with self.assertRaises(IOError):
-      phdi_handle.read_buffer_at_offset(4096, 0)
+            remaining_media_size = media_size - media_offset
 
-  def test_seek_offset(self):
-    """Tests the seek_offset function."""
-    test_source = getattr(unittest, "source", None)
-    if not test_source:
-      raise unittest.SkipTest("missing source")
+            data_size = len(data)
 
-    phdi_handle = pyphdi.handle()
+            if read_size > remaining_media_size:
+                read_size = remaining_media_size
 
-    phdi_handle.open(test_source)
-    phdi_handle.open_extent_data_files()
+            self.assertEqual(data_size, read_size)
 
-    media_size = phdi_handle.get_media_size()
+            remaining_media_size -= data_size
 
-    phdi_handle.seek_offset(16, os.SEEK_SET)
+            if not remaining_media_size:
+                phdi_handle.seek_offset(0, os.SEEK_SET)
 
-    offset = phdi_handle.get_offset()
-    self.assertEqual(offset, 16)
+        with self.assertRaises(ValueError):
+            phdi_handle.read_buffer_at_offset(-1, 0)
 
-    phdi_handle.seek_offset(16, os.SEEK_CUR)
+        with self.assertRaises(ValueError):
+            phdi_handle.read_buffer_at_offset(4096, -1)
 
-    offset = phdi_handle.get_offset()
-    self.assertEqual(offset, 32)
+        phdi_handle.close()
 
-    phdi_handle.seek_offset(-16, os.SEEK_CUR)
+        # Test the read without open.
+        with self.assertRaises(IOError):
+            phdi_handle.read_buffer_at_offset(4096, 0)
 
-    offset = phdi_handle.get_offset()
-    self.assertEqual(offset, 16)
+    def test_seek_offset(self):
+        """Tests the seek_offset function."""
+        test_source = getattr(unittest, "source", None)
+        if not test_source:
+            raise unittest.SkipTest("missing source")
 
-    if media_size > 16:
-      phdi_handle.seek_offset(-16, os.SEEK_END)
+        phdi_handle = pyphdi.handle()
 
-      offset = phdi_handle.get_offset()
-      self.assertEqual(offset, media_size - 16)
+        phdi_handle.open(test_source)
+        phdi_handle.open_extent_data_files()
 
-    phdi_handle.seek_offset(16, os.SEEK_END)
+        media_size = phdi_handle.get_media_size()
 
-    offset = phdi_handle.get_offset()
-    self.assertEqual(offset, media_size + 16)
+        phdi_handle.seek_offset(16, os.SEEK_SET)
 
-    # TODO: change IOError into ValueError
-    with self.assertRaises(IOError):
-      phdi_handle.seek_offset(-1, os.SEEK_SET)
+        offset = phdi_handle.get_offset()
+        self.assertEqual(offset, 16)
 
-    # TODO: change IOError into ValueError
-    with self.assertRaises(IOError):
-      phdi_handle.seek_offset(-32 - media_size, os.SEEK_CUR)
+        phdi_handle.seek_offset(16, os.SEEK_CUR)
 
-    # TODO: change IOError into ValueError
-    with self.assertRaises(IOError):
-      phdi_handle.seek_offset(-32 - media_size, os.SEEK_END)
+        offset = phdi_handle.get_offset()
+        self.assertEqual(offset, 32)
 
-    # TODO: change IOError into ValueError
-    with self.assertRaises(IOError):
-      phdi_handle.seek_offset(0, -1)
+        phdi_handle.seek_offset(-16, os.SEEK_CUR)
 
-    phdi_handle.close()
+        offset = phdi_handle.get_offset()
+        self.assertEqual(offset, 16)
 
-    # Test the seek without open.
-    with self.assertRaises(IOError):
-      phdi_handle.seek_offset(16, os.SEEK_SET)
+        if media_size > 16:
+            phdi_handle.seek_offset(-16, os.SEEK_END)
 
-  def test_get_offset(self):
-    """Tests the get_offset function."""
-    test_source = getattr(unittest, "source", None)
-    if not test_source:
-      raise unittest.SkipTest("missing source")
+            offset = phdi_handle.get_offset()
+            self.assertEqual(offset, media_size - 16)
 
-    phdi_handle = pyphdi.handle()
+        phdi_handle.seek_offset(16, os.SEEK_END)
 
-    phdi_handle.open(test_source)
-    phdi_handle.open_extent_data_files()
+        offset = phdi_handle.get_offset()
+        self.assertEqual(offset, media_size + 16)
 
-    offset = phdi_handle.get_offset()
-    self.assertIsNotNone(offset)
+        # TODO: change IOError into ValueError
+        with self.assertRaises(IOError):
+            phdi_handle.seek_offset(-1, os.SEEK_SET)
 
-    phdi_handle.close()
+        # TODO: change IOError into ValueError
+        with self.assertRaises(IOError):
+            phdi_handle.seek_offset(-32 - media_size, os.SEEK_CUR)
 
-  def test_get_media_size(self):
-    """Tests the get_media_size function and media_size property."""
-    test_source = getattr(unittest, "source", None)
-    if not test_source:
-      raise unittest.SkipTest("missing source")
+        # TODO: change IOError into ValueError
+        with self.assertRaises(IOError):
+            phdi_handle.seek_offset(-32 - media_size, os.SEEK_END)
 
-    phdi_handle = pyphdi.handle()
+        # TODO: change IOError into ValueError
+        with self.assertRaises(IOError):
+            phdi_handle.seek_offset(0, -1)
 
-    phdi_handle.open(test_source)
+        phdi_handle.close()
 
-    media_size = phdi_handle.get_media_size()
-    self.assertIsNotNone(media_size)
+        # Test the seek without open.
+        with self.assertRaises(IOError):
+            phdi_handle.seek_offset(16, os.SEEK_SET)
 
-    self.assertIsNotNone(phdi_handle.media_size)
+    def test_get_offset(self):
+        """Tests the get_offset function."""
+        test_source = getattr(unittest, "source", None)
+        if not test_source:
+            raise unittest.SkipTest("missing source")
 
-    phdi_handle.close()
+        phdi_handle = pyphdi.handle()
 
-  def test_get_number_of_extents(self):
-    """Tests the get_number_of_extents function and number_of_extents property."""
-    test_source = getattr(unittest, "source", None)
-    if not test_source:
-      raise unittest.SkipTest("missing source")
+        phdi_handle.open(test_source)
+        phdi_handle.open_extent_data_files()
 
-    phdi_handle = pyphdi.handle()
+        offset = phdi_handle.get_offset()
+        self.assertIsNotNone(offset)
 
-    phdi_handle.open(test_source)
+        phdi_handle.close()
 
-    number_of_extents = phdi_handle.get_number_of_extents()
-    self.assertIsNotNone(number_of_extents)
+    def test_get_media_size(self):
+        """Tests the get_media_size function and media_size property."""
+        test_source = getattr(unittest, "source", None)
+        if not test_source:
+            raise unittest.SkipTest("missing source")
 
-    self.assertIsNotNone(phdi_handle.number_of_extents)
+        phdi_handle = pyphdi.handle()
 
-    phdi_handle.close()
+        phdi_handle.open(test_source)
+
+        media_size = phdi_handle.get_media_size()
+        self.assertIsNotNone(media_size)
+
+        self.assertIsNotNone(phdi_handle.media_size)
+
+        phdi_handle.close()
+
+    def test_get_number_of_extents(self):
+        """Tests the get_number_of_extents function and number_of_extents property."""
+        test_source = getattr(unittest, "source", None)
+        if not test_source:
+            raise unittest.SkipTest("missing source")
+
+        phdi_handle = pyphdi.handle()
+
+        phdi_handle.open(test_source)
+
+        number_of_extents = phdi_handle.get_number_of_extents()
+        self.assertIsNotNone(number_of_extents)
+
+        self.assertIsNotNone(phdi_handle.number_of_extents)
+
+        phdi_handle.close()
 
 
 if __name__ == "__main__":
-  argument_parser = argparse.ArgumentParser()
+    argument_parser = argparse.ArgumentParser()
 
-  argument_parser.add_argument(
-      "source", nargs="?", action="store", metavar="PATH",
-      default=None, help="path of the source file.")
+    argument_parser.add_argument(
+        "source",
+        nargs="?",
+        action="store",
+        metavar="PATH",
+        default=None,
+        help="path of the source file.",
+    )
 
-  options, unknown_options = argument_parser.parse_known_args()
-  unknown_options.insert(0, sys.argv[0])
+    options, unknown_options = argument_parser.parse_known_args()
+    unknown_options.insert(0, sys.argv[0])
 
-  setattr(unittest, "source", options.source)
+    setattr(unittest, "source", options.source)
 
-  unittest.main(argv=unknown_options, verbosity=2)
+    unittest.main(argv=unknown_options, verbosity=2)
