@@ -892,18 +892,19 @@ int libphdi_data_files_get_extent_data_file_path(
 	                        (int) LIBCPATH_SEPARATOR,
 	                        narrow_filename_size );
 
-	if( extent_data_filename != NULL )
+	extent_data_filename_size = narrow_filename_size;
+
+	if( extent_data_filename == NULL )
+	{
+		extent_data_filename = narrow_filename;
+	}
+	else
 	{
 		/* Ignore the path separator itself
 		 */
 		extent_data_filename++;
 
-		extent_data_filename_size = (size_t) ( extent_data_filename - narrow_filename );
-	}
-	else
-	{
-		extent_data_filename      = narrow_filename;
-		extent_data_filename_size = narrow_filename_size;
+		extent_data_filename_size -= (size_t) ( extent_data_filename - narrow_filename );
 	}
 	if( libphdi_data_files_join_extent_data_file_path(
 	     data_files,
@@ -1368,18 +1369,19 @@ int libphdi_data_files_get_extent_data_file_path_wide(
 	                        (wint_t) LIBCPATH_SEPARATOR,
 	                        wide_filename_size );
 
-	if( extent_data_filename != NULL )
+	extent_data_filename_size = wide_filename_size;
+
+	if( extent_data_filename == NULL )
+	{
+		extent_data_filename = wide_filename;
+	}
+	else
 	{
 		/* Ignore the path separator itself
 		 */
 		extent_data_filename++;
 
-		extent_data_filename_size = (size_t) ( extent_data_filename - wide_filename );
-	}
-	else
-	{
-		extent_data_filename      = wide_filename;
-		extent_data_filename_size = wide_filename_size;
+		extent_data_filename_size -= (size_t) ( extent_data_filename - wide_filename );
 	}
 	if( libphdi_data_files_join_extent_data_file_path_wide(
 	     data_files,
